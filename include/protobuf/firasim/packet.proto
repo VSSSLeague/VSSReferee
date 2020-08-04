@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+import "command.proto";
+import "replacement.proto";
+import "common.proto";
+
+package fira_message.sim_to_ref;
+
+message Packet {
+	Commands    cmd     = 1;
+	Replacement replace = 2;
+}
+
+message Environment {
+	uint32 step = 1;
+	Frame frame = 2;
+	Field field = 3;
+}
+
+service Simulate {
+	rpc Simulate (Packet) returns (Environment) {}
+}

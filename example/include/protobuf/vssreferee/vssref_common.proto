@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package VSSRef;
+
+enum Foul{
+	FREE_KICK = 0;
+	PENALTY_KICK = 1;
+	GOAL_KICK = 2;
+	FREE_BALL = 3;
+}
+
+enum Color{
+	BLUE = 0;
+	YELLOW = 1;
+}
+
+message Robot {
+    uint32 robot_id    = 1;
+    double x           = 2;
+    double y           = 3;
+    double orientation = 4;
+}
+
+message Frame {
+	Color teamColor = 1;
+	repeated Robot robots    = 2;
+}

@@ -1,0 +1,41 @@
+language: cpp
+
+compiler:
+  - gcc
+
+# by default Ubuntu Precise is included
+# this results on 3 build configurations:
+# Ubuntu Precise and Trusty + Latest OSX image
+matrix:
+    - os: linux
+      dist: bionic
+      sudo: required
+    #- os: linux
+    #  dist: xenial
+    #  sudo: required
+
+addons:
+  apt:
+    packages:
+      - cmake
+      - qt5-default
+      - libprotobuf-dev 
+      - protobuf-compiler 
+      - build-essential 
+      - g++
+  homebrew:
+    taps: 
+    packages:
+      - qt5
+      - protobuf
+
+install:
+
+script:
+  # Referee
+  - cd $TRAVIS_BUILD_DIR
+  - sudo ./protobuf.sh
+  - mkdir build
+  - cd build
+  - qmake ..
+  - make -j8

@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+import "vssref_common.proto";
+
+package VSSRef.team_to_ref;
+
+message VSSRef_Placement {
+	Frame world = 1;
+}
