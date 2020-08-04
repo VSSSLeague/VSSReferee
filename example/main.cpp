@@ -26,6 +26,17 @@ QString getTeamColorNameById(VSSRef::Color color){
     }
 }
 
+QString getQuadrantNameById(VSSRef::Quadrant quadrant){
+    switch(quadrant){
+        case VSSRef::Quadrant::NO_QUADRANT: return "NO QUADRANT";
+        case VSSRef::Quadrant::QUADRANT_1:  return "QUADRANT 1";
+        case VSSRef::Quadrant::QUADRANT_2:  return "QUADRANT 2";
+        case VSSRef::Quadrant::QUADRANT_3:  return "QUADRANT 3";
+        case VSSRef::Quadrant::QUADRANT_4:  return "QUADRANT 4";
+        default:                            return "QUADRANT NOT IDENTIFIED";
+    }
+}
+
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
@@ -55,6 +66,7 @@ int main(int argc, char *argv[])
         if(client->receive(command)){
             // If received command, let's debug it
             std::cout << "[Example] Succesfully received an command from ref: " << getFoulNameById(command.foul()).toStdString() << " for team " << getTeamColorNameById(command.teamcolor()).toStdString() << std::endl;
+            std::cout << getQuadrantNameById(command.foulquadrant()).toStdString() << std::endl;
 
             // Now let's send an placement packet to it
 

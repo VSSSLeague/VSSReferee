@@ -58,6 +58,7 @@ void VSSReferee::loop(){
 
         // By default, send a FREE_BALL for team BLUE (foul packet test)
         _refereeCommand.set_foul(VSSRef::Foul::FREE_BALL);
+        _refereeCommand.set_foulquadrant(VSSRef::Quadrant::QUADRANT_1);
         _refereeCommand.set_teamcolor(VSSRef::Color::BLUE);
 
         if(isConnected()){
