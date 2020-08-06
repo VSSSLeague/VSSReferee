@@ -19,6 +19,7 @@ addons:
     packages:
       - cmake
       - qt5-default
+      - libqt5opengl5-dev
       - libprotobuf-dev 
       - protobuf-compiler 
       - build-essential 
