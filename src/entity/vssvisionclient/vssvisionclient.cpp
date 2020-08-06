@@ -61,6 +61,9 @@ void VSSVisionClient::loop(){
 
             // Set flag
             _hasDetectionUpdate = true;
+
+            // Update on gui
+            RefereeView::updateDetection(currDetection);
         }
 
         // Check if packet contains geometry data

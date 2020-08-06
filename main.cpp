@@ -1,12 +1,13 @@
-#include <QCoreApplication>
+#include <QApplication>
 
 #include <src/entity/vssvisionclient/vssvisionclient.h>
 #include <src/entity/vssreferee/vssreferee.h>
 #include <src/entity/vssreplacer/vssreplacer.h>
+#include <src/entity/refereeview/refereeview.h>
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication a(argc, argv);
+    QApplication a(argc, argv);
 
     // Defines
     QString refereeAddress = "224.5.23.2";
@@ -23,6 +24,7 @@ int main(int argc, char *argv[])
     VSSVisionClient *vssVisionClient = new VSSVisionClient(refereeAddress, visionPort);
     VSSReferee *vssReferee = new VSSReferee(vssVisionClient, refereeAddress, refereePort);
     VSSReplacer *vssReplacer = new VSSReplacer(refereeAddress, replacerPort, firaSimAddress, firaSimCommandPort);
+    RefereeView *refView = new RefereeView();
 
     // Make connections with signals and slots
     QObject::connect(vssReferee, SIGNAL(setFoul(VSSRef::Foul)), vssReplacer, SLOT(takeFoul(VSSRef::Foul)), Qt::DirectConnection);
@@ -32,6 +34,7 @@ int main(int argc, char *argv[])
     vssVisionClient->start();
     vssReferee->start();
     vssReplacer->start();
+    refView->start();
 
     // Run
     bool exec = a.exec();
@@ -40,11 +43,13 @@ int main(int argc, char *argv[])
     vssVisionClient->terminate();
     vssReferee->terminate();
     vssReplacer->terminate();
+    refView->terminate();
 
     // Wait for modules sync
     vssVisionClient->wait();
     vssReferee->wait();
     vssReplacer->wait();
+    refView->wait();
 
     return exec;
 }

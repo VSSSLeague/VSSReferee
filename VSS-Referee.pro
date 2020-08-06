@@ -41,6 +41,11 @@ SOURCES += \
         include/vssref_common.pb.cc \
         main.cpp \
         src/entity/entity.cpp \
+        src/entity/refereeview/mainwindow/mainwindow.cpp \
+        src/entity/refereeview/refereeview.cpp \
+        src/entity/refereeview/soccerview/soccerview.cpp \
+        src/entity/refereeview/soccerview/util/field.cpp \
+        src/entity/refereeview/soccerview/util/gltext.cpp \
         src/entity/vssreferee/vssreferee.cpp \
         src/entity/vssreplacer/vssreplacer.cpp \
         src/entity/vssvisionclient/vssvisionclient.cpp
@@ -63,6 +68,20 @@ HEADERS += \
     include/vssref_placement.pb.h \
     include/vssref_common.pb.h \
     src/entity/entity.h \
+    src/entity/refereeview/mainwindow/mainwindow.h \
+    src/entity/refereeview/refereeview.h \
+    src/entity/refereeview/soccerview/soccerview.h \
+    src/entity/refereeview/soccerview/util/field.h \
+    src/entity/refereeview/soccerview/util/field_default_constants.h \
+    src/entity/refereeview/soccerview/util/geometry.h \
+    src/entity/refereeview/soccerview/util/gltext.h \
+    src/entity/refereeview/soccerview/util/gvector.h \
+    src/entity/refereeview/soccerview/util/timer.h \
+    src/entity/refereeview/soccerview/util/util.h \
     src/entity/vssreferee/vssreferee.h \
     src/entity/vssreplacer/vssreplacer.h \
+    build/tmp/moc/ui_mainwindow.h \
     src/entity/vssvisionclient/vssvisionclient.h
+
+FORMS += \
+    src/entity/refereeview/mainwindow/mainwindow.ui

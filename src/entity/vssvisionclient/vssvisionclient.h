@@ -8,6 +8,8 @@
 #include <include/packet.pb.h>
 #include <include/vssclient/vssclient.h>
 
+#include <src/entity/refereeview/refereeview.h>
+
 #define CLIENT_DISCONNECTED_TIME 500 // ms
 
 class VSSVisionClient : public Entity
