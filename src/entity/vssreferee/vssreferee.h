@@ -2,6 +2,9 @@
 #define VSSREFEREE_H
 
 #include <src/entity/vssvisionclient/vssvisionclient.h>
+
+#include <utils/utils.h>
+
 #include <include/vssref_command.pb.h>
 #include <include/vssref_placement.pb.h>
 
@@ -58,9 +61,6 @@ private:
     int timePassed;
 
     /// FOULS
-
-    // Utils
-    bool isInsideGoalArea(VSSRef::Color teamColor, vector2d pos);
 
     // Two players inside goal area with ball
     bool checkTwoPlayersInsideGoalAreaWithBall();

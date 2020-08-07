@@ -48,7 +48,8 @@ SOURCES += \
         src/entity/refereeview/soccerview/util/gltext.cpp \
         src/entity/vssreferee/vssreferee.cpp \
         src/entity/vssreplacer/vssreplacer.cpp \
-        src/entity/vssvisionclient/vssvisionclient.cpp
+        src/entity/vssvisionclient/vssvisionclient.cpp \
+        utils/utils.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -81,7 +82,8 @@ HEADERS += \
     src/entity/vssreferee/vssreferee.h \
     src/entity/vssreplacer/vssreplacer.h \
     build/tmp/moc/ui_mainwindow.h \
-    src/entity/vssvisionclient/vssvisionclient.h
+    src/entity/vssvisionclient/vssvisionclient.h \
+    utils/utils.h
 
 FORMS += \
     src/entity/refereeview/mainwindow/mainwindow.ui

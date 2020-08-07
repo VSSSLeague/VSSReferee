@@ -178,18 +178,18 @@ bool VSSReferee::checkTwoPlayersInsideGoalAreaWithBall(){
 
     // Checking for blue team
     int bluePlayersAtGoal = 0;
-    bool ballIsAtBlueGoal = isInsideGoalArea(VSSRef::Color::BLUE, vector2d(frame.ball().x(), frame.ball().y()));
+    bool ballIsAtBlueGoal = Utils::isInsideGoalArea(VSSRef::Color::BLUE, vector2d(frame.ball().x(), frame.ball().y()));
     for(int x = 0; x < frame.robots_blue().size(); x++){
-        if(isInsideGoalArea(VSSRef::Color::BLUE, vector2d(frame.robots_blue(x).x(), frame.robots_blue(x).y())))
+        if(Utils::isInsideGoalArea(VSSRef::Color::BLUE, vector2d(frame.robots_blue(x).x(), frame.robots_blue(x).y())))
             bluePlayersAtGoal++;
     }
     if(bluePlayersAtGoal >= 2 && ballIsAtBlueGoal) return true;
 
     // Checking for yellow team
     int yellowPlayersAtGoal = 0;
-    bool ballIsAtYellowGoal = isInsideGoalArea(VSSRef::Color::YELLOW, vector2d(frame.ball().x(), frame.ball().y()));
+    bool ballIsAtYellowGoal = Utils::isInsideGoalArea(VSSRef::Color::YELLOW, vector2d(frame.ball().x(), frame.ball().y()));
     for(int x = 0; x < frame.robots_yellow().size(); x++){
-        if(isInsideGoalArea(VSSRef::Color::YELLOW, vector2d(frame.robots_yellow(x).x(), frame.robots_yellow(x).y())))
+        if(Utils::isInsideGoalArea(VSSRef::Color::YELLOW, vector2d(frame.robots_yellow(x).x(), frame.robots_yellow(x).y())))
             yellowPlayersAtGoal++;
     }
     if(yellowPlayersAtGoal >= 2 && ballIsAtYellowGoal) return true;
@@ -202,18 +202,18 @@ bool VSSReferee::checkTwoPlayersAttackingAtGoalArea(){
 
     // Checking for blue team
     int enemyPlayersAtBlueGoal = 0;
-    bool ballIsAtBlueGoal = isInsideGoalArea(VSSRef::Color::BLUE, vector2d(frame.ball().x(), frame.ball().y()));
+    bool ballIsAtBlueGoal = Utils::isInsideGoalArea(VSSRef::Color::BLUE, vector2d(frame.ball().x(), frame.ball().y()));
     for(int x = 0; x < frame.robots_yellow().size(); x++){
-        if(isInsideGoalArea(VSSRef::Color::BLUE, vector2d(frame.robots_yellow(x).x(), frame.robots_yellow(x).y())))
+        if(Utils::isInsideGoalArea(VSSRef::Color::BLUE, vector2d(frame.robots_yellow(x).x(), frame.robots_yellow(x).y())))
             enemyPlayersAtBlueGoal++;
     }
     if(enemyPlayersAtBlueGoal >= 2 && ballIsAtBlueGoal) return true;
 
     // Checking for yellow team
     int enemyPlayersAtYellowGoal = 0;
-    bool ballIsAtYellowGoal = isInsideGoalArea(VSSRef::Color::YELLOW, vector2d(frame.ball().x(), frame.ball().y()));
+    bool ballIsAtYellowGoal = Utils::isInsideGoalArea(VSSRef::Color::YELLOW, vector2d(frame.ball().x(), frame.ball().y()));
     for(int x = 0; x < frame.robots_blue().size(); x++){
-        if(isInsideGoalArea(VSSRef::Color::YELLOW, vector2d(frame.robots_blue(x).x(), frame.robots_blue(x).y())))
+        if(Utils::isInsideGoalArea(VSSRef::Color::YELLOW, vector2d(frame.robots_blue(x).x(), frame.robots_blue(x).y())))
             enemyPlayersAtYellowGoal++;
     }
     if(enemyPlayersAtYellowGoal >= 2 && ballIsAtYellowGoal) return true;
@@ -225,13 +225,13 @@ bool VSSReferee::checkGKTakeoutTimeout(){
     fira_message::Frame frame = _visionClient->getDetectionData();
 
     int playersAtBlueGoal = 0;
-    bool isBallInsideBlueGoal = isInsideGoalArea(VSSRef::Color::BLUE, vector2d(frame.ball().x(), frame.ball().y()));
-    bool isBallInsideYellowGoal = isInsideGoalArea(VSSRef::Color::YELLOW, vector2d(frame.ball().x(), frame.ball().y()));
+    bool isBallInsideBlueGoal = Utils::isInsideGoalArea(VSSRef::Color::BLUE, vector2d(frame.ball().x(), frame.ball().y()));
+    bool isBallInsideYellowGoal = Utils::isInsideGoalArea(VSSRef::Color::YELLOW, vector2d(frame.ball().x(), frame.ball().y()));
 
     // Checking for blue team if ball is inside their goal
     if(isBallInsideBlueGoal){
         for(int x = 0; x < frame.robots_yellow().size(); x++){
-            if(isInsideGoalArea(VSSRef::Color::BLUE, vector2d(frame.robots_yellow(x).x(), frame.robots_yellow(x).y())))
+            if(Utils::isInsideGoalArea(VSSRef::Color::BLUE, vector2d(frame.robots_yellow(x).x(), frame.robots_yellow(x).y())))
                 playersAtBlueGoal++;
         }
         if(playersAtBlueGoal == 0){
@@ -251,7 +251,7 @@ bool VSSReferee::checkGKTakeoutTimeout(){
     else if(isBallInsideYellowGoal){
         int playersAtYellowGoal = 0;
         for(int x = 0; x < frame.robots_blue().size(); x++){
-            if(isInsideGoalArea(VSSRef::Color::YELLOW, vector2d(frame.robots_blue(x).x(), frame.robots_blue(x).y())))
+            if(Utils::isInsideGoalArea(VSSRef::Color::YELLOW, vector2d(frame.robots_blue(x).x(), frame.robots_blue(x).y())))
                 playersAtYellowGoal++;
         }
         if(playersAtYellowGoal == 0){
@@ -269,34 +269,6 @@ bool VSSReferee::checkGKTakeoutTimeout(){
     }
     else{
         startedGKTimer = false;
-    }
-
-    return false;
-}
-
-bool VSSReferee::isInsideGoalArea(VSSRef::Color teamColor, vector2d pos){
-    float goal_x = (FieldConstantsVSS::kFieldLength/2.0 - FieldConstantsVSS::kDefenseRadius) / 1000.0;
-    float goal_y = (FieldConstantsVSS::kDefenseStretch / 2.0) / 1000.0;
-
-    if(teamColor == VSSRef::Color::BLUE){
-        if(RefereeView::getBlueIsLeftSide()){
-            if(pos.x < -goal_x && abs(pos.y) < goal_y)
-                return true;
-        }
-        else{
-            if(pos.x > goal_x && abs(pos.y) < goal_y)
-                return true;
-        }
-    }
-    else if(teamColor == VSSRef::Color::YELLOW){
-        if(RefereeView::getBlueIsLeftSide()){
-            if(pos.x > goal_x && abs(pos.y) < goal_y)
-                return true;
-        }
-        else{
-            if(pos.x < -goal_x && abs(pos.y) < goal_y)
-                return true;
-        }
     }
 
     return false;
