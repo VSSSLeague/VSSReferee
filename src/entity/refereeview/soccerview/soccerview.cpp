@@ -394,6 +394,18 @@ void SoccerView::drawRobot(int team, bool hasAngle, bool useDisplayLists)
   drawQuad(40,-40,35,40,RobotZ+0.01);
   drawQuad(-40,-40,-35,40,RobotZ+0.01);
 
+    /* collision track
+  glColor3d(1.0,0.0,0.0);
+  drawArc(vector2d(-35, 35),0,8,-M_PI,M_PI,BallZ - 0.01);
+  drawArc(vector2d(35, 35),0,8,-M_PI,M_PI,BallZ - 0.01);
+  drawArc(vector2d(-35, -35),0,8,-M_PI,M_PI,BallZ - 0.01);
+  drawArc(vector2d(35, -35),0,8,-M_PI,M_PI,BallZ - 0.01);
+  drawQuad(-40,40,40,35,BallZ - 0.01);
+  drawQuad(-40,-40,40,-35,BallZ - 0.01);
+  drawQuad(40,-40,35,40,BallZ - 0.01);
+  drawQuad(-40,-40,-35,40,BallZ - 0.01);
+    */
+
   if(hasAngle){
       glColor3d(0.5, 0.5, 0.5);
 

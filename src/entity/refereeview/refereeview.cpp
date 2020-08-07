@@ -33,3 +33,23 @@ void RefereeView::finalization(){
 void RefereeView::updateDetection(fira_message::Frame frame){
     _refereeUI->updateDetection(frame);
 }
+
+void RefereeView::addRefereeCommand(QString command){
+    _refereeUI->addRefereeCommand(command);
+}
+
+void RefereeView::setRefereeCommand(QString command){
+    _refereeUI->setRefereeCommand(command);
+}
+
+void RefereeView::addRefereeWarning(QString command){
+    _refereeUI->addRefereeWarning(command);
+}
+
+void RefereeView::setCurrentTime(int time){
+    _refereeUI->setCurrentTime(time);
+}
+
+bool RefereeView::getBlueIsLeftSide(){
+    return _refereeUI->getBlueIsLeftSide();
+}

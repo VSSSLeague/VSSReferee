@@ -9,7 +9,8 @@
 #include <QUdpSocket>
 #include <include/timer.h>
 
-#define PLACEMENT_WAIT_TIME 10.0 // seconds
+#define PLACEMENT_WAIT_TIME 10.0  // seconds
+#define GAME_HALF_TIME      300   // seconds
 
 class VSSReferee : public Entity
 {
@@ -39,12 +40,24 @@ private:
     // VSSVisionClient to receive data from FIRASim
     VSSVisionClient *_visionClient;
 
+    // Foul name by id
+    QString getFoulNameById(VSSRef::Foul foul);
+
     // Foul placement analysis
     Timer _placementTimer;
     bool _yellowSent;
     bool _blueSent;
     bool _placementIsSet;
     QMutex _placementMutex;
+
+    bool alreadySet;
+
+    // Game time analysis
+    Timer _gameTimer;
+    int timePassed;
+
+    // Penalty foul analysis
+    bool checkPenalty();
 
 signals:
     void setFoul(VSSRef::Foul foul);        // send foul to replacer (reset it vars)

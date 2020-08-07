@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>ui/referee.png</file>
+        <file>ui/warning.png</file>
+    </qresource>
+</RCC>

@@ -78,7 +78,7 @@ void VSSReplacer::loop(){
                 std::cout << "[VSSReplacer] Received packet from team " << teamColor << std::endl;
 
                 // Send signal to VSSReferee
-                teamPlaced(frame.teamcolor());
+                emit teamPlaced(frame.teamcolor());
 
                 _packetsReceived++;
             }

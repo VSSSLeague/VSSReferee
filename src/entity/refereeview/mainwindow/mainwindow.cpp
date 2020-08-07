@@ -72,3 +72,43 @@ void MainWindow::switchSides(){
 
     ui->openGLWidget->setLeftIsBlue(blueIsLeft);
 }
+
+void MainWindow::addRefereeCommand(QString command){
+    QListWidgetItem *item = new QListWidgetItem();
+    QPixmap itemIcon;
+    itemIcon.load(":/ui/referee.png");
+
+    item->setText(command);
+    item->setIcon(itemIcon);
+
+    ui->listWidget->insertItem(0, item);
+    ui->referee_command->setText(command);
+}
+
+void MainWindow::addRefereeWarning(QString command){
+    QListWidgetItem *item = new QListWidgetItem();
+    QPixmap itemIcon;
+    itemIcon.load(":/ui/warning.png");
+
+    item->setText(command);
+    item->setIcon(itemIcon);
+
+
+    ui->listWidget->insertItem(0, item);
+}
+
+void MainWindow::setCurrentTime(int time){
+    int min = time / 60;
+    int sec = time - (min * 60);
+
+    char timeleft[100];
+
+    sprintf(timeleft, "(%.2d:%.2d)", min, sec);
+
+    QString textToSet(timeleft);
+    ui->referee_timeleft->setText(textToSet);
+}
+
+void MainWindow::setRefereeCommand(QString command){
+    ui->referee_command->setText(command);
+}

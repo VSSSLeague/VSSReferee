@@ -15,7 +15,15 @@ public:
     MainWindow(QWidget *parent);
     ~MainWindow();
 
+    // Detection updates
     void updateDetection(fira_message::Frame frame);
+
+    // Referee
+    void addRefereeCommand(QString command);
+    void addRefereeWarning(QString command);
+    void setCurrentTime(int time);
+    void setRefereeCommand(QString command);
+    bool getBlueIsLeftSide() { return blueIsLeft; }
 
 private:
     Ui::MainWindow *ui;
