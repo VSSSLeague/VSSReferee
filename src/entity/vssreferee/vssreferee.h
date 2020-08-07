@@ -11,6 +11,7 @@
 
 #define PLACEMENT_WAIT_TIME 10.0  // seconds
 #define GAME_HALF_TIME      300   // seconds
+#define GK_TIME_TAKEOUT     10.0  // seconds
 
 class VSSReferee : public Entity
 {
@@ -56,8 +57,18 @@ private:
     Timer _gameTimer;
     int timePassed;
 
+    /// FOULS
+
+    // Utils
+    bool isInsideGoalArea(VSSRef::Color teamColor, vector2d pos);
+
     // Penalty foul analysis
     bool checkPenalty();
+
+    // GK alone with ball analysis
+    bool checkGKTakeout();
+    Timer _gkTimer;
+    bool startedGKTimer;
 
 signals:
     void setFoul(VSSRef::Foul foul);        // send foul to replacer (reset it vars)
