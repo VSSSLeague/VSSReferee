@@ -174,7 +174,7 @@ QString VSSReferee::getFoulNameById(VSSRef::Foul foul){
 }
 
 // Fouls detection
-bool VSSReferee::checkPenalty(){
+bool VSSReferee::checkTwoPlayersInsideGoalAreaWithBall(){
     fira_message::Frame frame = _visionClient->getDetectionData();
 
     // Checking for blue team
@@ -198,7 +198,7 @@ bool VSSReferee::checkPenalty(){
     return false;
 }
 
-bool VSSReferee::checkGKTakeout(){
+bool VSSReferee::checkGKTakeoutTimeout(){
     fira_message::Frame frame = _visionClient->getDetectionData();
 
     int playersAtBlueGoal = 0;

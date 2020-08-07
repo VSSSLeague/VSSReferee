@@ -62,11 +62,11 @@ private:
     // Utils
     bool isInsideGoalArea(VSSRef::Color teamColor, vector2d pos);
 
-    // Penalty foul analysis
-    bool checkPenalty();
+    // Two players inside goal area with ball
+    bool checkTwoPlayersInsideGoalAreaWithBall();
 
     // GK alone with ball analysis
-    bool checkGKTakeout();
+    bool checkGKTakeoutTimeout();
     Timer _gkTimer;
     bool startedGKTimer;
 
