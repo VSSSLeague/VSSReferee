@@ -85,7 +85,6 @@ void VSSReferee::loop(){
         RefereeView::setCurrentTime(GAME_HALF_TIME - (_gameTimer.timesec() + timePassed));
         RefereeView::setRefereeCommand("GAME_ON");
 
-
         /// TODO HERE
         /// Receive and process VSSVisionClient informations to check fouls
 
@@ -194,6 +193,30 @@ bool VSSReferee::checkTwoPlayersInsideGoalAreaWithBall(){
             yellowPlayersAtGoal++;
     }
     if(yellowPlayersAtGoal >= 2 && ballIsAtYellowGoal) return true;
+
+    return false;
+}
+
+bool VSSReferee::checkTwoPlayersAttackingAtGoalArea(){
+    fira_message::Frame frame = _visionClient->getDetectionData();
+
+    // Checking for blue team
+    int enemyPlayersAtBlueGoal = 0;
+    bool ballIsAtBlueGoal = isInsideGoalArea(VSSRef::Color::BLUE, vector2d(frame.ball().x(), frame.ball().y()));
+    for(int x = 0; x < frame.robots_yellow().size(); x++){
+        if(isInsideGoalArea(VSSRef::Color::BLUE, vector2d(frame.robots_yellow(x).x(), frame.robots_yellow(x).y())))
+            enemyPlayersAtBlueGoal++;
+    }
+    if(enemyPlayersAtBlueGoal >= 2 && ballIsAtBlueGoal) return true;
+
+    // Checking for yellow team
+    int enemyPlayersAtYellowGoal = 0;
+    bool ballIsAtYellowGoal = isInsideGoalArea(VSSRef::Color::YELLOW, vector2d(frame.ball().x(), frame.ball().y()));
+    for(int x = 0; x < frame.robots_blue().size(); x++){
+        if(isInsideGoalArea(VSSRef::Color::YELLOW, vector2d(frame.robots_blue(x).x(), frame.robots_blue(x).y())))
+            enemyPlayersAtYellowGoal++;
+    }
+    if(enemyPlayersAtYellowGoal >= 2 && ballIsAtYellowGoal) return true;
 
     return false;
 }
