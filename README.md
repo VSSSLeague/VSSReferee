@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/MaracatronicsRobotics/VSSReferee.svg)](https://travis-ci.com/MaracatronicsRobotics/VSSReferee)
+
 # VSS_Referee
 
 ## Introduction
@@ -6,6 +8,7 @@ The VSS-Referee is an module created to the **IEEE Very Small Size Soccer League
 ## Requirements
  * g++
  * Qt
+ * Qt OpenGL
  * Google protocol buffers (protoc)
  
 ## Compilation
