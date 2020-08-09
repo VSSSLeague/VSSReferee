@@ -25,6 +25,9 @@ public:
     void setRefereeCommand(QString command);
     bool getBlueIsLeftSide() { return blueIsLeft; }
 
+    // GUI
+    void drawText(vector2d pos, char *str);
+
 private:
     Ui::MainWindow *ui;
 

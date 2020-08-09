@@ -53,3 +53,7 @@ void RefereeView::setCurrentTime(int time){
 bool RefereeView::getBlueIsLeftSide(){
     return _refereeUI->getBlueIsLeftSide();
 }
+
+void RefereeView::drawText(vector2d pos, char *str){
+    _refereeUI->drawText(pos, str);
+}

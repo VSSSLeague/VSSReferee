@@ -275,6 +275,7 @@ void SoccerView::paintEvent(QPaintEvent* event)
     drawFieldLines(fieldDim);
     drawRobots();
     drawBalls();
+    drawTexts();
     //vectorTextTest();
     glPopMatrix();
     swapBuffers();
@@ -547,6 +548,34 @@ void SoccerView::drawBall(vector2d loc) {
     drawArc(loc,0,16,-M_PI,M_PI,BallZ);
     glColor3d(0.8706,0.3490,0.0);
     drawArc(loc,15,21,-M_PI,M_PI,BallZ);
+}
+
+void SoccerView::drawText(vector2d pos, char *str){
+    texts.push_back(std::make_pair(pos, str));
+}
+
+void SoccerView::drawTexts(){
+    glColor3d(1.0, 1.0, 1.0);
+    for(int x = 0; x < texts.size(); x++){
+        glText.drawString(vector2d(texts.at(x).first.x, texts.at(x).first.y - 30),0,30,texts.at(x).second,GLText::CenterAligned,GLText::MiddleAligned);
+    }
+
+    while(!texts.empty())
+        texts.pop_back();
+}
+
+void SoccerView::drawLine(vector2d v1, vector2d v2, double z){
+    glColor3d(1.0, 0.0, 0.0);
+
+    const vector2d perp = (v2 - v1).norm().perp();
+
+    // Line
+    const double quad_half_thickness = 0.5 * 10;
+    const vector2d qv1 = v1 - quad_half_thickness * perp;
+    const vector2d qv2 = v1 + quad_half_thickness * perp;
+    const vector2d qv3 = v2 + quad_half_thickness * perp;
+    const vector2d qv4 = v2 - quad_half_thickness * perp;
+    drawQuad(qv1, qv2, qv3, qv4, z);
 }
 
 void SoccerView::drawVector(vector2d v1, vector2d v2, double z) {

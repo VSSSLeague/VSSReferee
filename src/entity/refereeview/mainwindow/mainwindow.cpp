@@ -112,3 +112,7 @@ void MainWindow::setCurrentTime(int time){
 void MainWindow::setRefereeCommand(QString command){
     ui->referee_command->setText(command);
 }
+
+void MainWindow::drawText(vector2d pos, char *str){
+    ui->openGLWidget->drawText(pos, str);
+}

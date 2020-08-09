@@ -18,6 +18,8 @@ public:
     static float distanceToLine(const vector2d &s1, const vector2d &s2, const vector2d &point);
     static float distanceToSegment(const vector2d &s1, const vector2d &s2, const vector2d &point);
     static bool isInsideGoalArea(VSSRef::Color teamColor, vector2d pos);
+    static vector2d rotatePoint(vector2d point, float angle);
+    static VSSRef::Quadrant getBallQuadrant(vector2d ballPos);
 };
 
 #endif // UTILS_H

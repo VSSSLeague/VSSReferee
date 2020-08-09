@@ -15,6 +15,8 @@
 #define PLACEMENT_WAIT_TIME 10.0  // seconds
 #define GAME_HALF_TIME      300   // seconds
 #define GK_TIME_TAKEOUT     10.0  // seconds
+#define BALL_STUCK_TIMEOUT  10.0  // seconds
+#define BALL_MINVELOCITY    0.1   // m/s
 
 class VSSReferee : public Entity
 {
@@ -72,6 +74,15 @@ private:
     bool checkGKTakeoutTimeout();
     Timer _gkTimer;
     bool startedGKTimer;
+
+    // Ball stuck
+    bool checkBallStucked();
+    Timer _ballStuckTimer;
+    Timer _ballVelTimer;
+    vector2d lastBallPos;
+
+    // Foul setter
+    void setTeamFoul(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant foulQuadrant = VSSRef::Quadrant::NO_QUADRANT);
 
 signals:
     void setFoul(VSSRef::Foul foul);        // send foul to replacer (reset it vars)

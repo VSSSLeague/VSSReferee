@@ -54,6 +54,9 @@ public:
         teamYellow
     } TeamTypes;
 
+    vector<std::pair<vector2d, char*>> texts;
+    void drawText(vector2d pos, char* str);
+
 private:
     static constexpr double minZValue = -10;
     static constexpr double maxZValue = 10;
@@ -100,6 +103,8 @@ private:
     void drawFieldLines(FieldDimensions &dimensions);
     void drawRobots();
     void drawBalls();
+    void drawTexts();
+    void drawLine(vector2d v1, vector2d v2, double z);
     void drawQuad(vector2d loc1, vector2d loc2, double z=0.0);
     void drawQuad(double x1, double y1, double x2, double y2, double z=0.0){drawQuad(vector2d(x1,y1),vector2d(x2,y2),z);}
     void drawQuad(vector2d v1, vector2d v2, vector2d v3, vector2d v4, double z);

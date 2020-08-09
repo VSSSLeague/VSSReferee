@@ -19,6 +19,9 @@ public:
     static void setRefereeCommand(QString command);
     static bool getBlueIsLeftSide();
 
+    // GUI
+    static void drawText(vector2d pos, char *str);
+
 private:
     // Entity inherited methods
     void initialization();

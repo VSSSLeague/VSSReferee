@@ -102,3 +102,32 @@ bool Utils::isInsideGoalArea(VSSRef::Color teamColor, vector2d pos){
 
     return false;
 }
+
+vector2d Utils::rotatePoint(vector2d point, float angle){
+    float xNew = point.x * cos(angle) - point.y * sin(angle);
+    float yNew = point.x * sin(angle) - point.y * cos(angle);
+
+    return vector2d(xNew, yNew);
+}
+
+VSSRef::Quadrant Utils::getBallQuadrant(vector2d ballPos){
+    if(isInsideGoalArea(VSSRef::Color::BLUE, ballPos) || isInsideGoalArea(VSSRef::Color::YELLOW, ballPos))
+        return VSSRef::Quadrant::NO_QUADRANT;
+
+    /// Quadrants
+    // Quadrant 1 (top-right)
+    // Quadrant 2 (top-left)
+    // Quadrant 3 (bot-left)
+    // Quadrant 4 (bot-right)
+
+    if(ballPos.x > 0.0 && ballPos.y > 0.0)
+        return VSSRef::Quadrant::QUADRANT_1;
+    else if(ballPos.x <= 0.0 && ballPos.y > 0.0)
+        return VSSRef::Quadrant::QUADRANT_2;
+    else if(ballPos.x <= 0.0 && ballPos.y <= 0.0)
+        return VSSRef::Quadrant::QUADRANT_3;
+    else if(ballPos.x > 0.0 && ballPos.y <= 0.0)
+        return VSSRef::Quadrant::QUADRANT_4;
+
+    return VSSRef::Quadrant::NO_QUADRANT;
+}
