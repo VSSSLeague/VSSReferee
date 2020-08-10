@@ -92,9 +92,8 @@ void VSSReferee::loop(){
 
         checkTwoPlayersInsideGoalAreaWithBall();
         checkTwoPlayersAttackingAtGoalArea();
-        checkGKTakeoutTimeout();
         checkBallStucked();
-
+        checkGKTakeoutTimeout();
 
     }
 }
@@ -321,16 +320,28 @@ bool VSSReferee::checkBallStucked(){
         // Check if a player is at least L * sqrt(2) dist from the ball (possible stuck)
         /// CHECK THIS LATER WITH JSON
         bool haveAtLeastOne = false;
+        VSSRef::Color closestColor;
+        float closestDist = 999.0f;
         float playerMaxDistToBall = 0.075 * sqrt(2); // meters
         for(int x = 0; x < frame.robots_blue_size(); x++){
-            if(Utils::distance(vector2d(frame.robots_blue(x).x(), frame.robots_blue(x).y()), ballPos) <= playerMaxDistToBall){
+            float dist = Utils::distance(vector2d(frame.robots_blue(x).x(), frame.robots_blue(x).y()), ballPos);
+            if(dist <= playerMaxDistToBall){
                 haveAtLeastOne = true;
+                if(dist < closestDist){
+                    closestDist = dist;
+                    closestColor = VSSRef::Color::BLUE;
+                }
                 break;
             }
         }
         for(int x = 0; x < frame.robots_yellow_size(); x++){
-            if(Utils::distance(vector2d(frame.robots_yellow(x).x(), frame.robots_yellow(x).y()), ballPos) <= playerMaxDistToBall){
+            float dist = Utils::distance(vector2d(frame.robots_blue(x).x(), frame.robots_blue(x).y()), ballPos);
+            if(dist <= playerMaxDistToBall){
                 haveAtLeastOne = true;
+                if(dist < closestDist){
+                    closestDist = dist;
+                    closestColor = VSSRef::Color::YELLOW;
+                }
                 break;
             }
         }
@@ -341,7 +352,17 @@ bool VSSReferee::checkBallStucked(){
             snprintf(str, 1023, "%.2f", _ballStuckTimer.timesec());
             RefereeView::drawText(vector2d(frame.ball().x() * 1000.0, frame.ball().y() * 1000.0), str);
             if(_ballStuckTimer.timesec() >= BALL_STUCK_TIMEOUT){
-                setTeamFoul(VSSRef::Foul::FREE_BALL, VSSRef::Color::BLUE, Utils::getBallQuadrant(ballPos));
+                VSSRef::Quadrant foulQuadrant = Utils::getBallQuadrant(ballPos);
+                if(foulQuadrant == VSSRef::Quadrant::NO_QUADRANT){
+                    // If foul occurs at goal
+                    VSSRef::Color foulKicker = (closestColor == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE;
+                    setTeamFoul(VSSRef::Foul::PENALTY_KICK, foulKicker, Utils::getBallQuadrant(ballPos));
+                }
+                else{
+                    // If occurs at field
+                    setTeamFoul(VSSRef::Foul::FREE_BALL, VSSRef::Color::BLUE, Utils::getBallQuadrant(ballPos));
+                }
+                _ballStuckTimer.start();
                 return true;
             }
         }
