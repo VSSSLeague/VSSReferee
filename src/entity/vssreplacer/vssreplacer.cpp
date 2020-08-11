@@ -160,8 +160,6 @@ QString VSSReplacer::getFoulNameById(VSSRef::Foul foul){
 }
 
 void VSSReplacer::takeFoul(VSSRef::Foul foul){
-    std::cout << "[VSSReplacer] Command from ref: " << getFoulNameById(foul).toStdString() << ". Awaiting teams replacement packets." << std::endl;
-
     _mutex.lock();
     _yellowSentPacket = false;
     _blueSentPacket   = false;

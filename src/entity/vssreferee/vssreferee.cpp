@@ -15,12 +15,13 @@ VSSReferee::VSSReferee(VSSVisionClient *visionClient, const QString& refereeAddr
     connect(refereeAddress, refereePort);
 
     // Reset vars initially
-    _placementIsSet = false;
-    _blueSent       = false;
-    _yellowSent     = false;
-    timePassed      = 0;
-    alreadySet      = false;
-    startedGKTimer  = false;
+    _placementIsSet   = false;
+    _blueSent         = false;
+    _yellowSent       = false;
+    timePassed        = 0;
+    alreadySet        = false;
+    startedGKTimer    = false;
+    startedStuckTimer = false;
 
     // Start timers
     _placementTimer.start();
@@ -173,6 +174,7 @@ void VSSReferee::setTeamFoul(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Q
     _refereeCommand.set_foulquadrant(foulQuadrant);
 
     if(isConnected()){
+        std::cout << "[VSSReferee] Command from referee: " << getFoulNameById(foul).toStdString() << ". Now VSSReplacer is awaiting team's replacement packets.\n";
         sendPacket(_refereeCommand);
         RefereeView::addRefereeCommand(getFoulNameById(_refereeCommand.foul()));
         emit setFoul(_refereeCommand.foul());
@@ -262,6 +264,7 @@ bool VSSReferee::checkGKTakeoutTimeout(){
                 RefereeView::drawText(vector2d(frame.ball().x() * 1000.0, frame.ball().y() * 1000.0), str);
                 if(_gkTimer.timesec() >= GK_TIME_TAKEOUT){
                     setTeamFoul(VSSRef::Foul::PENALTY_KICK, VSSRef::Color::YELLOW);
+                    startedGKTimer = false;
                     return true;
                 }
             }
@@ -287,6 +290,7 @@ bool VSSReferee::checkGKTakeoutTimeout(){
                 RefereeView::drawText(vector2d(frame.ball().x() * 1000.0, frame.ball().y() * 1000.0), str);
                 if(_gkTimer.timesec() >= GK_TIME_TAKEOUT){
                     setTeamFoul(VSSRef::Foul::PENALTY_KICK, VSSRef::Color::BLUE);
+                    startedGKTimer = false;
                     return true;
                 }
             }
@@ -313,7 +317,8 @@ bool VSSReferee::checkBallStucked(){
 
     float ballVelocity = sqrt(pow(vx, 2) + pow(vy, 2));
 
-    if(ballVelocity > BALL_MINVELOCITY){
+    if(ballVelocity > BALL_MINVELOCITY || !startedStuckTimer){
+        if(!startedStuckTimer) startedStuckTimer = true;
         _ballStuckTimer.start();
     }
     else{
@@ -335,7 +340,7 @@ bool VSSReferee::checkBallStucked(){
             }
         }
         for(int x = 0; x < frame.robots_yellow_size(); x++){
-            float dist = Utils::distance(vector2d(frame.robots_blue(x).x(), frame.robots_blue(x).y()), ballPos);
+            float dist = Utils::distance(vector2d(frame.robots_yellow(x).x(), frame.robots_yellow(x).y()), ballPos);
             if(dist <= playerMaxDistToBall){
                 haveAtLeastOne = true;
                 if(dist < closestDist){
@@ -362,7 +367,7 @@ bool VSSReferee::checkBallStucked(){
                     // If occurs at field
                     setTeamFoul(VSSRef::Foul::FREE_BALL, VSSRef::Color::BLUE, Utils::getBallQuadrant(ballPos));
                 }
-                _ballStuckTimer.start();
+                startedStuckTimer = false;
                 return true;
             }
         }

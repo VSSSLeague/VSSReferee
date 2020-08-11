@@ -80,6 +80,7 @@ private:
     Timer _ballStuckTimer;
     Timer _ballVelTimer;
     vector2d lastBallPos;
+    bool startedStuckTimer;
 
     // Foul setter
     void setTeamFoul(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant foulQuadrant = VSSRef::Quadrant::NO_QUADRANT);
