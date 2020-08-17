@@ -177,8 +177,16 @@ void VSSReferee::setTeamFoul(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Q
         std::cout << "[VSSReferee] Command from referee: " << getFoulNameById(foul).toStdString() << ". Now VSSReplacer is awaiting team's replacement packets.\n";
         sendPacket(_refereeCommand);
         RefereeView::addRefereeCommand(getFoulNameById(_refereeCommand.foul()));
+        resetFoulTimers();
         emit setFoul(_refereeCommand.foul());
     }
+}
+
+void VSSReferee::resetFoulTimers(){
+    _placementTimer.start();
+    _gkTimer.start();
+    _ballStuckTimer.start();
+    _ballVelTimer.start();
 }
 
 // Fouls detection
@@ -241,27 +249,36 @@ bool VSSReferee::checkTwoPlayersAttackingAtGoalArea(){
 bool VSSReferee::checkGKTakeoutTimeout(){
     fira_message::Frame frame = _visionClient->getDetectionData();
 
-    int playersAtBlueGoal = 0;
     bool isBallInsideBlueGoal = Utils::isInsideGoalArea(VSSRef::Color::BLUE, vector2d(frame.ball().x(), frame.ball().y()));
     bool isBallInsideYellowGoal = Utils::isInsideGoalArea(VSSRef::Color::YELLOW, vector2d(frame.ball().x(), frame.ball().y()));
 
     // Checking for blue team if ball is inside their goal
     if(isBallInsideBlueGoal){
+        int opPlayersAtBlueGoal = 0;
+        int alliePlayersAtBlueGoal = 0;
         for(int x = 0; x < frame.robots_yellow().size(); x++){
             if(Utils::isInsideGoalArea(VSSRef::Color::BLUE, vector2d(frame.robots_yellow(x).x(), frame.robots_yellow(x).y())))
-                playersAtBlueGoal++;
+                opPlayersAtBlueGoal++;
         }
-        if(playersAtBlueGoal == 0){
+        for(int x = 0; x < frame.robots_blue().size(); x++){
+            if(Utils::isInsideGoalArea(VSSRef::Color::BLUE, vector2d(frame.robots_blue(x).x(), frame.robots_blue(x).y())))
+                alliePlayersAtBlueGoal++;
+        }
+        // If have no contestation and only GK is at goal area
+        if(opPlayersAtBlueGoal == 0 && alliePlayersAtBlueGoal == 1){
             // Check if timer is started, if don't, start it and check after
             if(!startedGKTimer){
                 _gkTimer.start();
                 startedGKTimer = true;
             }
             else{
-                _gkTimer.stop();
+                // Debug to GUI
                 char str[1024];
                 snprintf(str, 1023, "%.2f", _gkTimer.timesec());
                 RefereeView::drawText(vector2d(frame.ball().x() * 1000.0, frame.ball().y() * 1000.0), str);
+
+                // Check timer
+                _gkTimer.stop();
                 if(_gkTimer.timesec() >= GK_TIME_TAKEOUT){
                     setTeamFoul(VSSRef::Foul::PENALTY_KICK, VSSRef::Color::YELLOW);
                     startedGKTimer = false;
@@ -269,31 +286,46 @@ bool VSSReferee::checkGKTakeoutTimeout(){
                 }
             }
         }
+        else{
+            startedGKTimer = false;
+        }
     }
     // Checking for yellow team if ball is inside their goal
     else if(isBallInsideYellowGoal){
-        int playersAtYellowGoal = 0;
+        int opPlayersAtYellowGoal = 0;
+        int alliePlayersAtYellowGoal = 0;
         for(int x = 0; x < frame.robots_blue().size(); x++){
             if(Utils::isInsideGoalArea(VSSRef::Color::YELLOW, vector2d(frame.robots_blue(x).x(), frame.robots_blue(x).y())))
-                playersAtYellowGoal++;
+                opPlayersAtYellowGoal++;
         }
-        if(playersAtYellowGoal == 0){
+        for(int x = 0; x < frame.robots_yellow().size(); x++){
+            if(Utils::isInsideGoalArea(VSSRef::Color::YELLOW, vector2d(frame.robots_yellow(x).x(), frame.robots_yellow(x).y())))
+                alliePlayersAtYellowGoal++;
+        }
+
+        // If have no contestation and only GK is at goal area
+        if(opPlayersAtYellowGoal == 0 && alliePlayersAtYellowGoal == 1){
             // Check if timer is started, if don't, start it and check after
             if(!startedGKTimer){
                 _gkTimer.start();
                 startedGKTimer = true;
             }
             else{
-                _gkTimer.stop();
+                // Debug to GUI
                 char str[1024];
                 snprintf(str, 1023, "%.2f", _gkTimer.timesec());
                 RefereeView::drawText(vector2d(frame.ball().x() * 1000.0, frame.ball().y() * 1000.0), str);
+
+                // Check timer
+                _gkTimer.stop();
                 if(_gkTimer.timesec() >= GK_TIME_TAKEOUT){
                     setTeamFoul(VSSRef::Foul::PENALTY_KICK, VSSRef::Color::BLUE);
                     startedGKTimer = false;
                     return true;
                 }
             }
+        }else{
+            startedGKTimer = false;
         }
     }
     else{
@@ -322,57 +354,21 @@ bool VSSReferee::checkBallStucked(){
         _ballStuckTimer.start();
     }
     else{
-        // Check if a player is at least L * sqrt(2) dist from the ball (possible stuck)
-        /// CHECK THIS LATER WITH JSON
-        bool haveAtLeastOne = false;
-        VSSRef::Color closestColor;
-        float closestDist = 999.0f;
-        float playerMaxDistToBall = 0.075 * sqrt(2); // meters
-        for(int x = 0; x < frame.robots_blue_size(); x++){
-            float dist = Utils::distance(vector2d(frame.robots_blue(x).x(), frame.robots_blue(x).y()), ballPos);
-            if(dist <= playerMaxDistToBall){
-                haveAtLeastOne = true;
-                if(dist < closestDist){
-                    closestDist = dist;
-                    closestColor = VSSRef::Color::BLUE;
-                }
-                break;
-            }
-        }
-        for(int x = 0; x < frame.robots_yellow_size(); x++){
-            float dist = Utils::distance(vector2d(frame.robots_yellow(x).x(), frame.robots_yellow(x).y()), ballPos);
-            if(dist <= playerMaxDistToBall){
-                haveAtLeastOne = true;
-                if(dist < closestDist){
-                    closestDist = dist;
-                    closestColor = VSSRef::Color::YELLOW;
-                }
-                break;
-            }
-        }
-
-        if(haveAtLeastOne){
-            _ballStuckTimer.stop();
+        VSSRef::Quadrant foulQuadrant = Utils::getBallQuadrant(ballPos);
+        // If the ball isn't at goal
+        if(foulQuadrant != VSSRef::Quadrant::NO_QUADRANT){
+            // Showing timer at GUI
             char str[1024];
             snprintf(str, 1023, "%.2f", _ballStuckTimer.timesec());
             RefereeView::drawText(vector2d(frame.ball().x() * 1000.0, frame.ball().y() * 1000.0), str);
+
+            // Check timer
+            _ballStuckTimer.stop();
             if(_ballStuckTimer.timesec() >= BALL_STUCK_TIMEOUT){
-                VSSRef::Quadrant foulQuadrant = Utils::getBallQuadrant(ballPos);
-                if(foulQuadrant == VSSRef::Quadrant::NO_QUADRANT){
-                    // If foul occurs at goal
-                    VSSRef::Color foulKicker = (closestColor == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE;
-                    setTeamFoul(VSSRef::Foul::PENALTY_KICK, foulKicker, Utils::getBallQuadrant(ballPos));
-                }
-                else{
-                    // If occurs at field
-                    setTeamFoul(VSSRef::Foul::FREE_BALL, VSSRef::Color::BLUE, Utils::getBallQuadrant(ballPos));
-                }
+                setTeamFoul(VSSRef::Foul::FREE_BALL, VSSRef::Color::BLUE, Utils::getBallQuadrant(ballPos));
                 startedStuckTimer = false;
                 return true;
             }
-        }
-        else{
-            _ballStuckTimer.start();
         }
     }
 

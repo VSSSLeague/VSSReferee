@@ -64,6 +64,9 @@ private:
 
     /// FOULS
 
+    // Reset all timers
+    void resetFoulTimers();
+
     // Two players inside goal area with ball
     bool checkTwoPlayersInsideGoalAreaWithBall();
 
