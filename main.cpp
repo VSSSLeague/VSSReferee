@@ -60,6 +60,9 @@ int main(int argc, char *argv[])
     // Goal connection
     QObject::connect(vssReferee, SIGNAL(goalMarked(VSSRef::Color)), refView->getUI(), SLOT(addGoal(VSSRef::Color)), Qt::DirectConnection);
 
+    /// Set team
+    refView->setTeams(constants->getLeftTeamName(), constants->getLeftTeamColor(), constants->getRightTeamName(), constants->getRightTeamColor());
+
     /// Start all
     vssVisionClient->start();
     vssReferee->start();

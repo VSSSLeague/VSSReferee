@@ -129,3 +129,19 @@ float Constants::getGameHalfTime() const{
 float Constants::getStopWaitTime() const{
     return _stopWaitTime;
 }
+
+QString Constants::getLeftTeamName() const{
+    return _teamLeftName;
+}
+
+VSSRef::Color Constants::getLeftTeamColor() const{
+    return _teamLeftColor;
+}
+
+QString Constants::getRightTeamName() const{
+    return _teamRightName;
+}
+
+VSSRef::Color Constants::getRightTeamColor() const{
+    return _teamRightColor;
+}
