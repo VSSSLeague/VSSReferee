@@ -14,12 +14,15 @@ QString getFoulNameById(VSSRef::Foul foul){
         case VSSRef::Foul::FREE_KICK:    return "FREE_KICK";
         case VSSRef::Foul::GOAL_KICK:    return "GOAL_KICK";
         case VSSRef::Foul::PENALTY_KICK: return "PENALTY_KICK";
+        case VSSRef::Foul::KICKOFF:      return "KICKOFF";
+        case VSSRef::Foul::STOP:         return "STOP";
         default:                         return "FOUL NOT IDENTIFIED";
     }
 }
 
 QString getTeamColorNameById(VSSRef::Color color){
     switch(color){
+        case VSSRef::Color::NONE:    return "NONE";
         case VSSRef::Color::BLUE:    return "BLUE";
         case VSSRef::Color::YELLOW:  return "YELLOW";
         default:                     return "COLOR NOT IDENTIFIED";

@@ -23,6 +23,9 @@ public:
     static void drawText(vector2d pos, char *str);
     static void setTeams(QString teamLeft, VSSRef::Color leftColor, QString teamRight, VSSRef::Color rightColor);
 
+    // UI
+    static MainWindow* getUI();
+
 private:
     // Entity inherited methods
     void initialization();

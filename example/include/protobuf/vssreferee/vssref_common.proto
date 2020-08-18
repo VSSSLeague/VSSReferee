@@ -7,11 +7,14 @@ enum Foul{
 	PENALTY_KICK = 1;
 	GOAL_KICK = 2;
 	FREE_BALL = 3;
+	KICKOFF = 4;
+	STOP = 5;
 }
 
 enum Color{
-	BLUE = 0;
-	YELLOW = 1;
+	NONE = 0;
+	BLUE = 1;
+	YELLOW = 2;
 }
 
 enum Quadrant{
@@ -31,5 +34,5 @@ message Robot {
 
 message Frame {
 	Color teamColor = 1;
-	repeated Robot robots    = 2;
+	repeated Robot robots = 2;
 }

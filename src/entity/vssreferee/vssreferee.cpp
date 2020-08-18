@@ -19,8 +19,8 @@ VSSReferee::VSSReferee(VSSVisionClient *visionClient, const QString& refereeAddr
     _placementIsSet   = false;
     _blueSent         = false;
     _yellowSent       = false;
+    _stopEnabled      = false;
     timePassed        = 0;
-    alreadySet        = false;
     startedGKTimer    = false;
     startedStuckTimer = false;
 
@@ -30,7 +30,7 @@ VSSReferee::VSSReferee(VSSVisionClient *visionClient, const QString& refereeAddr
     _gkTimer.start();
     _ballStuckTimer.start();
     _ballVelTimer.start();
-
+    _stopTimer.start();
 }
 
 VSSReferee::~VSSReferee(){
@@ -38,7 +38,7 @@ VSSReferee::~VSSReferee(){
 }
 
 void VSSReferee::initialization(){
-
+    std::cout << "[VSSReferee] Thread started" << std::endl;
 }
 
 void VSSReferee::loop(){
@@ -48,6 +48,8 @@ void VSSReferee::loop(){
         RefereeView::addRefereeWarning("Half passed!");
         _gameTimer.start();
         timePassed = 0;
+        setTeamFoul(VSSRef::Foul::KICKOFF, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT);
+        emit halfPassed();
     }
 
     // Checking timer overextended if a foul is set
@@ -62,12 +64,14 @@ void VSSReferee::loop(){
         if((_placementTimer.timensec() / 1E9) >= getConstants()->getPlacementWaitTime() && (!_blueSent || !_yellowSent)){
             // If enters here, one of the teams didn't placed as required in the determined time
             if(!_blueSent){
-                RefereeView::addRefereeWarning("Blue Team hasn't placed.");
+                RefereeView::addRefereeWarning("Blue Team hasn't placed");
                 std::cout << "[VSSReferee] Team BLUE hasn't sent the placement command." << std::endl;
+                // place an automatic position here
             }
             if(!_yellowSent){
-                RefereeView::addRefereeWarning("Yellow Team hasn't placed.");
+                RefereeView::addRefereeWarning("Yellow Team hasn't placed");
                 std::cout << "[VSSReferee] Team YELLOW hasn't sent the placement command." << std::endl;
+                // place an automatic position here
             }
             _placementMutex.lock();
             _blueSent = false;
@@ -75,8 +79,10 @@ void VSSReferee::loop(){
             _placementIsSet = false;
             _placementMutex.unlock();
 
-            // Do something here (an foul when one of the teams haven't placed ?)
-
+            // Set stop and reset its timer
+            _stopEnabled = true;
+            _stopTimer.start();
+            setTeamFoul(VSSRef::Foul::STOP, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT, true);
         }
         else if(_blueSent && _yellowSent){
             _placementMutex.lock();
@@ -84,6 +90,27 @@ void VSSReferee::loop(){
             _yellowSent = false;
             _placementIsSet = false;
             _placementMutex.unlock();
+
+            // Set stop and reset its timer
+            _stopEnabled = true;
+            _stopTimer.start();
+            setTeamFoul(VSSRef::Foul::STOP, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT, true);
+        }
+    }
+    else if(_stopEnabled){
+        // Saves game passed time
+        _gameTimer.stop();
+        timePassed += _gameTimer.timesec();
+        _gameTimer.start();
+
+        // Taking stop time
+        _stopTimer.stop();
+        RefereeView::setCurrentTime(getConstants()->getStopWaitTime() - _stopTimer.timesec());
+
+        // Checking if timer ends
+        if((_stopTimer.timensec() / 1E9) >= getConstants()->getStopWaitTime()){
+            _stopEnabled = false;
+            RefereeView::addRefereeWarning("Stop time ended");
         }
     }
     else{
@@ -105,7 +132,7 @@ void VSSReferee::finalization(){
     std::cout << "[VSSReferee] Thread ended" << std::endl;
 }
 
-void VSSReferee::sendPacket(VSSRef::ref_to_team::VSSRef_Command command){
+void VSSReferee::sendPacket(VSSRef::ref_to_team::VSSRef_Command command, bool isStop){
     std::string msg;
     command.SerializeToString(&msg);
 
@@ -113,12 +140,14 @@ void VSSReferee::sendPacket(VSSRef::ref_to_team::VSSRef_Command command){
         std::cout << "[VSSReferee] Failed to write to socket: " << _socket.errorString().toStdString() << std::endl;
     }
     else{
-        _placementMutex.lock();
-        _placementIsSet = true;
-        _blueSent = false;
-        _yellowSent = false;
-        _placementTimer.start();
-        _placementMutex.unlock();
+        if(!isStop){
+            _placementMutex.lock();
+            _placementIsSet = true;
+            _blueSent = false;
+            _yellowSent = false;
+            _placementTimer.start();
+            _placementMutex.unlock();
+        }
     }
 }
 
@@ -165,21 +194,23 @@ QString VSSReferee::getFoulNameById(VSSRef::Foul foul){
         case VSSRef::Foul::FREE_KICK:    return "FREE_KICK";
         case VSSRef::Foul::GOAL_KICK:    return "GOAL_KICK";
         case VSSRef::Foul::PENALTY_KICK: return "PENALTY_KICK";
+        case VSSRef::Foul::KICKOFF:      return "KICKOFF";
+        case VSSRef::Foul::STOP:         return "STOP";
         default:                         return "FOUL NOT IDENTIFIED";
     }
 }
 
-void VSSReferee::setTeamFoul(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant foulQuadrant){
+void VSSReferee::setTeamFoul(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant foulQuadrant, bool isStop){
     _refereeCommand.set_foul(foul);
     _refereeCommand.set_teamcolor(forTeam);
     _refereeCommand.set_foulquadrant(foulQuadrant);
 
     if(isConnected()){
-        std::cout << "[VSSReferee] Command from referee: " << getFoulNameById(foul).toStdString() << ". Now VSSReplacer is awaiting team's replacement packets.\n";
-        sendPacket(_refereeCommand);
+        std::cout << "[VSSReferee] Command from referee: " << getFoulNameById(foul).toStdString() << "\n";
+        sendPacket(_refereeCommand, isStop);
         RefereeView::addRefereeCommand(getFoulNameById(_refereeCommand.foul()));
         resetFoulTimers();
-        emit setFoul(_refereeCommand.foul());
+        if(!isStop) emit setFoul(_refereeCommand.foul());
     }
 }
 
@@ -366,7 +397,7 @@ bool VSSReferee::checkBallStucked(){
             // Check timer
             _ballStuckTimer.stop();
             if(_ballStuckTimer.timesec() >= getConstants()->getBallStuckTime()){
-                setTeamFoul(VSSRef::Foul::FREE_BALL, VSSRef::Color::BLUE, Utils::getBallQuadrant(ballPos));
+                setTeamFoul(VSSRef::Foul::FREE_BALL, VSSRef::Color::NONE, Utils::getBallQuadrant(ballPos));
                 startedStuckTimer = false;
                 return true;
             }

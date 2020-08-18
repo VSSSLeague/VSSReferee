@@ -34,6 +34,7 @@ public:
     // Parameters
     float getBallMinimumVelocity() const;
     float getPlacementWaitTime() const;
+    float getStopWaitTime() const;
     float getGKTakeoutTime() const;
     float getBallStuckTime() const;
     float getGameHalfTime() const;
@@ -70,6 +71,7 @@ private:
     // Parameters
     float _ballMinimumVelocity;
     float _placementWaitTime;
+    float _stopWaitTime;
     float _gkTakeoutTime;
     float _ballStuckTime;
     float _gameHalfTime;

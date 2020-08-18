@@ -46,6 +46,7 @@ int main(int argc, char *argv[])
     // Make connections with signals and slots
     QObject::connect(vssReferee, SIGNAL(setFoul(VSSRef::Foul)), vssReplacer, SLOT(takeFoul(VSSRef::Foul)), Qt::DirectConnection);
     QObject::connect(vssReplacer, SIGNAL(teamPlaced(VSSRef::Color)), vssReferee, SLOT(teamSent(VSSRef::Color)), Qt::DirectConnection);
+    QObject::connect(vssReferee, SIGNAL(halfPassed()), refView->getUI(), SLOT(switchSides()));
 
     // Start all
     vssVisionClient->start();

@@ -27,7 +27,7 @@ private:
 
     // VSS Client to receive replacement data
     VSSClient *_vssClient;
-    VSSRef::Frame frames[2];
+    VSSRef::Frame frames[3];
     QString _refereeAddress;
     int _replacerPort;
 

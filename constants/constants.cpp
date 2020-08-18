@@ -55,6 +55,7 @@ Constants::Constants(QString fileName){
     QVariantMap parametersMap = doc_map["Parameters"].toMap();
     _ballMinimumVelocity = parametersMap["BallMinimumVelocity"].toFloat();
     _placementWaitTime   = parametersMap["PlacementWaitTime"].toFloat();
+    _stopWaitTime        = parametersMap["StopWaitTime"].toFloat();
     _gkTakeoutTime       = parametersMap["GKTakeoutTime"].toFloat();
     _ballStuckTime       = parametersMap["BallStuckTime"].toFloat();
     _gameHalfTime        = parametersMap["GameHalfTime"].toFloat();
@@ -119,4 +120,8 @@ float Constants::getBallStuckTime() const{
 
 float Constants::getGameHalfTime() const{
     return _gameHalfTime;
+}
+
+float Constants::getStopWaitTime() const{
+    return _stopWaitTime;
 }

@@ -41,7 +41,7 @@ private:
     QString _refereeAddress;
     int _refereePort;
     VSSRef::ref_to_team::VSSRef_Command _refereeCommand;
-    void sendPacket(VSSRef::ref_to_team::VSSRef_Command command);
+    void sendPacket(VSSRef::ref_to_team::VSSRef_Command command, bool isStop = false);
 
     // VSSVisionClient to receive data from FIRASim
     VSSVisionClient *_visionClient;
@@ -56,7 +56,9 @@ private:
     bool _placementIsSet;
     QMutex _placementMutex;
 
-    bool alreadySet;
+    // Stop after placement analysis
+    bool _stopEnabled;
+    Timer _stopTimer;
 
     // Game time analysis
     Timer _gameTimer;
@@ -86,10 +88,11 @@ private:
     bool startedStuckTimer;
 
     // Foul setter
-    void setTeamFoul(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant foulQuadrant = VSSRef::Quadrant::NO_QUADRANT);
+    void setTeamFoul(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant foulQuadrant = VSSRef::Quadrant::NO_QUADRANT, bool isStop = false);
 
 signals:
     void setFoul(VSSRef::Foul foul);        // send foul to replacer (reset it vars)
+    void halfPassed();                      // when half passed
 
 public slots:
     void teamSent(VSSRef::Color color);     // if a team sent it packet

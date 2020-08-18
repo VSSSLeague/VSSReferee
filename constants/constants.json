@@ -4,7 +4,8 @@
 
 	"Parameters":{
 		"BallMinimumVelocity": 0.1,
-		"PlacementWaitTime": 10.0,
+		"PlacementWaitTime": 5.0,
+		"StopWaitTime": 5.0,
 		"GKTakeoutTime": 10.0,
 		"BallStuckTime": 10.0,
 		"GameHalfTime": 300.0

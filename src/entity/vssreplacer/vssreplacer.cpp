@@ -155,6 +155,8 @@ QString VSSReplacer::getFoulNameById(VSSRef::Foul foul){
         case VSSRef::Foul::FREE_KICK:    return "FREE_KICK";
         case VSSRef::Foul::GOAL_KICK:    return "GOAL_KICK";
         case VSSRef::Foul::PENALTY_KICK: return "PENALTY_KICK";
+        case VSSRef::Foul::KICKOFF:      return "KICKOFF";
+        case VSSRef::Foul::STOP:         return "STOP";
         default:                         return "FOUL NOT IDENTIFIED";
     }
 }
@@ -167,6 +169,8 @@ void VSSReplacer::takeFoul(VSSRef::Foul foul){
     _packetsReceived  = 0;
     _timer.start();
     _mutex.unlock();
+
+    std::cout << "[VSSReplacer] Waiting for placement packets for foul: " << getFoulNameById(foul).toStdString() << "\n";
 }
 
 void VSSReplacer::fillPacket(VSSRef::Frame frameBlue, VSSRef::Frame frameYellow){

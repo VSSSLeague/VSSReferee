@@ -61,3 +61,7 @@ void RefereeView::drawText(vector2d pos, char *str){
 void RefereeView::setTeams(QString teamLeft, VSSRef::Color leftColor, QString teamRight, VSSRef::Color rightColor){
     _refereeUI->setTeams(teamLeft, leftColor, teamRight, rightColor);
 }
+
+MainWindow* RefereeView::getUI(){
+    return _refereeUI;
+}
