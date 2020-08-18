@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     /// Create modules
     VSSVisionClient *vssVisionClient = new VSSVisionClient(visionAddress, visionPort);
     VSSReferee *vssReferee = new VSSReferee(vssVisionClient, refereeAddress, refereePort, constants);
-    VSSReplacer *vssReplacer = new VSSReplacer(replacerAddress, replacerPort, firaSimAddress, firaSimPort);
+    VSSReplacer *vssReplacer = new VSSReplacer(replacerAddress, replacerPort, firaSimAddress, firaSimPort, constants);
     RefereeView *refView = new RefereeView();
 
     /// Make connections with signals and slots

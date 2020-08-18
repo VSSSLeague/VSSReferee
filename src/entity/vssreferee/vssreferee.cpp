@@ -64,6 +64,8 @@ VSSReferee::~VSSReferee(){
 
 void VSSReferee::initialization(){
     std::cout << "[VSSReferee] Thread started" << std::endl;
+
+    setTeamFoul(VSSRef::Foul::KICKOFF, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT);
 }
 
 void VSSReferee::loop(){
@@ -129,6 +131,9 @@ void VSSReferee::loop(){
         }
     }
     else if(_stopEnabled){
+        // Reset foul timers
+        resetFoulTimers();
+
         // Saves game passed time
         _gameTimer.stop();
         timePassed += _gameTimer.timesec();
@@ -507,9 +512,9 @@ void VSSReferee::updateGoalieTimers(){
 
 void VSSReferee::requestGoalie(VSSRef::Color team){
     float bestVal = 0.0;
-    int bestId = -1;
-    for(int x = 0; x < 3; x++){
-        if(time[team][x] >= bestVal){
+    int bestId = 0;
+    for(int x = 0; x < getConstants()->getQtPlayers(); x++){
+        if(time[team][x] > bestVal){
             bestVal = time[team][x];
             bestId = x;
         }

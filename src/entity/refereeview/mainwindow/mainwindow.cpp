@@ -35,7 +35,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->setPalette(darkPalette);
 
     // Side control
-    blueIsLeft = true;
     connect(ui->pushButton, SIGNAL(released()), this, SLOT(switchSides()));
 
     // Setting initial scores values and colors

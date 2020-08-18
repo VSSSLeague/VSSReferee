@@ -12,11 +12,13 @@
 #include <src/entity/refereeview/soccerview/util/field_default_constants.h>
 #include <src/entity/refereeview/soccerview/util/geometry.h>
 
+#include <constants/constants.h>
+
 class VSSReplacer : public Entity
 {
     Q_OBJECT
 public:
-    VSSReplacer(const QString& refereeAddress, int replacerPort, const QString& firaSimAddress, int firaSimCommandPort);
+    VSSReplacer(const QString& refereeAddress, int replacerPort, const QString& firaSimAddress, int firaSimCommandPort, Constants* constants);
     ~VSSReplacer();
     QString name();
 
@@ -54,7 +56,7 @@ private:
     bool isConnected() const;
     void sendPacket(fira_message::sim_to_ref::Packet command);
     void disconnect();
-    void fillPacket(fira_message::sim_to_ref::Replacement *replacementPacket, VSSRef::Color teamColor, VSSRef::Frame frame);
+    void fillAndSendPacket(VSSRef::Frame *frame);
     void placeBall(double x, double y);
     void parseRobot(fira_message::sim_to_ref::Replacement *replacementPacket, VSSRef::Robot *robot, VSSRef::Color robotTeam);
     void debugFrame(VSSRef::Frame frame);
@@ -63,8 +65,16 @@ private:
     int goalie[2];
     QMutex _goalieMutex;
 
+    // Constants
+    Constants* _constants;
+    Constants* getConstants();
+
     // Utils
     QString getFoulNameById(VSSRef::Foul foul);
+    VSSRef::Frame* getPenaltyPlacement(VSSRef::Color color);
+    VSSRef::Frame* getGoalKickPlacement(VSSRef::Color color);
+    VSSRef::Frame* getFreeBallPlacement(VSSRef::Color color);
+    VSSRef::Frame* getKickoffPlacement(VSSRef::Color color);
 
 signals:
     void teamPlaced(VSSRef::Color color);

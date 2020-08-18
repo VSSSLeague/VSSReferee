@@ -1,6 +1,7 @@
 {
 	"BallRadius": 0.0215,
 	"RobotLength": 0.075,
+	"QtPlayers": 3,
 
 	"Parameters":{
 		"BallMinimumVelocity": 0.1,
