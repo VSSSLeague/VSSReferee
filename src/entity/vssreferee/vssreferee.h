@@ -93,14 +93,21 @@ private:
     // Foul setter
     void setTeamFoul(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant foulQuadrant = VSSRef::Quadrant::NO_QUADRANT, bool isStop = false);
 
+    // Goalie check
+    void updateGoalieTimers();
+    float time[2][3];
+    Timer timers[2][3];
+
 signals:
     void setFoul(VSSRef::Foul foul, VSSRef::Color color, VSSRef::Quadrant quadrant); // send foul to replacer (reset it vars)
     void halfPassed();                      // when half passed
     void goalMarked(VSSRef::Color team);    // when an goal occurred
     void stopReplacerWaiting();             // stop when reached timeout or both teams placed
+    void sendGoalie(VSSRef::Color team, int playerId);
 
 public slots:
     void teamSent(VSSRef::Color color);     // if a team sent it packet
+    void requestGoalie(VSSRef::Color team); // request team goalie
 };
 
 #endif // VSSREFEREE_H

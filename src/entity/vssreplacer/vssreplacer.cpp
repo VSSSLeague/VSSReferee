@@ -18,14 +18,15 @@ VSSReplacer::VSSReplacer(const QString& refereeAddress, int replacerPort, const 
     // Connect socket to send placement data to firaSim
     connect(firaSimAddress, firaSimCommandPort);
 
-    // Allocate in replacement command
-    _replacementCommand = new fira_message::sim_to_ref::Replacement();
-
     // Reset vars
     _packetsReceived = 0;
     _blueSentPacket = false;
     _yellowSentPacket = false;
     _awaitingPackets = false;
+
+    // Set initial goalies as 0
+    goalie[VSSRef::Color::BLUE] = 0;
+    goalie[VSSRef::Color::YELLOW] = 1;
 }
 
 VSSReplacer::~VSSReplacer(){
@@ -51,20 +52,46 @@ void VSSReplacer::loop(){
             // Avoid to receive more than 1 packet from teams
             bool duplicated = false;
             if(frame.teamcolor() == VSSRef::Color::BLUE){
+                _mutex.lock();
+
                 if(!_blueSentPacket){
-                    _mutex.lock();
                     _blueSentPacket = true;
-                    _mutex.unlock();
+
+                    // Filling replacement packet
+                    fira_message::sim_to_ref::Replacement *replacementCommand = new fira_message::sim_to_ref::Replacement();
+                    fillPacket(replacementCommand, frame.teamcolor(), frame);
+
+                    // Filling packet with replacement data
+                    fira_message::sim_to_ref::Packet packet;
+                    packet.set_allocated_replace(replacementCommand);
+
+                    // Send packet to firaSim
+                    sendPacket(packet);
                 }
                 else duplicated = true;
+
+                _mutex.unlock();
             }
             else if(frame.teamcolor() == VSSRef::Color::YELLOW){
+                _mutex.lock();
+
                 if(!_yellowSentPacket){
-                    _mutex.lock();
                     _yellowSentPacket = true;
-                    _mutex.unlock();
+
+                    // Filling replacement packet
+                    fira_message::sim_to_ref::Replacement *replacementCommand = new fira_message::sim_to_ref::Replacement();
+                    fillPacket(replacementCommand, frame.teamcolor(), frame);
+
+                    // Filling packet with replacement data
+                    fira_message::sim_to_ref::Packet packet;
+                    packet.set_allocated_replace(replacementCommand);
+
+                    // Send packet to firaSim
+                    sendPacket(packet);
                 }
                 else duplicated = true;
+
+                _mutex.unlock();
             }
 
             if(!duplicated){
@@ -81,32 +108,6 @@ void VSSReplacer::loop(){
                 emit teamPlaced(frame.teamcolor());
 
                 _packetsReceived++;
-            }
-
-            // If received packets from both teams
-            if(_packetsReceived == 2){
-                // reset
-                _mutex.lock();
-                _yellowSentPacket = false;
-                _blueSentPacket   = false;
-                _awaitingPackets  = false;
-                _packetsReceived  = 0;
-                _mutex.unlock();
-
-                std::cout << "[VSSReplacer] Succesfuly received packets from the teams. Replacing now." << std::endl;
-
-                /// TODO here
-                /// Check if the positions are consistents to the foul (?)
-                /// Place ball too, based on the foul received.
-
-                // Fill replacement packet with frame infos
-                fillPacket(frames[VSSRef::Color::BLUE], frames[VSSRef::Color::YELLOW]);
-
-                fira_message::sim_to_ref::Packet packet;
-                packet.set_allocated_replace(_replacementCommand);
-
-                // Send packet to firaSim
-                sendPacket(packet);
             }
         }
     }
@@ -189,27 +190,19 @@ void VSSReplacer::stopWaiting(){
     placeBall(ballPlacePos.x, ballPlacePos.y);
 }
 
-void VSSReplacer::fillPacket(VSSRef::Frame frameBlue, VSSRef::Frame frameYellow){
+void VSSReplacer::fillPacket(fira_message::sim_to_ref::Replacement *replacementPacket, VSSRef::Color teamColor, VSSRef::Frame frame){
     // Filling blue robots
-    int sz = frameBlue.robots_size();
+    int sz = frame.robots_size();
     for(int x = 0; x < sz; x++){
         // Taking robot from frame
-        VSSRef::Robot robotAt = frameBlue.robots(x);
-        parseRobot(&robotAt, VSSRef::Color::BLUE);
-    }
-
-    // Filling yellow robots
-    sz = frameYellow.robots_size();
-    for(int x = 0; x < sz; x++){
-        // Taking robot from frame
-        VSSRef::Robot robotAt = frameYellow.robots(x);
-        parseRobot(&robotAt, VSSRef::Color::YELLOW);
+        VSSRef::Robot robotAt = frame.robots(x);
+        parseRobot(replacementPacket, &robotAt, teamColor);
     }
 }
 
-void VSSReplacer::parseRobot(VSSRef::Robot *robot, VSSRef::Color robotTeam){
+void VSSReplacer::parseRobot(fira_message::sim_to_ref::Replacement *replacementPacket, VSSRef::Robot *robot, VSSRef::Color robotTeam){
     // Creating firaRobot and robotPosition
-    fira_message::sim_to_ref::RobotReplacement *firaRobot = _replacementCommand->add_robots();
+    fira_message::sim_to_ref::RobotReplacement *firaRobot = replacementPacket->add_robots();
     fira_message::Robot *robotPosition = new fira_message::Robot();
 
     // Parsing position
@@ -316,4 +309,10 @@ vector2d VSSReplacer::getBallPlaceByFoul(VSSRef::Foul foul, VSSRef::Color color,
             return vector2d(0.0, 0.0);
         }
     }
+}
+
+void VSSReplacer::takeGoalie(VSSRef::Color team, int id){
+    _goalieMutex.lock();
+    goalie[team] = id;
+    _goalieMutex.unlock();
 }

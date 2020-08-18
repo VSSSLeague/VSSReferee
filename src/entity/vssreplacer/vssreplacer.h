@@ -28,7 +28,7 @@ private:
 
     // VSS Client to receive replacement data
     VSSClient *_vssClient;
-    VSSRef::Frame frames[3];
+    VSSRef::Frame frames[2];
     QString _refereeAddress;
     int _replacerPort;
 
@@ -49,24 +49,29 @@ private:
     // Socket to send replacement commands to firaSim
     QUdpSocket _socket;
     QString _firaSimAddress;
-    fira_message::sim_to_ref::Replacement *_replacementCommand;
     int _firaSimCommandPort;
     bool connect(const QString &firaSimAddress, int firaSimCommandPort);
     bool isConnected() const;
     void sendPacket(fira_message::sim_to_ref::Packet command);
     void disconnect();
-    void fillPacket(VSSRef::Frame frameBlue, VSSRef::Frame frameYellow);
+    void fillPacket(fira_message::sim_to_ref::Replacement *replacementPacket, VSSRef::Color teamColor, VSSRef::Frame frame);
     void placeBall(double x, double y);
-    void parseRobot(VSSRef::Robot *robot, VSSRef::Color robotTeam);
+    void parseRobot(fira_message::sim_to_ref::Replacement *replacementPacket, VSSRef::Robot *robot, VSSRef::Color robotTeam);
     void debugFrame(VSSRef::Frame frame);
+
+    // Team's goalie
+    int goalie[2];
+    QMutex _goalieMutex;
 
     // Utils
     QString getFoulNameById(VSSRef::Foul foul);
 
 signals:
     void teamPlaced(VSSRef::Color color);
+    void requestGoalie(VSSRef::Color team);
 
 public slots:
+    void takeGoalie(VSSRef::Color team, int id);
     void takeFoul(VSSRef::Foul foul, VSSRef::Color color, VSSRef::Quadrant quadrant);
     void stopWaiting();
 };

@@ -31,6 +31,12 @@ VSSReferee::VSSReferee(VSSVisionClient *visionClient, const QString& refereeAddr
     _ballStuckTimer.start();
     _ballVelTimer.start();
     _stopTimer.start();
+    for(int x = 0; x < 2; x++){
+        for(int y = 0; y < 3; y++){
+            timers[x][y].start();
+            time[x][y] = 0.0;
+        }
+    }
 }
 
 VSSReferee::~VSSReferee(){
@@ -130,6 +136,7 @@ void VSSReferee::loop(){
         checkBallStucked();
         checkGKTakeoutTimeout();
         checkGoal();
+        updateGoalieTimers();
     }
 }
 
@@ -439,4 +446,55 @@ Constants* VSSReferee::getConstants(){
     }
 
     return _constants;
+}
+
+void VSSReferee::updateGoalieTimers(){
+    fira_message::Frame frame = _visionClient->getDetectionData();
+
+    for(int x = 0; x < frame.robots_blue_size(); x++){
+        vector2d pos = vector2d(frame.robots_blue(x).x(), frame.robots_blue(x).y());
+        if(Utils::isInsideGoalArea(VSSRef::Color::BLUE, pos)){
+            timers[VSSRef::Color::BLUE][x].stop();
+            // If passed more than 1s, this player appearly isn't the gk formerly, so reset to count in the next it
+            if(timers[VSSRef::Color::BLUE][x].timesec() >= 1.0){
+                timers[VSSRef::Color::BLUE][x].start();
+            }
+            // Else, if passed less than 1s, probably this player is at goal area and isn't noise
+            else{
+                timers[VSSRef::Color::BLUE][x].stop();
+                time[VSSRef::Color::BLUE][x] += timers[VSSRef::Color::BLUE][x].timesec();
+                timers[VSSRef::Color::BLUE][x].start();
+            }
+        }
+    }
+
+    for(int x = 0; x < frame.robots_yellow_size(); x++){
+        vector2d pos = vector2d(frame.robots_yellow(x).x(), frame.robots_yellow(x).y());
+        if(Utils::isInsideGoalArea(VSSRef::Color::YELLOW, pos)){
+            timers[VSSRef::Color::YELLOW][x].stop();
+            // If passed more than 1s, this player appearly isn't the gk formerly, so reset to count in the next it
+            if(timers[VSSRef::Color::YELLOW][x].timesec() >= 1.0){
+                timers[VSSRef::Color::YELLOW][x].start();
+            }
+            // Else, if passed less than 1s, probably this player is at goal area and isn't noise
+            else{
+                timers[VSSRef::Color::YELLOW][x].stop();
+                time[VSSRef::Color::YELLOW][x] += timers[VSSRef::Color::YELLOW][x].timesec();
+                timers[VSSRef::Color::YELLOW][x].start();
+            }
+        }
+    }
+}
+
+void VSSReferee::requestGoalie(VSSRef::Color team){
+    float bestVal = 0.0;
+    int bestId = -1;
+    for(int x = 0; x < 3; x++){
+        if(time[team][x] >= bestVal){
+            bestVal = time[team][x];
+            bestId = x;
+        }
+    }
+
+    emit sendGoalie(team, bestId);
 }

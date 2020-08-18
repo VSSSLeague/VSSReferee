@@ -12,9 +12,9 @@ enum Foul{
 }
 
 enum Color{
-	NONE = 0;
-	BLUE = 1;
-	YELLOW = 2;
+	BLUE = 0;
+	YELLOW = 1;
+	NONE = 2;
 }
 
 enum Quadrant{

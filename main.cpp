@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    // Creating constants pointer
+    /// Creating constants pointer
     Constants* constants = new Constants("../constants/constants.json");
     Utils::setConstants(constants);
 
@@ -28,45 +28,54 @@ int main(int argc, char *argv[])
 
     // Replacer
     QString replacerAddress = constants->getReplacerAddress();
-    int replacerPort        = constants->getRefereePort();
+    int replacerPort        = constants->getReplacerPort();
 
     // FiraSim
     QString firaSimAddress  = constants->getFiraSimAddress();
     int firaSimPort         = constants->getFiraSimPort();
 
-    // Setup ExitHandler
+    /// Setup ExitHandler
     ExitHandler::setApplication(&a);
     ExitHandler::setup();
 
-    // Create modules
+    /// Create modules
     VSSVisionClient *vssVisionClient = new VSSVisionClient(visionAddress, visionPort);
     VSSReferee *vssReferee = new VSSReferee(vssVisionClient, refereeAddress, refereePort, constants);
     VSSReplacer *vssReplacer = new VSSReplacer(replacerAddress, replacerPort, firaSimAddress, firaSimPort);
     RefereeView *refView = new RefereeView();
 
-    // Make connections with signals and slots
+    /// Make connections with signals and slots
+    // Foul connetion
     QObject::connect(vssReferee, SIGNAL(setFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), vssReplacer, SLOT(takeFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), Qt::DirectConnection);
-    QObject::connect(vssReplacer, SIGNAL(teamPlaced(VSSRef::Color)), vssReferee, SLOT(teamSent(VSSRef::Color)), Qt::DirectConnection);
-    QObject::connect(vssReferee, SIGNAL(halfPassed()), refView->getUI(), SLOT(switchSides()), Qt::DirectConnection);
-    QObject::connect(vssReferee, SIGNAL(goalMarked(VSSRef::Color)), refView->getUI(), SLOT(addGoal(VSSRef::Color)), Qt::DirectConnection);
     QObject::connect(vssReferee, SIGNAL(stopReplacerWaiting()), vssReplacer, SLOT(stopWaiting()), Qt::DirectConnection);
+    QObject::connect(vssReplacer, SIGNAL(teamPlaced(VSSRef::Color)), vssReferee, SLOT(teamSent(VSSRef::Color)), Qt::DirectConnection);
 
-    // Start all
+    // Half connection
+    QObject::connect(vssReferee, SIGNAL(halfPassed()), refView->getUI(), SLOT(switchSides()), Qt::DirectConnection);
+
+    // Goalie connection
+    QObject::connect(vssReferee, SIGNAL(sendGoalie(VSSRef::Color, int)), vssReplacer, SLOT(takeGoalie(VSSRef::Color, int)), Qt::DirectConnection);
+    QObject::connect(vssReplacer, SIGNAL(requestGoalie(VSSRef::Color)), vssReferee, SLOT(requestGoalie(VSSRef::Color)), Qt::DirectConnection);
+
+    // Goal connection
+    QObject::connect(vssReferee, SIGNAL(goalMarked(VSSRef::Color)), refView->getUI(), SLOT(addGoal(VSSRef::Color)), Qt::DirectConnection);
+
+    /// Start all
     vssVisionClient->start();
     vssReferee->start();
     vssReplacer->start();
     refView->start();
 
-    // Run
+    /// Run app
     bool exec = a.exec();
 
-    // Stop modules
+    /// Stop modules
     vssVisionClient->terminate();
     vssReferee->terminate();
     vssReplacer->terminate();
     refView->terminate();
 
-    // Wait for modules sync
+    /// Wait for modules sync
     vssVisionClient->wait();
     vssReferee->wait();
     vssReplacer->wait();

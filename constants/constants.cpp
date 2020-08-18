@@ -33,8 +33,8 @@ Constants::Constants(QString fileName){
 
     // Parsing replacer network
     QVariantMap replacerMap = doc_map["ReplacerNetwork"].toMap();
-    _replacerAddress = refereeMap["address"].toString();
-    _replacerPort    = refereeMap["port"].toInt();
+    _replacerAddress = replacerMap["address"].toString();
+    _replacerPort    = replacerMap["port"].toInt();
 
     // Parsing firaSim network
     QVariantMap firaMap = doc_map["FiraSimNetwork"].toMap();
