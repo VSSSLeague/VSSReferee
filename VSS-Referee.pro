@@ -31,6 +31,7 @@ LIBS *= -lprotobuf -lGLU -pthread -lQt5Core -lpthread
 
 SOURCES += \
         constants/constants.cpp \
+        exithandler.cpp \
         include/command.pb.cc \
         include/common.pb.cc \
         include/packet.pb.cc \
@@ -59,6 +60,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     constants/constants.h \
+    exithandler.h \
     include/command.pb.h \
     include/common.pb.h \
     include/packet.pb.h \

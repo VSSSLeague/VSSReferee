@@ -7,6 +7,8 @@
 
 #include <constants/constants.h>
 
+#include <exithandler.h>
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
@@ -30,6 +32,10 @@ int main(int argc, char *argv[])
     // FiraSim
     QString firaSimAddress  = constants->getFiraSimAddress();
     int firaSimPort         = constants->getFiraSimPort();
+
+    // Setup ExitHandler
+    ExitHandler::setApplication(&a);
+    ExitHandler::setup();
 
     // Create modules
     VSSVisionClient *vssVisionClient = new VSSVisionClient(visionAddress, visionPort);
