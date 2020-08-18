@@ -41,10 +41,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     // Setting initial scores values and colors
     leftTeamName = "Maracatronics";
     rightTeamName = "Warthog";
-    ui->teamLeftName->setText(leftTeamName);
-    ui->teamRightName->setText(rightTeamName);
-    ui->teamLeftScore->setStyleSheet("QLabel { color : #417EFF; } ");
-    ui->teamRightScore->setStyleSheet("QLabel { color : #FFF33E; } ");
+    leftTeamGoalsScored = 0;
+    rightTeamGoalsScored = 0;
+    setTeams(leftTeamName, VSSRef::Color::BLUE, rightTeamName, VSSRef::Color::YELLOW);
 }
 
 MainWindow::~MainWindow(){
@@ -70,10 +69,18 @@ void MainWindow::updateDetection(fira_message::Frame frame){
 
 void MainWindow::switchSides(){
     blueIsLeft = !blueIsLeft;
+
+    // Swapping names
     std::swap(leftTeamName, rightTeamName);
     ui->teamLeftName->setText(leftTeamName);
     ui->teamRightName->setText(rightTeamName);
 
+    // Swapping scores
+    std::swap(leftTeamGoalsScored, rightTeamGoalsScored);
+    ui->teamLeftScore->setText(QString("%1").arg(leftTeamGoalsScored));
+    ui->teamRightScore->setText(QString("%1").arg(rightTeamGoalsScored));
+
+    // Adjusting colors
     if(blueIsLeft){
         ui->teamLeftScore->setStyleSheet("QLabel { color : #417EFF; }");
         ui->teamRightScore->setStyleSheet("QLabel { color : #FFF33E; } ");
@@ -128,4 +135,27 @@ void MainWindow::setRefereeCommand(QString command){
 
 void MainWindow::drawText(vector2d pos, char *str){
     ui->openGLWidget->drawText(pos, str);
+}
+
+void MainWindow::addGoal(VSSRef::Color team){
+    if(team == VSSRef::Color::BLUE){
+        if(blueIsLeft){
+            leftTeamGoalsScored++;
+            ui->teamLeftScore->setText(QString("%1").arg(leftTeamGoalsScored));
+        }
+        else{
+            rightTeamGoalsScored++;
+            ui->teamRightScore->setText(QString("%1").arg(rightTeamGoalsScored));
+        }
+    }
+    else if(team == VSSRef::Color::YELLOW){
+        if(blueIsLeft){
+            rightTeamGoalsScored++;
+            ui->teamRightScore->setText(QString("%1").arg(rightTeamGoalsScored));
+        }
+        else{
+            leftTeamGoalsScored++;
+            ui->teamLeftScore->setText(QString("%1").arg(leftTeamGoalsScored));
+        }
+    }
 }

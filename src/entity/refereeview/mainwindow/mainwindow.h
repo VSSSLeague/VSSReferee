@@ -38,8 +38,13 @@ private:
     QString leftTeamName;
     QString rightTeamName;
 
+    // goal control
+    int leftTeamGoalsScored;
+    int rightTeamGoalsScored;
+
 public slots:
     void switchSides();
+    void addGoal(VSSRef::Color team);
 };
 
 #endif // MAINWINDOW_H

@@ -1,5 +1,8 @@
 #include "utils.h"
 
+// Default value
+Constants* Utils::_constants = NULL;
+
 float Utils::distance(const vector2d &a, const vector2d &b) {
     return sqrt(pow(a.x - b.x ,2) + pow(a.y - b.y, 2));
 }
@@ -103,6 +106,34 @@ bool Utils::isInsideGoalArea(VSSRef::Color teamColor, vector2d pos){
     return false;
 }
 
+bool Utils::isBallInsideGoal(VSSRef::Color teamColor, vector2d pos){
+    float goal_x = (FieldConstantsVSS::kFieldLength/2.0) / 1000.0 + getConstants()->getBallRadius();
+    float goal_y = (FieldConstantsVSS::kDefenseStretch / 2.0) / 1000.0;
+
+    if(teamColor == VSSRef::Color::BLUE){
+        if(RefereeView::getBlueIsLeftSide()){
+            if(pos.x < -goal_x && abs(pos.y) < goal_y)
+                return true;
+        }
+        else{
+            if(pos.x > goal_x && abs(pos.y) < goal_y)
+                return true;
+        }
+    }
+    else if(teamColor == VSSRef::Color::YELLOW){
+        if(RefereeView::getBlueIsLeftSide()){
+            if(pos.x > goal_x && abs(pos.y) < goal_y)
+                return true;
+        }
+        else{
+            if(pos.x < -goal_x && abs(pos.y) < goal_y)
+                return true;
+        }
+    }
+
+    return false;
+}
+
 vector2d Utils::rotatePoint(vector2d point, float angle){
     float xNew = point.x * cos(angle) - point.y * sin(angle);
     float yNew = point.x * sin(angle) - point.y * cos(angle);
@@ -130,4 +161,17 @@ VSSRef::Quadrant Utils::getBallQuadrant(vector2d ballPos){
         return VSSRef::Quadrant::QUADRANT_4;
 
     return VSSRef::Quadrant::NO_QUADRANT;
+}
+
+void Utils::setConstants(Constants *constants){
+    _constants = constants;
+}
+
+Constants* Utils::getConstants(){
+    if(_constants == NULL){
+        std::cout << "[ERROR] Utils is requesting constants, but it's NULL\n";
+        return NULL;
+    }
+
+    return _constants;
 }

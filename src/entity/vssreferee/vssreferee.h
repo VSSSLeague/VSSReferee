@@ -87,12 +87,16 @@ private:
     vector2d lastBallPos;
     bool startedStuckTimer;
 
+    // Goal check
+    bool checkGoal();
+
     // Foul setter
     void setTeamFoul(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant foulQuadrant = VSSRef::Quadrant::NO_QUADRANT, bool isStop = false);
 
 signals:
     void setFoul(VSSRef::Foul foul);        // send foul to replacer (reset it vars)
     void halfPassed();                      // when half passed
+    void goalMarked(VSSRef::Color team);    // when an goal occurred
 
 public slots:
     void teamSent(VSSRef::Color color);     // if a team sent it packet

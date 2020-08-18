@@ -123,7 +123,7 @@ void VSSReferee::loop(){
         checkTwoPlayersAttackingAtGoalArea();
         checkBallStucked();
         checkGKTakeoutTimeout();
-
+        checkGoal();
     }
 }
 
@@ -405,6 +405,25 @@ bool VSSReferee::checkBallStucked(){
     }
 
     return false;
+}
+
+bool VSSReferee::checkGoal(){
+    fira_message::Frame frame = _visionClient->getDetectionData();
+    vector2d ballPos = vector2d(frame.ball().x(), frame.ball().y());
+
+    if(Utils::isBallInsideGoal(VSSRef::BLUE, ballPos)){
+        setTeamFoul(VSSRef::KICKOFF, VSSRef::Color::BLUE);
+        emit goalMarked(VSSRef::YELLOW);
+        return true;
+    }
+    else if(Utils::isBallInsideGoal(VSSRef::YELLOW, ballPos)){
+        setTeamFoul(VSSRef::KICKOFF, VSSRef::Color::YELLOW);
+        emit goalMarked(VSSRef::BLUE);
+        return true;
+    }
+    else{
+        return false;
+    }
 }
 
 Constants* VSSReferee::getConstants(){
