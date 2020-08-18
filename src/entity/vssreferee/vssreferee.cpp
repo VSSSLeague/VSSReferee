@@ -31,8 +31,21 @@ VSSReferee::VSSReferee(VSSVisionClient *visionClient, const QString& refereeAddr
     _ballStuckTimer.start();
     _ballVelTimer.start();
     _stopTimer.start();
+
+    // Allocating memory to time and timers (for gk checking)
+    time = (float **) malloc(2 * sizeof(float *));
     for(int x = 0; x < 2; x++){
-        for(int y = 0; y < 3; y++){
+        time[x] = (float *) malloc(getConstants()->getQtPlayers() * sizeof(float));
+    }
+
+    timers = (Timer **) malloc(2 * sizeof(Timer *));
+    for(int x = 0; x < 2; x++){
+        timers[x] = (Timer *) malloc(getConstants()->getQtPlayers() * sizeof(Timer));
+    }
+
+    // Starting gk checking values and timers
+    for(int x = 0; x < 2; x++){
+        for(int y = 0; y < getConstants()->getQtPlayers(); y++){
             timers[x][y].start();
             time[x][y] = 0.0;
         }
@@ -40,7 +53,13 @@ VSSReferee::VSSReferee(VSSVisionClient *visionClient, const QString& refereeAddr
 }
 
 VSSReferee::~VSSReferee(){
+    for(int x = 0; x < 2; x++){
+        free(time[x]);
+        free(timers[x]);
+    }
 
+    free(time);
+    free(timers);
 }
 
 void VSSReferee::initialization(){

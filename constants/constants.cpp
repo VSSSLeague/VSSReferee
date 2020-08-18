@@ -18,6 +18,7 @@ Constants::Constants(QString fileName){
     QVariantMap doc_map = docObject.toVariantMap();
 
     // Parsing field and robot data
+    _qtPlayers       = doc_map["QtPlayers"].toInt();
     _ballRadius      = doc_map["BallRadius"].toFloat();
     _robotLength     = doc_map["RobotLength"].toFloat();
 
@@ -61,6 +62,9 @@ Constants::Constants(QString fileName){
     _gameHalfTime        = parametersMap["GameHalfTime"].toFloat();
 }
 
+int Constants::getQtPlayers() const{
+    return _qtPlayers;
+}
 
 float Constants::getBallRadius() const{
     return _ballRadius;

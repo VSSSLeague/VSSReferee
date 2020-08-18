@@ -254,7 +254,7 @@ vector2d VSSReplacer::getBallPlaceByFoul(VSSRef::Foul foul, VSSRef::Color color,
 
     switch(foul){
         case VSSRef::Foul::KICKOFF:{
-            return vector2d(0, 0);
+            return vector2d(0.0, 0.0);
         }
         break;
         case VSSRef::Foul::FREE_BALL:{
@@ -275,33 +275,33 @@ vector2d VSSReplacer::getBallPlaceByFoul(VSSRef::Foul foul, VSSRef::Color color,
         case VSSRef::Foul::GOAL_KICK:{
             if(color == VSSRef::Color::BLUE){
                 if(RefereeView::getBlueIsLeftSide()) return vector2d(-goalKickX, 0);
-                else return vector2d(goalKickX, 0);
+                else return vector2d(goalKickX, 0.0);
             }
             else if(color == VSSRef::Color::YELLOW){
                 if(RefereeView::getBlueIsLeftSide()) return vector2d(goalKickX, 0);
-                else return vector2d(-goalKickX, 0);
+                else return vector2d(-goalKickX, 0.0);
             }
         }
         break;
         case VSSRef::Foul::PENALTY_KICK:{
             if(color == VSSRef::Color::BLUE){
                 if(RefereeView::getBlueIsLeftSide()) return vector2d(markX, 0);
-                else return vector2d(-markX, 0);
+                else return vector2d(-markX, 0.0);
             }
             else if(color == VSSRef::Color::YELLOW){
                 if(RefereeView::getBlueIsLeftSide()) return vector2d(-markX, 0);
-                else return vector2d(markX, 0);
+                else return vector2d(markX, 0.0);
             }
         }
         break;
         case VSSRef::Foul::FREE_KICK:{
             if(color == VSSRef::Color::BLUE){
                 if(RefereeView::getBlueIsLeftSide()) return vector2d(markX, 0);
-                else return vector2d(-markX, 0);
+                else return vector2d(-markX, 0.0);
             }
             else if(color == VSSRef::Color::YELLOW){
                 if(RefereeView::getBlueIsLeftSide()) return vector2d(-markX, 0);
-                else return vector2d(markX, 0);
+                else return vector2d(markX, 0.0);
             }
         }
         break;
@@ -309,6 +309,8 @@ vector2d VSSReplacer::getBallPlaceByFoul(VSSRef::Foul foul, VSSRef::Color color,
             return vector2d(0.0, 0.0);
         }
     }
+
+    return vector2d(0.0, 0.0);
 }
 
 void VSSReplacer::takeGoalie(VSSRef::Color team, int id){

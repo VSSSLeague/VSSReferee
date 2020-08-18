@@ -12,6 +12,7 @@ public:
     /// Getters
 
     // Physic data
+    int getQtPlayers() const;
     float getBallRadius() const;
     float getRobotLength() const;
 
@@ -41,6 +42,7 @@ public:
 
 private:
     // General informations about the robots and ball
+    int _qtPlayers;
     float _ballRadius;
     float _robotLength;
 

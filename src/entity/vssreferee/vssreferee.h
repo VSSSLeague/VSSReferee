@@ -95,8 +95,8 @@ private:
 
     // Goalie check
     void updateGoalieTimers();
-    float time[2][3];
-    Timer timers[2][3];
+    float **time;
+    Timer **timers;
 
 signals:
     void setFoul(VSSRef::Foul foul, VSSRef::Color color, VSSRef::Quadrant quadrant); // send foul to replacer (reset it vars)
