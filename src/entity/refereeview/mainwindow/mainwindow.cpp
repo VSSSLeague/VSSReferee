@@ -51,6 +51,19 @@ MainWindow::~MainWindow(){
     delete ui;
 }
 
+void MainWindow::setTeams(QString teamLeft, VSSRef::Color leftColor, QString teamRight, VSSRef::Color rightColor){
+    ui->teamLeftName->setText(teamLeft);
+    ui->teamRightName->setText(teamRight);
+
+    blueIsLeft = (leftColor == VSSRef::Color::BLUE);
+
+    if(leftColor == VSSRef::Color::BLUE)  ui->teamLeftScore->setStyleSheet("QLabel { color : #417EFF; }");
+    else                                  ui->teamLeftScore->setStyleSheet("QLabel { color : #FFF33E; }");
+
+    if(rightColor == VSSRef::Color::BLUE) ui->teamRightScore->setStyleSheet("QLabel { color : #417EFF; }");
+    else                                  ui->teamRightScore->setStyleSheet("QLabel { color : #FFF33E; }");
+}
+
 void MainWindow::updateDetection(fira_message::Frame frame){
     ui->openGLWidget->updateDetection(frame);
 }

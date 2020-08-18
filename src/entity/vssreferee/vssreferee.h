@@ -12,17 +12,13 @@
 #include <QUdpSocket>
 #include <include/timer.h>
 
-#define PLACEMENT_WAIT_TIME 10.0  // seconds
-#define GAME_HALF_TIME      300   // seconds
-#define GK_TIME_TAKEOUT     10.0  // seconds
-#define BALL_STUCK_TIMEOUT  10.0  // seconds
-#define BALL_MINVELOCITY    0.1   // m/s
+#include <constants/constants.h>
 
 class VSSReferee : public Entity
 {
     Q_OBJECT
 public:
-    VSSReferee(VSSVisionClient *visionClient, const QString& refereeAddress, int refereePort);
+    VSSReferee(VSSVisionClient *visionClient, const QString& refereeAddress, int refereePort, Constants *constants);
     ~VSSReferee();
     QString name();
 
@@ -35,6 +31,10 @@ private:
     void initialization();
     void loop();
     void finalization();
+
+    // Constants
+    Constants *_constants;
+    Constants* getConstants();
 
     // Socket to send foul data
     QUdpSocket _socket;

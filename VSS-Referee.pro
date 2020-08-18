@@ -30,6 +30,7 @@ LIBS *= -lprotobuf -lGLU -pthread -lQt5Core -lpthread
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+        constants/constants.cpp \
         include/command.pb.cc \
         include/common.pb.cc \
         include/packet.pb.cc \
@@ -57,6 +58,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
+    constants/constants.h \
     include/command.pb.h \
     include/common.pb.h \
     include/packet.pb.h \

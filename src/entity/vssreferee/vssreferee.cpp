@@ -6,11 +6,12 @@ QString VSSReferee::name(){
     return "VSSReferee";
 }
 
-VSSReferee::VSSReferee(VSSVisionClient *visionClient, const QString& refereeAddress, int refereePort)
+VSSReferee::VSSReferee(VSSVisionClient *visionClient, const QString& refereeAddress, int refereePort, Constants* constants)
 {
     _visionClient   = visionClient;
     _refereeAddress = refereeAddress;
     _refereePort    = refereePort;
+    _constants      = constants;
 
     connect(refereeAddress, refereePort);
 
@@ -43,7 +44,7 @@ void VSSReferee::initialization(){
 void VSSReferee::loop(){
     // Checking if half passed, reseting the time count
     _gameTimer.stop();
-    if((_gameTimer.timesec() + timePassed) > GAME_HALF_TIME){
+    if((_gameTimer.timesec() + timePassed) > getConstants()->getGameHalfTime()){
         RefereeView::addRefereeWarning("Half passed!");
         _gameTimer.start();
         timePassed = 0;
@@ -57,8 +58,8 @@ void VSSReferee::loop(){
         _gameTimer.start();
 
         _placementTimer.stop();
-        RefereeView::setCurrentTime(PLACEMENT_WAIT_TIME - _placementTimer.timesec());
-        if((_placementTimer.timensec() / 1E9) >= PLACEMENT_WAIT_TIME && (!_blueSent || !_yellowSent)){
+        RefereeView::setCurrentTime(getConstants()->getPlacementWaitTime() - _placementTimer.timesec());
+        if((_placementTimer.timensec() / 1E9) >= getConstants()->getPlacementWaitTime() && (!_blueSent || !_yellowSent)){
             // If enters here, one of the teams didn't placed as required in the determined time
             if(!_blueSent){
                 RefereeView::addRefereeWarning("Blue Team hasn't placed.");
@@ -88,7 +89,7 @@ void VSSReferee::loop(){
     else{
         // Updating game left time
         _gameTimer.stop();
-        RefereeView::setCurrentTime(GAME_HALF_TIME - (_gameTimer.timesec() + timePassed));
+        RefereeView::setCurrentTime(getConstants()->getGameHalfTime() - (_gameTimer.timesec() + timePassed));
         RefereeView::setRefereeCommand("GAME_ON");
 
         checkTwoPlayersInsideGoalAreaWithBall();
@@ -279,7 +280,7 @@ bool VSSReferee::checkGKTakeoutTimeout(){
 
                 // Check timer
                 _gkTimer.stop();
-                if(_gkTimer.timesec() >= GK_TIME_TAKEOUT){
+                if(_gkTimer.timesec() >= getConstants()->getGKTakeoutTime()){
                     setTeamFoul(VSSRef::Foul::PENALTY_KICK, VSSRef::Color::YELLOW);
                     startedGKTimer = false;
                     return true;
@@ -318,7 +319,7 @@ bool VSSReferee::checkGKTakeoutTimeout(){
 
                 // Check timer
                 _gkTimer.stop();
-                if(_gkTimer.timesec() >= GK_TIME_TAKEOUT){
+                if(_gkTimer.timesec() >= getConstants()->getGKTakeoutTime()){
                     setTeamFoul(VSSRef::Foul::PENALTY_KICK, VSSRef::Color::BLUE);
                     startedGKTimer = false;
                     return true;
@@ -349,7 +350,7 @@ bool VSSReferee::checkBallStucked(){
 
     float ballVelocity = sqrt(pow(vx, 2) + pow(vy, 2));
 
-    if(ballVelocity > BALL_MINVELOCITY || !startedStuckTimer){
+    if(ballVelocity > getConstants()->getBallMinimumVelocity() || !startedStuckTimer){
         if(!startedStuckTimer) startedStuckTimer = true;
         _ballStuckTimer.start();
     }
@@ -364,7 +365,7 @@ bool VSSReferee::checkBallStucked(){
 
             // Check timer
             _ballStuckTimer.stop();
-            if(_ballStuckTimer.timesec() >= BALL_STUCK_TIMEOUT){
+            if(_ballStuckTimer.timesec() >= getConstants()->getBallStuckTime()){
                 setTeamFoul(VSSRef::Foul::FREE_BALL, VSSRef::Color::BLUE, Utils::getBallQuadrant(ballPos));
                 startedStuckTimer = false;
                 return true;
@@ -373,4 +374,13 @@ bool VSSReferee::checkBallStucked(){
     }
 
     return false;
+}
+
+Constants* VSSReferee::getConstants(){
+    if(_constants == NULL){
+        std::cout << "[ERROR] Referee is requesting constants, but it's NULL\n";
+        return NULL;
+    }
+
+    return _constants;
 }

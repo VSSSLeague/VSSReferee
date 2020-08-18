@@ -5,25 +5,36 @@
 #include <src/entity/vssreplacer/vssreplacer.h>
 #include <src/entity/refereeview/refereeview.h>
 
+#include <constants/constants.h>
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    // Defines
-    QString refereeAddress = "224.5.23.2";
-    int visionPort = 10002;
-    int refereePort = 10003;
-    int replacerPort = 10004;
-    QString firaSimAddress = "127.0.0.1";
-    int firaSimCommandPort = 20011;
+    // Creating constants pointer
+    Constants* constants = new Constants("../constants/constants.json");
 
-    /// TODO Here
-    /// Parse these address and ports
+    /// Parsing from constants
+    // Vision
+    QString visionAddress   = constants->getVisionAddress();
+    int visionPort          = constants->getVisionPort();
+
+    // Referee
+    QString refereeAddress  = constants->getRefereeAddress();
+    int refereePort         = constants->getRefereePort();
+
+    // Replacer
+    QString replacerAddress = constants->getReplacerAddress();
+    int replacerPort        = constants->getRefereePort();
+
+    // FiraSim
+    QString firaSimAddress  = constants->getFiraSimAddress();
+    int firaSimPort         = constants->getFiraSimPort();
 
     // Create modules
-    VSSVisionClient *vssVisionClient = new VSSVisionClient(refereeAddress, visionPort);
-    VSSReferee *vssReferee = new VSSReferee(vssVisionClient, refereeAddress, refereePort);
-    VSSReplacer *vssReplacer = new VSSReplacer(refereeAddress, replacerPort, firaSimAddress, firaSimCommandPort);
+    VSSVisionClient *vssVisionClient = new VSSVisionClient(visionAddress, visionPort);
+    VSSReferee *vssReferee = new VSSReferee(vssVisionClient, refereeAddress, refereePort, constants);
+    VSSReplacer *vssReplacer = new VSSReplacer(replacerAddress, replacerPort, firaSimAddress, firaSimPort);
     RefereeView *refView = new RefereeView();
 
     // Make connections with signals and slots

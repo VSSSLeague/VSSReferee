@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <src/entity/refereeview/soccerview/soccerview.h>
+#include <include/vssref_common.pb.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -27,6 +28,7 @@ public:
 
     // GUI
     void drawText(vector2d pos, char *str);
+    void setTeams(QString teamLeft, VSSRef::Color leftColor, QString teamRight, VSSRef::Color rightColor);
 
 private:
     Ui::MainWindow *ui;
