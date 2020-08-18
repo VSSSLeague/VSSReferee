@@ -8,6 +8,10 @@
 #include <include/vssref_placement.pb.h>
 #include <include/replacement.pb.h>
 
+#include <src/entity/refereeview/refereeview.h>
+#include <src/entity/refereeview/soccerview/util/field_default_constants.h>
+#include <src/entity/refereeview/soccerview/util/geometry.h>
+
 class VSSReplacer : public Entity
 {
     Q_OBJECT
@@ -22,9 +26,6 @@ private:
     void loop();
     void finalization();
 
-    // Timer
-    Timer _timer;
-
     // VSS Client to receive replacement data
     VSSClient *_vssClient;
     VSSRef::Frame frames[3];
@@ -37,6 +38,13 @@ private:
     bool _awaitingPackets;
     int _packetsReceived;
     QMutex _mutex;
+
+    VSSRef::Foul _foul;
+    VSSRef::Color _color;
+    VSSRef::Quadrant _quadrant;
+
+    // Ball replacement
+    vector2d getBallPlaceByFoul(VSSRef::Foul foul, VSSRef::Color color, VSSRef::Quadrant quadrant);
 
     // Socket to send replacement commands to firaSim
     QUdpSocket _socket;
@@ -59,7 +67,8 @@ signals:
     void teamPlaced(VSSRef::Color color);
 
 public slots:
-    void takeFoul(VSSRef::Foul foul);
+    void takeFoul(VSSRef::Foul foul, VSSRef::Color color, VSSRef::Quadrant quadrant);
+    void stopWaiting();
 };
 
 #endif // VSSREPLACER_H

@@ -101,7 +101,6 @@ void VSSReplacer::loop(){
 
                 // Fill replacement packet with frame infos
                 fillPacket(frames[VSSRef::Color::BLUE], frames[VSSRef::Color::YELLOW]);
-                placeBall(0.0, 0.0);
 
                 fira_message::sim_to_ref::Packet packet;
                 packet.set_allocated_replace(_replacementCommand);
@@ -161,16 +160,34 @@ QString VSSReplacer::getFoulNameById(VSSRef::Foul foul){
     }
 }
 
-void VSSReplacer::takeFoul(VSSRef::Foul foul){
+void VSSReplacer::takeFoul(VSSRef::Foul foul, VSSRef::Color color, VSSRef::Quadrant quadrant){
     _mutex.lock();
     _yellowSentPacket = false;
     _blueSentPacket   = false;
     _awaitingPackets  = true;
     _packetsReceived  = 0;
-    _timer.start();
+
+    _foul = foul;
+    _color = color;
+    _quadrant = quadrant;
     _mutex.unlock();
 
     std::cout << "[VSSReplacer] Waiting for placement packets for foul: " << getFoulNameById(foul).toStdString() << "\n";
+
+    // Ball place pos
+    vector2d ballPlacePos = getBallPlaceByFoul(_foul, _color, _quadrant);
+    std::cout << "[VSSReplacer] Ball placed into x: " << ballPlacePos.x << " and y: " << ballPlacePos.y << "\n";
+    placeBall(ballPlacePos.x, ballPlacePos.y);
+
+}
+
+void VSSReplacer::stopWaiting(){
+    _mutex.lock();
+    _yellowSentPacket = false;
+    _blueSentPacket   = false;
+    _awaitingPackets  = false;
+    _packetsReceived  = 0;
+    _mutex.unlock();
 }
 
 void VSSReplacer::fillPacket(VSSRef::Frame frameBlue, VSSRef::Frame frameYellow){
@@ -219,7 +236,15 @@ void VSSReplacer::placeBall(double x, double y){
     firaBall->set_vx(0.0);
 
     // Inserting infos at replacementCommand
-    _replacementCommand->set_allocated_ball(firaBall);
+    fira_message::sim_to_ref::Replacement *ballReplaceCommand = new fira_message::sim_to_ref::Replacement();
+    ballReplaceCommand->set_allocated_ball(firaBall);
+
+    // Sending to fira
+    fira_message::sim_to_ref::Packet packet;
+    packet.set_allocated_replace(ballReplaceCommand);
+
+    // Send packet to firaSim
+    sendPacket(packet);
 }
 
 void VSSReplacer::debugFrame(VSSRef::Frame frame){
@@ -227,5 +252,69 @@ void VSSReplacer::debugFrame(VSSRef::Frame frame){
     for(int x = 0; x < frame.robots_size(); x++){
         std::cout << "Robot " << frame.robots(x).robot_id() << " : " << std::endl;
         std::cout << "x: " << frame.robots(x).x() << " y: " << frame.robots(x).y() << " ori: " << frame.robots(x).orientation() << std::endl;
+    }
+}
+
+vector2d VSSReplacer::getBallPlaceByFoul(VSSRef::Foul foul, VSSRef::Color color, VSSRef::Quadrant quadrant){
+    float goalKickX = (FieldConstantsVSS::kFieldLength / 1000.0)/2.0 - 0.15;
+    float markX = (FieldConstantsVSS::kFieldLength / 1000.0)/2.0 - 0.375;
+    float markY = (FieldConstantsVSS::kFieldWidth / 1000.0)/2.0 - 0.25;
+
+    switch(foul){
+        case VSSRef::Foul::KICKOFF:{
+            return vector2d(0, 0);
+        }
+        break;
+        case VSSRef::Foul::FREE_BALL:{
+            if(quadrant == VSSRef::Quadrant::QUADRANT_1){
+                return vector2d(markX, markY);
+            }
+            else if(quadrant == VSSRef::Quadrant::QUADRANT_2){
+                return vector2d(-markX, markY);
+            }
+            else if(quadrant == VSSRef::Quadrant::QUADRANT_3){
+                return vector2d(-markX, -markY);
+            }
+            else if(quadrant == VSSRef::Quadrant::QUADRANT_4){
+                return vector2d(markX, -markY);
+            }
+        }
+        break;
+        case VSSRef::Foul::GOAL_KICK:{
+            if(color == VSSRef::Color::BLUE){
+                if(RefereeView::getBlueIsLeftSide()) return vector2d(-goalKickX, 0);
+                else return vector2d(goalKickX, 0);
+            }
+            else if(color == VSSRef::Color::YELLOW){
+                if(RefereeView::getBlueIsLeftSide()) return vector2d(goalKickX, 0);
+                else return vector2d(-goalKickX, 0);
+            }
+        }
+        break;
+        case VSSRef::Foul::PENALTY_KICK:{
+            if(color == VSSRef::Color::BLUE){
+                if(RefereeView::getBlueIsLeftSide()) return vector2d(markX, 0);
+                else return vector2d(-markX, 0);
+            }
+            else if(color == VSSRef::Color::YELLOW){
+                if(RefereeView::getBlueIsLeftSide()) return vector2d(-markX, 0);
+                else return vector2d(markX, 0);
+            }
+        }
+        break;
+        case VSSRef::Foul::FREE_KICK:{
+            if(color == VSSRef::Color::BLUE){
+                if(RefereeView::getBlueIsLeftSide()) return vector2d(markX, 0);
+                else return vector2d(-markX, 0);
+            }
+            else if(color == VSSRef::Color::YELLOW){
+                if(RefereeView::getBlueIsLeftSide()) return vector2d(-markX, 0);
+                else return vector2d(markX, 0);
+            }
+        }
+        break;
+        default:{
+            return vector2d(0.0, 0.0);
+        }
     }
 }

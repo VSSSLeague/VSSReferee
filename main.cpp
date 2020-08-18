@@ -45,10 +45,11 @@ int main(int argc, char *argv[])
     RefereeView *refView = new RefereeView();
 
     // Make connections with signals and slots
-    QObject::connect(vssReferee, SIGNAL(setFoul(VSSRef::Foul)), vssReplacer, SLOT(takeFoul(VSSRef::Foul)), Qt::DirectConnection);
+    QObject::connect(vssReferee, SIGNAL(setFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), vssReplacer, SLOT(takeFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), Qt::DirectConnection);
     QObject::connect(vssReplacer, SIGNAL(teamPlaced(VSSRef::Color)), vssReferee, SLOT(teamSent(VSSRef::Color)), Qt::DirectConnection);
     QObject::connect(vssReferee, SIGNAL(halfPassed()), refView->getUI(), SLOT(switchSides()), Qt::DirectConnection);
     QObject::connect(vssReferee, SIGNAL(goalMarked(VSSRef::Color)), refView->getUI(), SLOT(addGoal(VSSRef::Color)), Qt::DirectConnection);
+    QObject::connect(vssReferee, SIGNAL(stopReplacerWaiting()), vssReplacer, SLOT(stopWaiting()), Qt::DirectConnection);
 
     // Start all
     vssVisionClient->start();

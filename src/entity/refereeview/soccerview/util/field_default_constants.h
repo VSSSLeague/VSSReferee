@@ -42,7 +42,7 @@ namespace FieldConstantsVSS {
     const double kYMax = kFieldWidth/2;
     const double kYMin = -kYMax;
     const double kFieldCorner = kFieldLength*5/150;
-    const double kMarkDistanceX = 4*kFieldLength/15;
+    const double kMarkDistanceX = kFieldLength/4;
     const double kMarkDistanceY = 4*kFieldLength/15;
     const double kMarkLength = kFieldLength*5/150;
     const double kMarkCircleDistance = 2*kFieldLength/15;

@@ -83,6 +83,9 @@ void VSSReferee::loop(){
             _stopEnabled = true;
             _stopTimer.start();
             setTeamFoul(VSSRef::Foul::STOP, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT, true);
+
+            // Stop replacer wait
+            emit stopReplacerWaiting();
         }
         else if(_blueSent && _yellowSent){
             _placementMutex.lock();
@@ -95,6 +98,9 @@ void VSSReferee::loop(){
             _stopEnabled = true;
             _stopTimer.start();
             setTeamFoul(VSSRef::Foul::STOP, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT, true);
+
+            // Stop replacer wait
+            emit stopReplacerWaiting();
         }
     }
     else if(_stopEnabled){
@@ -210,7 +216,7 @@ void VSSReferee::setTeamFoul(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Q
         sendPacket(_refereeCommand, isStop);
         RefereeView::addRefereeCommand(getFoulNameById(_refereeCommand.foul()));
         resetFoulTimers();
-        if(!isStop) emit setFoul(_refereeCommand.foul());
+        if(!isStop) emit setFoul(foul, forTeam, foulQuadrant);
     }
 }
 
