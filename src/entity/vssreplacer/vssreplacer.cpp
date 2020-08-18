@@ -173,12 +173,6 @@ void VSSReplacer::takeFoul(VSSRef::Foul foul, VSSRef::Color color, VSSRef::Quadr
     _mutex.unlock();
 
     std::cout << "[VSSReplacer] Waiting for placement packets for foul: " << getFoulNameById(foul).toStdString() << "\n";
-
-    // Ball place pos
-    vector2d ballPlacePos = getBallPlaceByFoul(_foul, _color, _quadrant);
-    std::cout << "[VSSReplacer] Ball placed into x: " << ballPlacePos.x << " and y: " << ballPlacePos.y << "\n";
-    placeBall(ballPlacePos.x, ballPlacePos.y);
-
 }
 
 void VSSReplacer::stopWaiting(){
@@ -188,6 +182,11 @@ void VSSReplacer::stopWaiting(){
     _awaitingPackets  = false;
     _packetsReceived  = 0;
     _mutex.unlock();
+
+    // Place ball at foul location
+    vector2d ballPlacePos = getBallPlaceByFoul(_foul, _color, _quadrant);
+    std::cout << "[VSSReplacer] Ball placed into x: " << ballPlacePos.x << " and y: " << ballPlacePos.y << "\n";
+    placeBall(ballPlacePos.x, ballPlacePos.y);
 }
 
 void VSSReplacer::fillPacket(VSSRef::Frame frameBlue, VSSRef::Frame frameYellow){
