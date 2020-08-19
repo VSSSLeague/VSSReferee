@@ -50,7 +50,7 @@ Constants::Constants(QString fileName){
     // Parsing team right data
     QVariantMap teamRightMap = doc_map["TeamRight"].toMap();
     _teamRightName   = teamRightMap["name"].toString();
-    _teamLeftColor   = (teamRightMap["color"].toString() == "blue") ? VSSRef::Color::BLUE : VSSRef::Color::YELLOW;
+    _teamRightColor  = (teamRightMap["color"].toString() == "blue") ? VSSRef::Color::BLUE : VSSRef::Color::YELLOW;
 
     // Parsing parameters
     QVariantMap parametersMap = doc_map["Parameters"].toMap();
