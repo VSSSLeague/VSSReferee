@@ -9,6 +9,7 @@ enum Foul{
 	FREE_BALL = 3;
 	KICKOFF = 4;
 	STOP = 5;
+	GAME_ON = 6;
 }
 
 enum Color{

@@ -13,7 +13,6 @@ The VSS-Referee is the automatic referee module created to **IEEE Very Small Siz
  
 ## Compilation
 First of all, check the `constants/constants.json` file and update for your parameters (addresses, ports, team names, team colors, etc.)
-Run the `protobuf.sh` file at the main folder, using the command `sudo sh protobuf.sh` in the terminal.  
 Create an folder named `build`, open it and run the command `qmake ..`  
 So, after this, run the command `make` and if everything goes ok, the binary will be at the folder `bin` (at the main folder).  
 

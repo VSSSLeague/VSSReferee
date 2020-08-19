@@ -147,6 +147,7 @@ void VSSReferee::loop(){
         if((_stopTimer.timensec() / 1E9) >= getConstants()->getStopWaitTime()){
             _stopEnabled = false;
             RefereeView::addRefereeWarning("Stop time ended");
+            setTeamFoul(VSSRef::Foul::GAME_ON, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT, true);
         }
     }
     else{
@@ -233,6 +234,8 @@ QString VSSReferee::getFoulNameById(VSSRef::Foul foul){
         case VSSRef::Foul::PENALTY_KICK: return "PENALTY_KICK";
         case VSSRef::Foul::KICKOFF:      return "KICKOFF";
         case VSSRef::Foul::STOP:         return "STOP";
+        case VSSRef::Foul::GAME_ON:      return "GAME_ON";
+
         default:                         return "FOUL NOT IDENTIFIED";
     }
 }

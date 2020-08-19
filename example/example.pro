@@ -24,6 +24,11 @@ RCC_DIR = tmp/rc
 DEFINES += QT_DEPRECATED_WARNINGS
 LIBS *= -lprotobuf -lGLU -pthread -lQt5Core -lpthread
 
+# Compiling protobuf
+system(echo "Compiling firaSim protobufs" && cd include/protobuf/firasim && protoc --cpp_out=../../ *.proto && cd ../../..)
+system(echo "Compiling referee protobufs" && cd include/protobuf/vssreferee && protoc --cpp_out=../../ *.proto && cd ../../..)
+
+
 # You can also make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
 # You can also select to disable deprecated APIs only up to a certain version of Qt.

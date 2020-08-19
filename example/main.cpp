@@ -16,6 +16,7 @@ QString getFoulNameById(VSSRef::Foul foul){
         case VSSRef::Foul::PENALTY_KICK: return "PENALTY_KICK";
         case VSSRef::Foul::KICKOFF:      return "KICKOFF";
         case VSSRef::Foul::STOP:         return "STOP";
+        case VSSRef::Foul::GAME_ON:      return "GAME_ON";
         default:                         return "FOUL NOT IDENTIFIED";
     }
 }
