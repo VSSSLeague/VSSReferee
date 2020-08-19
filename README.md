@@ -3,7 +3,7 @@
 # VSS_Referee
 
 ## Introduction
-The VSS-Referee is an module created to the **IEEE Very Small Size Soccer League**, responsable for the automatic judge of the field, creating the possibility to the teams catch the data coming from it and replace strategically their robots, avoiding a little bit the human presence/necessity at the field.
+The VSS-Referee is the automatic referee module created to **IEEE Very Small Size Soccer League**, creating the possibility to teams catch the data coming from it and replace strategically their robots, decreasing the human necessity at the field.
 
 ## Requirements
  * g++
@@ -19,7 +19,7 @@ So, after this, run the command `make` and if everything goes ok, the binary wil
 
 ## Usage
 After compilation, simply run the binary at the `bin` folder using the `./VSS-Referee` command at the terminal. 
-**Remember to change the JSOn file to adjust the parameters for your need!**
+**Remember to change the Json file to adjust the parameters for your need!**
 
 ## Modules explanation
 Currently, the VSS-Referee have 3 modules inside it:  
@@ -31,10 +31,10 @@ The VSS-Vision Client is responsable to catch vision data (robots and ball posit
 The VSS-Referee module is responsable to use the VSS-Vision Client data and check the fouls occured in the field. 
 It uses the `vssref_command.proto` protobuf file to send the commands. The following fouls are supported by this protobuf:
 - [x] `KICKOFF`: This command is sent when the game start (when you open the referee), after valid goals and after half passed.
-- [x] `FREE_BALL`: This command is sent when the ball is stucked in any part of the field for `ballStuckTime` seconds. It passes the quadrant that the foul occured, that can be `QUADRANT_1`, `QUADRANT_2`, `QUADRANT_3` and `QUADRANT_4`. These quadrants begin from the TOP-RIGHT quadrant and the others follow an anti-hour orientation, so the `QUADRANT_2` is the TOP_LEFT and so on.
+- [x] `FREE_BALL`: This command is sent when the ball is stucked in any part of the field for `ballStuckTime` seconds. It passes the quadrant where the foul occured, that can be `QUADRANT_1`, `QUADRANT_2`, `QUADRANT_3` and `QUADRANT_4`. These quadrants begin from the TOP-RIGHT quadrant and the others follow an anti-hour orientation, so the `QUADRANT_2` is the TOP_LEFT and so on.
 - [ ] `FREE_KICK`: Currently this command isn't supported by the referee due to it's complexity to be analysed.
 - [x] `GOAL_KICK`: This command is sent when two attackers disputate the ball with the enemy goalkeeper.
-- [x] `PENALTY_KICK`: This command is sent when two defenders are at the goal area (at least 50%) with the ball in the area, or when the goalkeeper didn't takeout the ball from the goal area in at least `GKTakeoutTime` seconds.
+- [x] `PENALTY_KICK`: This command is sent when two defenders are inside of the goal area (at least 50%) with the ball in the area, or when the goalkeeper didn't takeout the ball from the goal area in at least `GKTakeoutTime` seconds.
 - [x] `STOP`: This is an new command, that occurs when the teams placed succesfuly. This allows the teams to make tiny modifications at their robot orientations to adapt for the other teams placement.
 - [x] `GAME_ON`: This command is sent when the stop ended , so all the players can play normally.
 
@@ -42,8 +42,8 @@ The `example/main.cpp` file contains an example of how the teams can catch data 
 
 ### VSS-Replacer
 The VSS-Replacer module is responsable to catch the data sent by the teams containing their desired position of each robot in the field, posteriorly positioning the robots in the `FIRASim` simulator.  
-The teams need to use the `vssref_placement.proto` protobuf file to send these commands to the VSS-Replacer. This protobuf have an var type named `Frame` on it, that contains the team `Color` and an vector of `Robot` type. The definition of these vars can be seen in the `vssref_common.proto` protobuf file.  
-Today when your team don't place the robots, it automatically place your team based at the **IEEE VSS Rules**, but it **only can recognize your goalkeepe**r, cause it store the time that each robot spent at the goal area, so the other players will be literally placed following the rules. You can check that rules placement at [Rules](http://200.145.27.208/cbr/wp-content/uploads/2020/07/vssRegras_Portugues.pdf).
+The teams need to use the `vssref_placement.proto` protobuf file to send these commands to the VSS-Replacer. This protobuf have an var type named `Frame` on it, that contains the team `Color` and a vector of `Robot` type. The definition of these vars can be seen in the `vssref_common.proto` protobuf file.  
+The current version, when your team don't place the robots, automatically place your team based at the **IEEE VSS Rules**, but it **only can recognize your goalkeeper**, cause it store the time that each robot spent at the goal area, so the other players will be literally placed following the rules. You can check that rules placement at [Rules](http://200.145.27.208/cbr/wp-content/uploads/2020/07/vssRegras_Portugues.pdf).
 The `example/main.cpp` file contains an example of how the teams can send placement data to VSS-Replacer.  
 
 #### Examples of placement
