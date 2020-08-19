@@ -161,6 +161,7 @@ void VSSReplacer::takeFoul(VSSRef::Foul foul, VSSRef::Color color, VSSRef::Quadr
 }
 
 void VSSReplacer::stopWaiting(){
+    _mutex.lock();
 
     // Check team that don't placed and place
     if(!_yellowSentPacket){
@@ -190,8 +191,6 @@ void VSSReplacer::stopWaiting(){
 
         fillAndSendPacket(frame);
     }
-
-    _mutex.lock();
 
     _yellowSentPacket = false;
     _blueSentPacket   = false;

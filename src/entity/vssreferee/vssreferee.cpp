@@ -244,10 +244,10 @@ void VSSReferee::setTeamFoul(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Q
 
     if(isConnected()){
         std::cout << "[VSSReferee] Command from referee: " << getFoulNameById(foul).toStdString() << "\n";
+        if(!isStop) emit setFoul(foul, forTeam, foulQuadrant);
         sendPacket(_refereeCommand, isStop);
         RefereeView::addRefereeCommand(getFoulNameById(_refereeCommand.foul()));
         resetFoulTimers();
-        if(!isStop) emit setFoul(foul, forTeam, foulQuadrant);
     }
 }
 
