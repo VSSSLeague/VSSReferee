@@ -26,6 +26,12 @@ enum Quadrant{
 	QUADRANT_4  = 4;
 }
 
+enum Half{
+	NO_HALF = 0;
+	FIRST_HALF = 1;
+	SECOND_HALF = 2;
+}
+
 message Robot {
     uint32 robot_id    = 1;
     double x           = 2;

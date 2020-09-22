@@ -41,6 +41,15 @@ QString getQuadrantNameById(VSSRef::Quadrant quadrant){
     }
 }
 
+QString getHalfNameById(VSSRef::Half half){
+    switch(half){
+        case VSSRef::Half::NO_HALF: return "NO_HALF";
+        case VSSRef::Half::FIRST_HALF: return "FIRST HALF";
+        case VSSRef::Half::SECOND_HALF: return "SECOND HALF";
+        default: "NO HALF DEFINED";
+    }
+}
+
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
@@ -71,6 +80,12 @@ int main(int argc, char *argv[])
             // If received command, let's debug it
             std::cout << "[Example] Succesfully received an command from ref: " << getFoulNameById(command.foul()).toStdString() << " for team " << getTeamColorNameById(command.teamcolor()).toStdString() << std::endl;
             std::cout << getQuadrantNameById(command.foulquadrant()).toStdString() << std::endl;
+
+            // Showing timestamp
+            std::cout << "Timestamp: " << command.timestamp() << std::endl;
+
+            // Showing half
+            std::cout << "Half: " << getHalfNameById(command.gamehalf()).toStdString() << std::endl;
 
             // Now let's send an placement packet to it
 

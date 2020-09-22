@@ -23,6 +23,7 @@ VSSReferee::VSSReferee(VSSVisionClient *visionClient, const QString& refereeAddr
     timePassed        = 0;
     startedGKTimer    = false;
     startedStuckTimer = false;
+    _gameHalf         = VSSRef::Half::FIRST_HALF;
 
     // Start timers
     _placementTimer.start();
@@ -73,6 +74,15 @@ void VSSReferee::loop(){
     _gameTimer.stop();
     if((_gameTimer.timesec() + timePassed) > getConstants()->getGameHalfTime()){
         RefereeView::addRefereeWarning("Half passed!");
+
+        // Swapping halfs
+        if(_gameHalf == VSSRef::Half::FIRST_HALF){
+            _gameHalf = VSSRef::Half::SECOND_HALF;
+        }
+        else{
+            _gameHalf = VSSRef::Half::FIRST_HALF;
+        }
+
         _gameTimer.start();
         timePassed = 0;
         setTeamFoul(VSSRef::Foul::KICKOFF, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT);
@@ -244,6 +254,13 @@ void VSSReferee::setTeamFoul(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Q
     _refereeCommand.set_foul(foul);
     _refereeCommand.set_teamcolor(forTeam);
     _refereeCommand.set_foulquadrant(foulQuadrant);
+    _refereeCommand.set_gamehalf(_gameHalf);
+
+    // Setting timestamp
+    _gameTimer.stop();
+    _refereeCommand.set_timestamp(_gameTimer.timesec() + timePassed);
+
+    // Setting half
 
     if(isConnected()){
         std::cout << "[VSSReferee] Command from referee: " << getFoulNameById(foul).toStdString() << "\n";

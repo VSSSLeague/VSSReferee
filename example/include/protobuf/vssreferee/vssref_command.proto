@@ -9,4 +9,5 @@ message VSSRef_Command {
 	Color teamcolor       = 2;
 	Quadrant foulQuadrant = 3;
 	double timestamp      = 4;
+	Half gameHalf         = 5;
 }

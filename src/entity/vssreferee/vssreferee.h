@@ -63,6 +63,7 @@ private:
     // Game time analysis
     Timer _gameTimer;
     int timePassed;
+    VSSRef::Half _gameHalf;
 
     /// FOULS
 
