@@ -471,11 +471,13 @@ bool VSSReferee::checkGoal(){
     if(Utils::isBallInsideGoal(VSSRef::BLUE, ballPos)){
         setTeamFoul(VSSRef::KICKOFF, VSSRef::Color::BLUE);
         emit goalMarked(VSSRef::YELLOW);
+        RefereeView::addRefereeWarning("GOAL YELLOW!");
         return true;
     }
     else if(Utils::isBallInsideGoal(VSSRef::YELLOW, ballPos)){
         setTeamFoul(VSSRef::KICKOFF, VSSRef::Color::YELLOW);
         emit goalMarked(VSSRef::BLUE);
+        RefereeView::addRefereeWarning("GOAL BLUE!");
         return true;
     }
     else{

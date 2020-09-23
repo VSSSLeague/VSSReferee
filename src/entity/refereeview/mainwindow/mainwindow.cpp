@@ -38,11 +38,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->pushButton, SIGNAL(released()), this, SLOT(switchSides()));
 
     // Setting initial scores values and colors
-    leftTeamName = "Maracatronics";
-    rightTeamName = "Warthog";
+   
     leftTeamGoalsScored = 0;
     rightTeamGoalsScored = 0;
-    setTeams(leftTeamName, VSSRef::Color::BLUE, rightTeamName, VSSRef::Color::YELLOW);
 }
 
 MainWindow::~MainWindow(){
@@ -50,6 +48,8 @@ MainWindow::~MainWindow(){
 }
 
 void MainWindow::setTeams(QString teamLeft, VSSRef::Color leftColor, QString teamRight, VSSRef::Color rightColor){
+    leftTeamName = teamLeft;
+    rightTeamName = teamRight;
     ui->teamLeftName->setText(teamLeft);
     ui->teamRightName->setText(teamRight);
 

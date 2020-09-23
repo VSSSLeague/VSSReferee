@@ -33,12 +33,12 @@
 	},
 
 	"TeamLeft": {
-		"name": "Maracatronics",
-		"color": "yellow"
+		"name": "Warthog",
+		"color": "blue"
 	},
 
 	"TeamRight": {
-		"name": "Warthog",
-		"color": "blue"
+		"name": "Maracatronics",
+		"color": "yellow"
 	}
 }
