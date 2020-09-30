@@ -60,6 +60,9 @@ int main(int argc, char *argv[])
     // Goal connection
     QObject::connect(vssReferee, SIGNAL(goalMarked(VSSRef::Color)), refView->getUI(), SLOT(addGoal(VSSRef::Color)), Qt::DirectConnection);
 
+    // Manual referee connection
+    QObject::connect(refView->getUI(), SIGNAL(sendManualCommand(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), vssReferee, SLOT(takeManualCommand(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)));
+
     /// Set team
     refView->setTeams(constants->getLeftTeamName(), constants->getLeftTeamColor(), constants->getRightTeamName(), constants->getRightTeamColor());
 

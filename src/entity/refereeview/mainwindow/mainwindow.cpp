@@ -37,8 +37,34 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     // Side control
     connect(ui->pushButton, SIGNAL(released()), this, SLOT(switchSides()));
 
+    /// Manual Referee
+    quadrantButtons.push_back(ui->freeBall_q1);
+    quadrantButtons.push_back(ui->freeBall_q2);
+    quadrantButtons.push_back(ui->freeBall_q3);
+    quadrantButtons.push_back(ui->freeBall_q4);
+
+    /// Connects for manual ref
+    // Free ball
+    connect(ui->freeBall,   SIGNAL(released()), this, SLOT(sendFreeBall()));
+    connect(ui->freeBall_2, SIGNAL(released()), this, SLOT(sendFreeBall()));
+
+    // Goal kick
+    connect(ui->goalKickYellow, SIGNAL(released()), this, SLOT(sendYellowGoalKick()));
+    connect(ui->goalKickBlue,   SIGNAL(released()), this, SLOT(sendBlueGoalKick()));
+
+    // Penalty
+    connect(ui->penaltyKickYellow, SIGNAL(released()), this, SLOT(sendYellowPenalty()));
+    connect(ui->penaltyKickBlue,   SIGNAL(released()), this, SLOT(sendBluePenalty()));
+
+    // Kickoff
+    connect(ui->kickoffYellow, SIGNAL(released()), this, SLOT(sendYellowKickoff()));
+    connect(ui->kickoffBlue,   SIGNAL(released()), this, SLOT(sendBlueKickoff()));
+
+    // Start and stop
+    connect(ui->startGame, SIGNAL(released()), this, SLOT(sendStart()));
+    connect(ui->stopGame,  SIGNAL(released()), this, SLOT(sendStop()));
+
     // Setting initial scores values and colors
-   
     leftTeamGoalsScored = 0;
     rightTeamGoalsScored = 0;
 }
@@ -157,4 +183,49 @@ void MainWindow::addGoal(VSSRef::Color team){
             ui->teamLeftScore->setText(QString("%1").arg(leftTeamGoalsScored));
         }
     }
+}
+
+VSSRef::Quadrant MainWindow::requestQuadrant(){
+    for(int x = 0; x < quadrantButtons.size(); x++){
+        if(quadrantButtons.at(x)->isChecked())
+            return VSSRef::Quadrant(x+1);
+    }
+
+    return VSSRef::Quadrant::NO_QUADRANT;
+}
+
+void MainWindow::sendFreeBall(){
+    emit sendManualCommand(VSSRef::Foul::FREE_BALL, VSSRef::Color::NONE, requestQuadrant());
+}
+
+void MainWindow::sendYellowKickoff(){
+    emit sendManualCommand(VSSRef::Foul::KICKOFF, VSSRef::Color::YELLOW);
+}
+
+void MainWindow::sendBlueKickoff(){
+    emit sendManualCommand(VSSRef::Foul::KICKOFF, VSSRef::Color::BLUE);
+}
+
+void MainWindow::sendYellowPenalty(){
+    emit sendManualCommand(VSSRef::Foul::PENALTY_KICK, VSSRef::Color::YELLOW);
+}
+
+void MainWindow::sendBluePenalty(){
+    emit sendManualCommand(VSSRef::Foul::PENALTY_KICK, VSSRef::Color::BLUE);
+}
+
+void MainWindow::sendYellowGoalKick(){
+    emit sendManualCommand(VSSRef::Foul::GOAL_KICK, VSSRef::Color::YELLOW);
+}
+
+void MainWindow::sendBlueGoalKick(){
+    emit sendManualCommand(VSSRef::Foul::GOAL_KICK, VSSRef::Color::BLUE);
+}
+
+void MainWindow::sendStart(){
+    emit sendManualCommand(VSSRef::Foul::GAME_ON);
+}
+
+void MainWindow::sendStop(){
+    emit sendManualCommand(VSSRef::Foul::STOP);
 }

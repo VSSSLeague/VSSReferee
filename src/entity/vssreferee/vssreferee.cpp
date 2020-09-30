@@ -20,6 +20,8 @@ VSSReferee::VSSReferee(VSSVisionClient *visionClient, const QString& refereeAddr
     _blueSent         = false;
     _yellowSent       = false;
     _stopEnabled      = false;
+    _manualStop       = false;
+    _manualGameOn     = false;
     timePassed        = 0;
     startedGKTimer    = false;
     startedStuckTimer = false;
@@ -151,11 +153,18 @@ void VSSReferee::loop(){
 
         // Taking stop time
         _stopTimer.stop();
-        RefereeView::setCurrentTime(getConstants()->getStopWaitTime() - _stopTimer.timesec());
+
+        float stopTime;
+        if(_manualStop) stopTime = 600;
+        else            stopTime = getConstants()->getStopWaitTime();
+
+        RefereeView::setCurrentTime(stopTime - _stopTimer.timesec());
 
         // Checking if timer ends
-        if((_stopTimer.timensec() / 1E9) >= getConstants()->getStopWaitTime()){
+        if((_stopTimer.timensec() / 1E9) >= stopTime || _manualGameOn){
             _stopEnabled = false;
+            _manualStop  = false;
+            _manualGameOn = false;
             RefereeView::addRefereeWarning("Stop time ended");
             setTeamFoul(VSSRef::Foul::GAME_ON, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT, true);
         }
@@ -543,4 +552,23 @@ void VSSReferee::requestGoalie(VSSRef::Color team){
     }
 
     emit sendGoalie(team, bestId);
+}
+
+void VSSReferee::takeManualCommand(VSSRef::Foul foul, VSSRef::Color color, VSSRef::Quadrant quadrant){
+    if(foul == VSSRef::GAME_ON || foul == VSSRef::STOP){
+        if(foul == VSSRef::STOP){
+            _placementIsSet = false;
+            _stopEnabled = true;
+            _manualStop = true;
+            _stopTimer.start();
+        }else{
+            _manualGameOn = true;
+        }
+        setTeamFoul(foul, color, quadrant, true);
+    }
+    else{
+        _manualStop   = false;
+        _manualGameOn = false;
+        setTeamFoul(foul, color, quadrant);
+    }
 }
