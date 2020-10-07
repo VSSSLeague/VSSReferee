@@ -79,9 +79,6 @@ void VSSReplacer::loop(){
                 // Debug frame (uncomment this if you want to)
                 //debugFrame(frame);
 
-                // Fill and send frame to fira
-                fillAndSendPacket(&frame);
-
                 // Save Frame from team
                 frames[frame.teamcolor()] = frame;
 
@@ -178,6 +175,9 @@ void VSSReplacer::stopWaiting(){
 
         fillAndSendPacket(frame);
     }
+    else{
+        fillAndSendPacket(&frames[VSSRef::Color::YELLOW]);
+    }
 
     if(!_blueSentPacket){
         VSSRef::Frame *frame = new VSSRef::Frame();
@@ -191,6 +191,8 @@ void VSSReplacer::stopWaiting(){
             frame = getGoalKickPlacement(VSSRef::Color::BLUE);
 
         fillAndSendPacket(frame);
+    }else{
+        fillAndSendPacket(&frames[VSSRef::Color::BLUE]);
     }
 
     _yellowSentPacket = false;
