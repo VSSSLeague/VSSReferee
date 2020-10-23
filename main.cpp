@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
     QObject::connect(vssReplacer, SIGNAL(teamPlaced(VSSRef::Color)), vssReferee, SLOT(teamSent(VSSRef::Color)), Qt::DirectConnection);
 
     // Half connection
-    QObject::connect(vssReferee, SIGNAL(halfPassed()), refView->getUI(), SLOT(switchSides()), Qt::DirectConnection);
+    //QObject::connect(vssReferee, SIGNAL(halfPassed()), refView->getUI(), SLOT(switchSides()), Qt::DirectConnection);
 
     // Goalie connection
     QObject::connect(vssReferee, SIGNAL(sendGoalie(VSSRef::Color, int)), vssReplacer, SLOT(takeGoalie(VSSRef::Color, int)), Qt::DirectConnection);
