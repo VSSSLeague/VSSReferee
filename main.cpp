@@ -64,7 +64,23 @@ int main(int argc, char *argv[])
     QObject::connect(refView->getUI(), SIGNAL(sendManualCommand(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), vssReferee, SLOT(takeManualCommand(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)));
 
     /// Set team
+    // Command line parser, get arguments
+    QCommandLineParser parser;
+    parser.setApplicationDescription("VSSReferee application help.");
+    parser.addHelpOption();
+    parser.addVersionOption();
+    parser.addPositionalArgument("teamBlueName", "Sets the team blue name");
+    parser.addPositionalArgument("teamYellowName", "Sets the team yellow name");
+    parser.process(a);
+    QStringList args = parser.positionalArguments();
+
+    // Setting default (by json)
     refView->setTeams(constants->getLeftTeamName(), constants->getLeftTeamColor(), constants->getRightTeamName(), constants->getRightTeamColor());
+
+    // Setting by args
+    if(args.size() >= 2){
+        refView->setTeams(args.at(0), VSSRef::Color::BLUE, args.at(1), VSSRef::Color::YELLOW);
+    }
 
     /// Start all
     vssVisionClient->start();
