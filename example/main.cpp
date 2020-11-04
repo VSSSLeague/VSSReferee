@@ -46,7 +46,7 @@ QString getHalfNameById(VSSRef::Half half){
         case VSSRef::Half::NO_HALF: return "NO_HALF";
         case VSSRef::Half::FIRST_HALF: return "FIRST HALF";
         case VSSRef::Half::SECOND_HALF: return "SECOND HALF";
-        default: "NO HALF DEFINED";
+        default: return "NO HALF DEFINED";
     }
 }
 
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
 
     QUdpSocket *replacerSocket = new QUdpSocket();
-    VSSClient *client = new VSSClient(REFEREE_PORT, UDP_ADDRESS);
+    QUdpSocket *refereeClient = new QUdpSocket();
 
     // Performing connection to send Replacer commands
     if(replacerSocket->isOpen())
@@ -64,19 +64,37 @@ int main(int argc, char *argv[])
     replacerSocket->connectToHost(UDP_ADDRESS, REPLACER_PORT, QIODevice::WriteOnly, QAbstractSocket::IPv4Protocol);
     std::cout << "[Example] Connected to REPLACER socket in port " << REPLACER_PORT << " and address = " << UDP_ADDRESS << ".\n";
 
-    // Performing connection to receive Referee foul commands
-    if(client->open(true))
-        std::cout << "[Example] Listening to referee system on port " << REFEREE_PORT << " and address = " << UDP_ADDRESS << ".\n";
-    else{
-        std::cout << "[Example] Cannot listen to referee system on port " << REFEREE_PORT << " and address = " << UDP_ADDRESS << ".\n";
-        return 0;
+    // Perfoming connection to receive Referee commands
+    // binding port
+    if(refereeClient->bind(QHostAddress::AnyIPv4, REFEREE_PORT, QUdpSocket::ShareAddress) == false){
+        std::cout << "[ERROR] Failed to bind referee client =(" << std::endl;
+        exit(-1);
     }
+    // connecting to multicast group in UDP_ADDRESS
+    if(refereeClient->joinMulticastGroup(QHostAddress(UDP_ADDRESS)) == false){
+        std::cout << "[ERROR] Failed to join VSSReferee multicast group =(" << std::endl;
+        exit(-1);
+    }
+
+    std::cout << "[Example] Connected to REFEREE socket in port " << REFEREE_PORT << " and address = " << UDP_ADDRESS << ".\n";
 
     /// Reading messages from referee
     // Receiving packets
     while(true){
         VSSRef::ref_to_team::VSSRef_Command command;
-        if(client->receive(command)){
+
+        bool received = false;
+        char *buffer = new char[65535];
+        long long int packetLength = 0;
+
+        while(refereeClient->hasPendingDatagrams()){
+            // Parse message to protobuf
+            packetLength = refereeClient->readDatagram(buffer, 65535);
+            if(command.ParseFromArray(buffer, int(packetLength)) == false){
+                std::cout << "[ERROR] Referee command parsing error =(" << std::endl;
+                exit(-1);
+            }
+
             // If received command, let's debug it
             std::cout << "[Example] Succesfully received an command from ref: " << getFoulNameById(command.foul()).toStdString() << " for team " << getTeamColorNameById(command.teamcolor()).toStdString() << std::endl;
             std::cout << getQuadrantNameById(command.foulquadrant()).toStdString() << std::endl;
@@ -95,7 +113,7 @@ int main(int argc, char *argv[])
             placementFrameBlue->set_teamcolor(VSSRef::Color::BLUE);
             for(int x = 0; x < 3; x++){
                 VSSRef::Robot *robot = placementFrameBlue->add_robots();
-                robot->set_robot_id(x);
+                robot->set_robot_id(static_cast<uint32_t>(x));
                 robot->set_x(0.5);
                 robot->set_y(-0.2 + (0.2 * x));
                 robot->set_orientation(0.0);
@@ -105,7 +123,7 @@ int main(int argc, char *argv[])
             // Sending blue
             std::string msgBlue;
             placementCommandBlue.SerializeToString(&msgBlue);
-            if(replacerSocket->write(msgBlue.c_str(), msgBlue.length()) == -1){
+            if(replacerSocket->write(msgBlue.c_str(), static_cast<qint64>(msgBlue.length())) == -1){
                 std::cout << "[Example] Failed to write to replacer socket: " << replacerSocket->errorString().toStdString() << std::endl;
             }
 
@@ -115,7 +133,7 @@ int main(int argc, char *argv[])
             placementFrameYellow->set_teamcolor(VSSRef::Color::YELLOW);
             for(int x = 0; x < 3; x++){
                 VSSRef::Robot *robot = placementFrameYellow->add_robots();
-                robot->set_robot_id(x);
+                robot->set_robot_id(static_cast<uint32_t>(x));
                 robot->set_x(-0.5);
                 robot->set_y(-0.2 + (0.2 * x));
                 robot->set_orientation(180.0);
@@ -125,19 +143,23 @@ int main(int argc, char *argv[])
             // Sending yellow
             std::string msgYellow;
             placementCommandYellow.SerializeToString(&msgYellow);
-            if(replacerSocket->write(msgYellow.c_str(), msgYellow.length()) == -1){
+            if(replacerSocket->write(msgYellow.c_str(), static_cast<qint64>(msgYellow.length())) == -1){
                 std::cout << "[Example] Failed to write to replacer socket: " << replacerSocket->errorString().toStdString() << std::endl;
             }
 
-            // Exiting (comment this if you want an infinite loop =))
-            break;
+            received = true;
         }
+
+        delete [] buffer;
+        if(received) break;
     }
 
-    // Closing client and socket
-    client->close();
+    // Closing sockets
     if(replacerSocket->isOpen())
         replacerSocket->close();
+
+    if(refereeClient->isOpen())
+        refereeClient->close();
 
     bool exec = a.exec();
 
