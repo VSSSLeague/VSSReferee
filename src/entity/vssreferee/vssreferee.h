@@ -59,6 +59,7 @@ private:
     // Stop after placement analysis
     bool _stopEnabled;
     bool _manualStop;
+    bool _gameStartStop;
     bool _manualGameOn;
     Timer _stopTimer;
 
@@ -97,6 +98,7 @@ private:
 
     // Foul setter
     void setTeamFoul(VSSRef::Foul foul, VSSRef::Color forTeam, VSSRef::Quadrant foulQuadrant = VSSRef::Quadrant::NO_QUADRANT, bool isStop = false);
+    void setGameStartStop();
 
     // Goalie check
     void updateGoalieTimers();

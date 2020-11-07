@@ -69,7 +69,7 @@ VSSReferee::~VSSReferee(){
 void VSSReferee::initialization(){
     std::cout << "[VSSReferee] Thread started" << std::endl;
 
-    setTeamFoul(VSSRef::Foul::KICKOFF, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT);
+    setGameStartStop();
 }
 
 void VSSReferee::loop(){
@@ -96,12 +96,12 @@ void VSSReferee::loop(){
     if(_placementIsSet){
         // Saves game passed time
         _gameTimer.stop();
-        timePassed += _gameTimer.timesec();
+        timePassed += static_cast<int>(_gameTimer.timesec());
         _gameTimer.start();
 
         _placementTimer.stop();
-        RefereeView::setCurrentTime(getConstants()->getPlacementWaitTime() - _placementTimer.timesec());
-        if((_placementTimer.timensec() / 1E9) >= getConstants()->getPlacementWaitTime() && (!_blueSent || !_yellowSent)){
+        RefereeView::setCurrentTime(static_cast<int>(static_cast<double>(getConstants()->getPlacementWaitTime()) - _placementTimer.timesec()));
+        if((_placementTimer.timensec() / 1E9) >= static_cast<double>(getConstants()->getPlacementWaitTime()) && (!_blueSent || !_yellowSent)){
             // If enters here, one of the teams didn't placed as required in the determined time
             if(!_blueSent){
                 RefereeView::addRefereeWarning("Blue Team hasn't placed");
@@ -149,31 +149,39 @@ void VSSReferee::loop(){
 
         // Saves game passed time
         _gameTimer.stop();
-        timePassed += _gameTimer.timesec();
+        timePassed += static_cast<int>(_gameTimer.timesec());
         _gameTimer.start();
 
         // Taking stop time
         _stopTimer.stop();
 
         float stopTime;
-        if(_manualStop) stopTime = 600;
-        else            stopTime = getConstants()->getStopWaitTime();
+        if(_manualStop)
+            if(_gameStartStop)  stopTime = 120;
+            else                stopTime = 600;
+        else                    stopTime = getConstants()->getStopWaitTime();
 
-        RefereeView::setCurrentTime(stopTime - _stopTimer.timesec());
+        RefereeView::setCurrentTime(static_cast<int>(static_cast<double>(stopTime) - _stopTimer.timesec()));
 
         // Checking if timer ends
-        if((_stopTimer.timensec() / 1E9) >= stopTime || _manualGameOn){
+        if((_stopTimer.timensec() / 1E9) >= static_cast<double>(stopTime) || _manualGameOn){
             _stopEnabled = false;
             _manualStop  = false;
             _manualGameOn = false;
             RefereeView::addRefereeWarning("Stop time ended");
-            setTeamFoul(VSSRef::Foul::GAME_ON, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT, true);
+            if(_gameStartStop){
+                _gameStartStop = false;
+                setTeamFoul(VSSRef::Foul::KICKOFF, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT);
+            }
+            else{
+                setTeamFoul(VSSRef::Foul::GAME_ON, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT, true);
+            }
         }
     }
     else{
         // Updating game left time
         _gameTimer.stop();
-        RefereeView::setCurrentTime(getConstants()->getGameHalfTime() - (_gameTimer.timesec() + timePassed));
+        RefereeView::setCurrentTime(static_cast<int>(static_cast<double>(getConstants()->getGameHalfTime()) - (_gameTimer.timesec() + timePassed)));
         RefereeView::setRefereeCommand("GAME_ON");
 
         checkTwoPlayersInsideGoalAreaWithBall();
@@ -194,7 +202,7 @@ void VSSReferee::sendPacket(VSSRef::ref_to_team::VSSRef_Command command, bool is
     std::string msg;
     command.SerializeToString(&msg);
 
-    if(_socket.write(msg.c_str(), msg.length()) == -1){
+    if(_socket.write(msg.c_str(), static_cast<qint64>(msg.length())) == -1){
         std::cout << "[VSSReferee] Failed to write to socket: " << _socket.errorString().toStdString() << std::endl;
     }
     else{
@@ -214,7 +222,7 @@ bool VSSReferee::connect(const QString &refereeAddress, int refereePort){
     if(_socket.isOpen())
         _socket.close();
 
-    _socket.connectToHost(refereeAddress, refereePort, QIODevice::WriteOnly, QAbstractSocket::IPv4Protocol);
+    _socket.connectToHost(refereeAddress, static_cast<quint16>(refereePort), QIODevice::WriteOnly, QAbstractSocket::IPv4Protocol);
 
     std::cout << "[VSSReferee] Writing to referee system on port " << _refereePort << " and address = " << _refereeAddress.toStdString() << ".\n";
 
@@ -364,6 +372,7 @@ bool VSSReferee::checkTwoPlayersAttackingAtGoalArea(){
         setTeamFoul(VSSRef::Foul::GOAL_KICK, VSSRef::Color::YELLOW);
         return true;
     }
+
     return false;
 }
 
@@ -400,7 +409,7 @@ bool VSSReferee::checkGKTakeoutTimeout(){
 
                 // Check timer
                 _gkTimer.stop();
-                if(_gkTimer.timesec() >= getConstants()->getGKTakeoutTime()){
+                if(_gkTimer.timesec() >= static_cast<double>(getConstants()->getGKTakeoutTime())){
                     setTeamFoul(VSSRef::Foul::PENALTY_KICK, VSSRef::Color::YELLOW);
                     startedGKTimer = false;
                     return true;
@@ -439,7 +448,7 @@ bool VSSReferee::checkGKTakeoutTimeout(){
 
                 // Check timer
                 _gkTimer.stop();
-                if(_gkTimer.timesec() >= getConstants()->getGKTakeoutTime()){
+                if(_gkTimer.timesec() >= static_cast<double>(getConstants()->getGKTakeoutTime())){
                     setTeamFoul(VSSRef::Foul::PENALTY_KICK, VSSRef::Color::BLUE);
                     startedGKTimer = false;
                     return true;
@@ -462,13 +471,13 @@ bool VSSReferee::checkBallStucked(){
 
     // Update ball velocity
     _ballVelTimer.stop();
-    float vx = (frame.ball().x() - lastBallPos.x) / _ballVelTimer.timesec();
-    float vy = (frame.ball().y() - lastBallPos.y) / _ballVelTimer.timesec();
+    float vx = static_cast<float>((frame.ball().x() - lastBallPos.x) / _ballVelTimer.timesec());
+    float vy = static_cast<float>((frame.ball().y() - lastBallPos.y) / _ballVelTimer.timesec());
     if(isnan(vx) || isnan(vy)) vx = vy = 0.0;
     _ballVelTimer.start();
     lastBallPos = ballPos;
 
-    float ballVelocity = sqrt(pow(vx, 2) + pow(vy, 2));
+    float ballVelocity = static_cast<float>(sqrt(pow(vx, 2) + pow(vy, 2)));
 
     if(ballVelocity > getConstants()->getBallMinimumVelocity() || !startedStuckTimer){
         if(!startedStuckTimer) startedStuckTimer = true;
@@ -485,7 +494,7 @@ bool VSSReferee::checkBallStucked(){
 
             // Check timer
             _ballStuckTimer.stop();
-            if(_ballStuckTimer.timesec() >= getConstants()->getBallStuckTime()){
+            if(_ballStuckTimer.timesec() >= static_cast<double>(getConstants()->getBallStuckTime())){
                 setTeamFoul(VSSRef::Foul::FREE_BALL, VSSRef::Color::NONE, Utils::getBallQuadrant(ballPos));
                 startedStuckTimer = false;
                 return true;
@@ -540,7 +549,7 @@ void VSSReferee::updateGoalieTimers(){
             // Else, if passed less than 1s, probably this player is at goal area and isn't noise
             else{
                 timers[VSSRef::Color::BLUE][x].stop();
-                time[VSSRef::Color::BLUE][x] += timers[VSSRef::Color::BLUE][x].timesec();
+                time[VSSRef::Color::BLUE][x] += static_cast<float>(timers[VSSRef::Color::BLUE][x].timesec());
                 timers[VSSRef::Color::BLUE][x].start();
             }
         }
@@ -557,7 +566,7 @@ void VSSReferee::updateGoalieTimers(){
             // Else, if passed less than 1s, probably this player is at goal area and isn't noise
             else{
                 timers[VSSRef::Color::YELLOW][x].stop();
-                time[VSSRef::Color::YELLOW][x] += timers[VSSRef::Color::YELLOW][x].timesec();
+                time[VSSRef::Color::YELLOW][x] += static_cast<float>(timers[VSSRef::Color::YELLOW][x].timesec());
                 timers[VSSRef::Color::YELLOW][x].start();
             }
         }
@@ -594,4 +603,13 @@ void VSSReferee::takeManualCommand(VSSRef::Foul foul, VSSRef::Color color, VSSRe
         _manualGameOn = false;
         setTeamFoul(foul, color, quadrant);
     }
+}
+
+void VSSReferee::setGameStartStop(){
+    _placementIsSet = false;
+    _stopEnabled = true;
+    _manualStop = true;
+    _gameStartStop = true;
+    setTeamFoul(VSSRef::Foul::STOP, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT, true);
+    _stopTimer.start();
 }
