@@ -593,10 +593,12 @@ void VSSReferee::takeManualCommand(VSSRef::Foul foul, VSSRef::Color color, VSSRe
             _stopEnabled = true;
             _manualStop = true;
             _stopTimer.start();
+
+            setTeamFoul(foul, color, quadrant, true);
         }else{
             _manualGameOn = true;
+            if(!_gameStartStop) setTeamFoul(foul, color, quadrant, true);
         }
-        setTeamFoul(foul, color, quadrant, true);
     }
     else{
         _manualStop   = false;
