@@ -59,6 +59,7 @@ Constants::Constants(QString fileName){
     _stopWaitTime        = parametersMap["StopWaitTime"].toFloat();
     _gkTakeoutTime       = parametersMap["GKTakeoutTime"].toFloat();
     _ballStuckTime       = parametersMap["BallStuckTime"].toFloat();
+    _penaltyTime         = parametersMap["PenaltyTime"].toFloat();
     _gameHalfTime        = parametersMap["GameHalfTime"].toFloat();
 }
 
@@ -120,6 +121,10 @@ float Constants::getGKTakeoutTime() const{
 
 float Constants::getBallStuckTime() const{
     return _ballStuckTime;
+}
+
+float Constants::getPenaltyTime() const{
+    return _penaltyTime;
 }
 
 float Constants::getGameHalfTime() const{

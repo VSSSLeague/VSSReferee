@@ -38,6 +38,7 @@ public:
     float getStopWaitTime() const;
     float getGKTakeoutTime() const;
     float getBallStuckTime() const;
+    float getPenaltyTime() const;
     float getGameHalfTime() const;
 
 private:
@@ -76,6 +77,7 @@ private:
     float _stopWaitTime;
     float _gkTakeoutTime;
     float _ballStuckTime;
+    float _penaltyTime;
     float _gameHalfTime;
 };
 

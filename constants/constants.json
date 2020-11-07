@@ -9,6 +9,7 @@
 		"StopWaitTime": 5.0,
 		"GKTakeoutTime": 10.0,
 		"BallStuckTime": 10.0,
+		"PenaltyTime": 2.0,
 		"GameHalfTime": 300.0
 	},
 

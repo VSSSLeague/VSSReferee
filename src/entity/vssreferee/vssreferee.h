@@ -74,6 +74,8 @@ private:
 
     // Two players inside goal area with ball
     bool checkTwoPlayersInsideGoalAreaWithBall();
+    bool _startedPenaltyTimer;
+    Timer _penaltyTimer;
 
     // Two players inside enemy goal area with ball
     bool checkTwoPlayersAttackingAtGoalArea();

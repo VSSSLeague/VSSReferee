@@ -25,6 +25,7 @@ VSSReferee::VSSReferee(VSSVisionClient *visionClient, const QString& refereeAddr
     timePassed        = 0;
     startedGKTimer    = false;
     startedStuckTimer = false;
+    _startedPenaltyTimer = false;
     _gameHalf         = VSSRef::Half::FIRST_HALF;
 
     // Start timers
@@ -36,14 +37,14 @@ VSSReferee::VSSReferee(VSSVisionClient *visionClient, const QString& refereeAddr
     _stopTimer.start();
 
     // Allocating memory to time and timers (for gk checking)
-    time = (float **) malloc(2 * sizeof(float *));
+    time = static_cast<float**>(malloc(2 * sizeof(float *)));
     for(int x = 0; x < 2; x++){
-        time[x] = (float *) malloc(getConstants()->getQtPlayers() * sizeof(float));
+        time[x] = static_cast<float*>(malloc(static_cast<unsigned int>(getConstants()->getQtPlayers()) * sizeof(float)));
     }
 
-    timers = (Timer **) malloc(2 * sizeof(Timer *));
+    timers = static_cast<Timer**>(malloc(2 * sizeof(Timer *)));
     for(int x = 0; x < 2; x++){
-        timers[x] = (Timer *) malloc(getConstants()->getQtPlayers() * sizeof(Timer));
+        timers[x] = static_cast<Timer*>(malloc(static_cast<unsigned int>(getConstants()->getQtPlayers()) * sizeof(Timer)));
     }
 
     // Starting gk checking values and timers
@@ -74,7 +75,7 @@ void VSSReferee::initialization(){
 void VSSReferee::loop(){
     // Checking if half passed, reseting the time count
     _gameTimer.stop();
-    if((_gameTimer.timesec() + timePassed) > getConstants()->getGameHalfTime()){
+    if((_gameTimer.timesec() + timePassed) > static_cast<double>(getConstants()->getGameHalfTime())){
         RefereeView::addRefereeWarning("Half passed!");
 
         // Swapping halfs
@@ -299,7 +300,17 @@ bool VSSReferee::checkTwoPlayersInsideGoalAreaWithBall(){
             bluePlayersAtGoal++;
     }
     if(bluePlayersAtGoal >= 2 && ballIsAtBlueGoal){
-        setTeamFoul(VSSRef::Foul::PENALTY_KICK, VSSRef::Color::YELLOW);
+        if(!_startedPenaltyTimer){
+            _startedPenaltyTimer = true;
+            _penaltyTimer.start();
+        }
+        else{
+            _penaltyTimer.stop();
+            if(_penaltyTimer.timesec() >= static_cast<double>(getConstants()->getPenaltyTime())){
+                _startedPenaltyTimer = false;
+                setTeamFoul(VSSRef::Foul::PENALTY_KICK, VSSRef::Color::YELLOW);
+            }
+        }
         return true;
     }
     // Checking for yellow team
@@ -310,9 +321,21 @@ bool VSSReferee::checkTwoPlayersInsideGoalAreaWithBall(){
             yellowPlayersAtGoal++;
     }
     if(yellowPlayersAtGoal >= 2 && ballIsAtYellowGoal){
-        setTeamFoul(VSSRef::Foul::PENALTY_KICK, VSSRef::Color::BLUE);
+        if(!_startedPenaltyTimer){
+            _startedPenaltyTimer = true;
+            _penaltyTimer.start();
+        }
+        else{
+            _penaltyTimer.stop();
+            if(_penaltyTimer.timesec() >= static_cast<double>(getConstants()->getPenaltyTime())){
+                _startedPenaltyTimer = false;
+                setTeamFoul(VSSRef::Foul::PENALTY_KICK, VSSRef::Color::BLUE);
+            }
+        }
         return true;
     }
+
+    _startedPenaltyTimer = false;
     return false;
 }
 
