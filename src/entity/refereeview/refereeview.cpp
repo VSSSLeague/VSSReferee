@@ -42,10 +42,6 @@ void RefereeView::setRefereeCommand(QString command){
     _refereeUI->setRefereeCommand(command);
 }
 
-void RefereeView::addRefereeWarning(QString command){
-    _refereeUI->addRefereeWarning(command);
-}
-
 void RefereeView::setCurrentTime(int time){
     _refereeUI->setCurrentTime(time);
 }

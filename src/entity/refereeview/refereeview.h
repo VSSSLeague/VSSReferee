@@ -14,7 +14,6 @@ public:
 
     static void updateDetection(fira_message::Frame frame);
     static void addRefereeCommand(QString command);
-    static void addRefereeWarning(QString command);
     static void setCurrentTime(int time);
     static void setRefereeCommand(QString command);
     static bool getBlueIsLeftSide();

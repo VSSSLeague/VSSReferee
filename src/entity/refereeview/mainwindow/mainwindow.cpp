@@ -119,27 +119,7 @@ void MainWindow::switchSides(){
 }
 
 void MainWindow::addRefereeCommand(QString command){
-    QListWidgetItem *item = new QListWidgetItem();
-    QPixmap itemIcon;
-    itemIcon.load(":/ui/referee.png");
-
-    item->setText(command);
-    item->setIcon(itemIcon);
-
-    ui->listWidget->insertItem(0, item);
     ui->referee_command->setText(command);
-}
-
-void MainWindow::addRefereeWarning(QString command){
-    QListWidgetItem *item = new QListWidgetItem();
-    QPixmap itemIcon;
-    itemIcon.load(":/ui/warning.png");
-
-    item->setText(command);
-    item->setIcon(itemIcon);
-
-
-    ui->listWidget->insertItem(0, item);
 }
 
 void MainWindow::setCurrentTime(int time){

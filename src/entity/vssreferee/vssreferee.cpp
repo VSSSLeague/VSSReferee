@@ -76,7 +76,6 @@ void VSSReferee::loop(){
     // Checking if half passed, reseting the time count
     _gameTimer.stop();
     if((_gameTimer.timesec() + timePassed) > static_cast<double>(getConstants()->getGameHalfTime())){
-        RefereeView::addRefereeWarning("Half passed!");
 
         // Swapping halfs
         if(_gameHalf == VSSRef::Half::FIRST_HALF){
@@ -104,12 +103,10 @@ void VSSReferee::loop(){
         if((_placementTimer.timensec() / 1E9) >= static_cast<double>(getConstants()->getPlacementWaitTime()) && (!_blueSent || !_yellowSent)){
             // If enters here, one of the teams didn't placed as required in the determined time
             if(!_blueSent){
-                RefereeView::addRefereeWarning("Blue Team hasn't placed");
                 std::cout << "[VSSReferee] Team BLUE hasn't sent the placement command." << std::endl;
                 // place an automatic position here
             }
             if(!_yellowSent){
-                RefereeView::addRefereeWarning("Yellow Team hasn't placed");
                 std::cout << "[VSSReferee] Team YELLOW hasn't sent the placement command." << std::endl;
                 // place an automatic position here
             }
@@ -168,7 +165,6 @@ void VSSReferee::loop(){
             _stopEnabled = false;
             _manualStop  = false;
             _manualGameOn = false;
-            RefereeView::addRefereeWarning("Stop time ended");
             if(_gameStartStop){
                 _gameStartStop = false;
                 setTeamFoul(VSSRef::Foul::KICKOFF, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT);
@@ -512,13 +508,11 @@ bool VSSReferee::checkGoal(){
     if(Utils::isBallInsideGoal(VSSRef::BLUE, ballPos)){
         setTeamFoul(VSSRef::KICKOFF, VSSRef::Color::BLUE);
         emit goalMarked(VSSRef::YELLOW);
-        RefereeView::addRefereeWarning("GOAL YELLOW!");
         return true;
     }
     else if(Utils::isBallInsideGoal(VSSRef::YELLOW, ballPos)){
         setTeamFoul(VSSRef::KICKOFF, VSSRef::Color::YELLOW);
         emit goalMarked(VSSRef::BLUE);
-        RefereeView::addRefereeWarning("GOAL BLUE!");
         return true;
     }
     else{

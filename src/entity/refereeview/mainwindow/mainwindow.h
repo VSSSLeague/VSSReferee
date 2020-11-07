@@ -23,7 +23,6 @@ public:
 
     // Referee
     void addRefereeCommand(QString command);
-    void addRefereeWarning(QString command);
     void setCurrentTime(int time);
     void setRefereeCommand(QString command);
     bool getBlueIsLeftSide() { return blueIsLeft; }
