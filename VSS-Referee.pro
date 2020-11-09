@@ -97,4 +97,5 @@ FORMS += \
     src/entity/refereeview/mainwindow/mainwindow.ui
 
 RESOURCES += \
+    constrsrc.qrc \
     resources/resources.qrc

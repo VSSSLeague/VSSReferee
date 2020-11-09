@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     /// Creating constants pointer
-    Constants* constants = new Constants("../constants/constants.json");
+    Constants* constants = new Constants(":/constants/constants.json");
     Utils::setConstants(constants);
 
     /// Parsing from constants

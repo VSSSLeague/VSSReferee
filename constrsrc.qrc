@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>constants/constants.json</file>
+    </qresource>
+</RCC>
