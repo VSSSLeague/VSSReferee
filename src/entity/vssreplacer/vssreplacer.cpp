@@ -449,8 +449,8 @@ VSSRef::Frame* VSSReplacer::getGoalKickPlacement(VSSRef::Color color){
     // _color is the team that will make the kick
     if(color == _color){
         // Random to choose GK position
-        auto seed = chrono::high_resolution_clock::now().time_since_epoch().count();
-        mt19937 mt_rand(seed);
+        auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+        std::mt19937 mt_rand(seed);
         _isGoaliePlacedAtTop = mt_rand() % 2;
 
         std::cout << "Botamo o goleiro encima: " << _isGoaliePlacedAtTop << std::endl;

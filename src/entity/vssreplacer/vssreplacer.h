@@ -15,6 +15,9 @@
 #include <constants/constants.h>
 #include <utils/utils.h>
 
+#include <random>
+#include <chrono>
+
 class VSSReplacer : public Entity
 {
     Q_OBJECT
