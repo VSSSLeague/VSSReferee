@@ -86,6 +86,10 @@ private:
     Timer _gkTimer;
     bool startedGKTimer;
 
+    // GK disputating ball analysis
+    bool startedDisputateTimer;
+    Timer _disputateTimer;
+
     // Ball stuck
     bool checkBallStucked();
     Timer _ballStuckTimer;
@@ -104,6 +108,9 @@ private:
     void updateGoalieTimers();
     float **time;
     Timer **timers;
+
+    // Utils
+    float getBallVelocity();
 
 signals:
     void setFoul(VSSRef::Foul foul, VSSRef::Color color, VSSRef::Quadrant quadrant); // send foul to replacer (reset it vars)

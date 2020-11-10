@@ -26,6 +26,7 @@ VSSReferee::VSSReferee(VSSVisionClient *visionClient, const QString& refereeAddr
     startedGKTimer    = false;
     startedStuckTimer = false;
     _startedPenaltyTimer = false;
+    startedDisputateTimer = false;
     _gameHalf         = VSSRef::Half::FIRST_HALF;
 
     // Start timers
@@ -411,9 +412,53 @@ bool VSSReferee::checkGKTakeoutTimeout(){
                     return true;
                 }
             }
+
+            startedDisputateTimer = false;
         }
         else{
             startedGKTimer = false;
+            // Disputating ball
+            if(opPlayersAtBlueGoal == 1 && alliePlayersAtBlueGoal == 1){
+                if(getBallVelocity() < getConstants()->getBallMinimumVelocity()){
+                    if(!startedDisputateTimer){
+                        startedDisputateTimer = true;
+                        _disputateTimer.start();
+                    }
+                    else{
+                        _disputateTimer.stop();
+                        if(_disputateTimer.timesec() >= 10){
+                            float distanceBlue = 999.0f;
+                            float distanceYellow = 999.0f;
+
+                            for(int x = 0; x < frame.robots_blue().size(); x++){
+                                if(Utils::isInsideGoalArea(VSSRef::Color::BLUE, vector2d(frame.robots_blue(x).x(), frame.robots_blue(x).y()))){
+                                    distanceBlue = Utils::distance(vector2d(frame.robots_blue(x).x(), frame.robots_blue(x).y()), vector2d(frame.ball().x(), frame.ball().y()));
+                                }
+                            }
+
+                            for(int x = 0; x < frame.robots_yellow().size(); x++){
+                                if(Utils::isInsideGoalArea(VSSRef::Color::BLUE, vector2d(frame.robots_yellow(x).x(), frame.robots_yellow(x).y()))){
+                                    distanceYellow = Utils::distance(vector2d(frame.robots_yellow(x).x(), frame.robots_yellow(x).y()), vector2d(frame.ball().x(), frame.ball().y()));
+                                }
+                            }
+
+                            if((distanceBlue <= ((getConstants()->getRobotLength() * sqrt(2)) + getConstants()->getBallRadius())) && (distanceYellow <= ((getConstants()->getRobotLength() * sqrt(2)) + getConstants()->getBallRadius()))){
+                                setTeamFoul(VSSRef::Foul::GOAL_KICK, VSSRef::Color::BLUE);
+                            }else{
+                                setTeamFoul(VSSRef::Foul::PENALTY_KICK, VSSRef::Color::YELLOW);
+                            }
+
+                            startedDisputateTimer = false;
+                        }
+                    }
+                }
+                else{
+                    startedDisputateTimer = false;
+                }
+            }
+            else{
+                startedDisputateTimer = false;
+            }
         }
     }
     // Checking for yellow team if ball is inside their goal
@@ -450,18 +495,61 @@ bool VSSReferee::checkGKTakeoutTimeout(){
                     return true;
                 }
             }
+
+            startedDisputateTimer = false;
         }else{
             startedGKTimer = false;
+            // Disputating ball
+            if(opPlayersAtYellowGoal == 1 && alliePlayersAtYellowGoal == 1){
+                if(getBallVelocity() < getConstants()->getBallMinimumVelocity()){
+                    if(!startedDisputateTimer){
+                        startedDisputateTimer = true;
+                        _disputateTimer.start();
+                    }
+                    else{
+                        _disputateTimer.stop();
+                        if(_disputateTimer.timesec() >= 10){
+                            float distanceYellow = 999.0f;
+                            for(int x = 0; x < frame.robots_yellow().size(); x++){
+                                if(Utils::isInsideGoalArea(VSSRef::Color::YELLOW, vector2d(frame.robots_yellow(x).x(), frame.robots_yellow(x).y()))){
+                                    distanceYellow = Utils::distance(vector2d(frame.robots_yellow(x).x(), frame.robots_yellow(x).y()), vector2d(frame.ball().x(), frame.ball().y()));
+                                }
+                            }
+
+                            float distanceBlue = 999.0f;
+                            for(int x = 0; x < frame.robots_blue().size(); x++){
+                                if(Utils::isInsideGoalArea(VSSRef::Color::YELLOW, vector2d(frame.robots_blue(x).x(), frame.robots_blue(x).y()))){
+                                    distanceBlue = Utils::distance(vector2d(frame.robots_blue(x).x(), frame.robots_blue(x).y()), vector2d(frame.ball().x(), frame.ball().y()));
+                                }
+                            }
+
+                            if((distanceYellow <= ((getConstants()->getRobotLength() * sqrt(2)) + getConstants()->getBallRadius())) && (distanceBlue <= ((getConstants()->getRobotLength() * sqrt(2)) + getConstants()->getBallRadius()))){
+                                setTeamFoul(VSSRef::Foul::GOAL_KICK, VSSRef::Color::YELLOW);
+                            }else{
+                                setTeamFoul(VSSRef::Foul::PENALTY_KICK, VSSRef::Color::BLUE);
+                            }
+
+                            startedDisputateTimer = false;
+                        }
+                    }
+                }
+                else{
+                    startedDisputateTimer = false;
+                }
+            }else{
+                startedDisputateTimer = false;
+            }
         }
     }
     else{
+        startedDisputateTimer = false;
         startedGKTimer = false;
     }
 
     return false;
 }
 
-bool VSSReferee::checkBallStucked(){
+float VSSReferee::getBallVelocity(){
     fira_message::Frame frame = _visionClient->getDetectionData();
     vector2d ballPos = vector2d(frame.ball().x(), frame.ball().y());
 
@@ -474,6 +562,14 @@ bool VSSReferee::checkBallStucked(){
     lastBallPos = ballPos;
 
     float ballVelocity = static_cast<float>(sqrt(pow(vx, 2) + pow(vy, 2)));
+
+    return ballVelocity;
+}
+
+bool VSSReferee::checkBallStucked(){
+    fira_message::Frame frame = _visionClient->getDetectionData();
+    vector2d ballPos = vector2d(frame.ball().x(), frame.ball().y());
+    float ballVelocity = getBallVelocity();
 
     if(ballVelocity > getConstants()->getBallMinimumVelocity() || !startedStuckTimer){
         if(!startedStuckTimer) startedStuckTimer = true;
