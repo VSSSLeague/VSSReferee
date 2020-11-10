@@ -444,11 +444,13 @@ bool VSSReferee::checkGKTakeoutTimeout(){
 
                             if((distanceBlue <= ((getConstants()->getRobotLength() * sqrt(2)) + getConstants()->getBallRadius())) && (distanceYellow <= ((getConstants()->getRobotLength() * sqrt(2)) + getConstants()->getBallRadius()))){
                                 setTeamFoul(VSSRef::Foul::GOAL_KICK, VSSRef::Color::BLUE);
+                                startedDisputateTimer = false;
+                                return true;
                             }else{
                                 setTeamFoul(VSSRef::Foul::PENALTY_KICK, VSSRef::Color::YELLOW);
+                                startedDisputateTimer = false;
+                                return true;
                             }
-
-                            startedDisputateTimer = false;
                         }
                     }
                 }
