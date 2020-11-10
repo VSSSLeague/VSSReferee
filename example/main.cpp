@@ -2,6 +2,9 @@
 #include <QUdpSocket>
 #include <iostream>
 
+#include <random>
+#include <chrono>
+
 #include <include/vssclient/vssclient.h>
 
 #define UDP_ADDRESS "224.5.23.2"
@@ -112,11 +115,30 @@ int main(int argc, char *argv[])
             VSSRef::Frame *placementFrameBlue = new VSSRef::Frame();
             placementFrameBlue->set_teamcolor(VSSRef::Color::BLUE);
             for(int x = 0; x < 3; x++){
-                VSSRef::Robot *robot = placementFrameBlue->add_robots();
-                robot->set_robot_id(static_cast<uint32_t>(x));
-                robot->set_x(0.5);
-                robot->set_y(-0.2 + (0.2 * x));
-                robot->set_orientation(0.0);
+                if(x == 0){
+                    auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+                    std::mt19937 mt_rand(seed);
+
+                    bool _gkAtTopSide = mt_rand() % 2;
+
+                    VSSRef::Robot *robot = placementFrameBlue->add_robots();
+                    robot->set_robot_id(static_cast<uint32_t>(x));
+                    robot->set_x(-0.65);
+                    robot->set_orientation(0.0);
+
+                    if(_gkAtTopSide)
+                        robot->set_y(0.2);
+                    else
+                        robot->set_y(-0.2);
+
+                }else{
+                    VSSRef::Robot *robot = placementFrameBlue->add_robots();
+                    robot->set_robot_id(static_cast<uint32_t>(x));
+                    robot->set_x(-0.5);
+                    robot->set_y(-0.2 + (0.2 * x));
+                    robot->set_orientation(0.0);
+                }
+
             }
             placementCommandBlue.set_allocated_world(placementFrameBlue);
 
@@ -132,11 +154,31 @@ int main(int argc, char *argv[])
             VSSRef::Frame *placementFrameYellow = new VSSRef::Frame();
             placementFrameYellow->set_teamcolor(VSSRef::Color::YELLOW);
             for(int x = 0; x < 3; x++){
-                VSSRef::Robot *robot = placementFrameYellow->add_robots();
-                robot->set_robot_id(static_cast<uint32_t>(x));
-                robot->set_x(-0.5);
-                robot->set_y(-0.2 + (0.2 * x));
-                robot->set_orientation(180.0);
+                if(x == 0){
+                    auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+                    std::mt19937 mt_rand(seed);
+
+                    bool _gkAtTopSide = mt_rand() % 2;
+
+                    VSSRef::Robot *robot = placementFrameYellow->add_robots();
+                    robot->set_robot_id(static_cast<uint32_t>(x));
+                    robot->set_x(0.65);
+                    robot->set_orientation(180.0);
+
+                    if(_gkAtTopSide)
+                        robot->set_y(0.2);
+                    else
+                        robot->set_y(-0.2);
+
+                }
+                else{
+                    VSSRef::Robot *robot = placementFrameYellow->add_robots();
+                    robot->set_robot_id(static_cast<uint32_t>(x));
+                    robot->set_x(0.5);
+                    robot->set_y(-0.2 + (0.2 * x));
+                    robot->set_orientation(180.0);
+                }
+
             }
             placementCommandYellow.set_allocated_world(placementFrameYellow);
 

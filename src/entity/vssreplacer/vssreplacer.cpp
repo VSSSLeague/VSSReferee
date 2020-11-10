@@ -202,6 +202,7 @@ void VSSReplacer::stopWaiting(){
     _mutex.unlock();
 
     // Place ball at foul location
+    std::cout << "Goleiro fica encima: " << _isGoaliePlacedAtTop << std::endl;
     vector2d ballPlacePos = getBallPlaceByFoul(_foul, _color, _quadrant);
     std::cout << "[VSSReplacer] Ball placed into x: " << ballPlacePos.x << " and y: " << ballPlacePos.y << "\n";
     placeBall(ballPlacePos.x, ballPlacePos.y);
@@ -216,6 +217,20 @@ void VSSReplacer::fillAndSendPacket(VSSRef::Frame *frame){
     for(int x = 0; x < sz; x++){
         // Taking robot from frame
         VSSRef::Robot robotAt = frame->robots(x);
+        // goalkeeper (is inside goal area)
+        if(Utils::isInsideGoalArea(frame->teamcolor(), vector2d(robotAt.x(), robotAt.y()))){
+            // if goalkeeper color is equal to the team that will take the foul (goal kick)
+            if(_color == frame->teamcolor()){
+                if(robotAt.y() >= 0){
+                    // if robot desired y >= 0
+                    _isGoaliePlacedAtTop = true;
+                }
+                else{
+                    // if not
+                    _isGoaliePlacedAtTop = false;
+                }
+            }
+        }
         parseRobot(replacementCommand, &robotAt, frame->teamcolor());
     }
 
@@ -301,12 +316,12 @@ vector2d VSSReplacer::getBallPlaceByFoul(VSSRef::Foul foul, VSSRef::Color color,
         break;
         case VSSRef::Foul::GOAL_KICK:{
             if(color == VSSRef::Color::BLUE){
-                if(RefereeView::getBlueIsLeftSide()) return vector2d(-goalKickX, 0);
-                else return vector2d(goalKickX, 0.0);
+                if(RefereeView::getBlueIsLeftSide()) return vector2d(-goalKickX, (_isGoaliePlacedAtTop) ? (0.375 - getConstants()->getBallRadius()) : (-0.375 + getConstants()->getBallRadius()));
+                else return vector2d(goalKickX, (_isGoaliePlacedAtTop) ? (0.375 - getConstants()->getBallRadius()) : (-0.375 + getConstants()->getBallRadius()));
             }
             else if(color == VSSRef::Color::YELLOW){
-                if(RefereeView::getBlueIsLeftSide()) return vector2d(goalKickX, 0);
-                else return vector2d(-goalKickX, 0.0);
+                if(RefereeView::getBlueIsLeftSide()) return vector2d(goalKickX, (_isGoaliePlacedAtTop) ? (0.375 - getConstants()->getBallRadius()) : (-0.375 + getConstants()->getBallRadius()));
+                else return vector2d(-goalKickX, (_isGoaliePlacedAtTop) ? (0.375 - getConstants()->getBallRadius()) : (-0.375 + getConstants()->getBallRadius()));
             }
         }
         break;
@@ -433,12 +448,26 @@ VSSRef::Frame* VSSReplacer::getGoalKickPlacement(VSSRef::Color color){
 
     // _color is the team that will make the kick
     if(color == _color){
+        // Random to choose GK position
+        auto seed = chrono::high_resolution_clock::now().time_since_epoch().count();
+        mt19937 mt_rand(seed);
+        _isGoaliePlacedAtTop = mt_rand() % 2;
+
+        std::cout << "Botamo o goleiro encima: " << _isGoaliePlacedAtTop << std::endl;
+
         // Insert GK
         VSSRef::Robot *gk = frame->add_robots();
         gk->set_robot_id(goalie[color]);
-        gk->set_orientation(0.0);
-        gk->set_x(factor * ((FieldConstantsVSS::kFieldLength / 2000.0) - getConstants()->getRobotLength()));
-        gk->set_y(0.0);
+        if(_isGoaliePlacedAtTop){
+            gk->set_orientation(factor * -45.0);
+            gk->set_x(factor * 0.675);
+            gk->set_y(0.270);
+        }
+        else{
+            gk->set_orientation(factor * 45.0);
+            gk->set_x(factor * 0.675);
+            gk->set_y(-0.270);
+        }
 
         // Attacker
         VSSRef::Robot *striker = frame->add_robots();

@@ -13,6 +13,7 @@
 #include <src/entity/refereeview/soccerview/util/geometry.h>
 
 #include <constants/constants.h>
+#include <utils/utils.h>
 
 class VSSReplacer : public Entity
 {
@@ -44,6 +45,9 @@ private:
     VSSRef::Foul _foul;
     VSSRef::Color _color;
     VSSRef::Quadrant _quadrant;
+
+    // Goal kick control
+    bool _isGoaliePlacedAtTop;
 
     // Ball replacement
     vector2d getBallPlaceByFoul(VSSRef::Foul foul, VSSRef::Color color, VSSRef::Quadrant quadrant);
