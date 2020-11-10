@@ -37,6 +37,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     // Side control
     connect(ui->pushButton, SIGNAL(released()), this, SLOT(switchSides()));
 
+    // Manual score control
+    connect(ui->addGoalLeft, SIGNAL(released()), this, SLOT(addGoalLeft()));
+    connect(ui->addGoalRight, SIGNAL(released()), this, SLOT(addGoalRight()));
+    connect(ui->removeGoalLeft, SIGNAL(released()), this, SLOT(removeGoalLeft()));
+    connect(ui->removeGoalRight, SIGNAL(released()), this, SLOT(removeGoalRight()));
+
     /// Manual Referee
     quadrantButtons.push_back(ui->freeBall_q1);
     quadrantButtons.push_back(ui->freeBall_q2);
@@ -163,6 +169,28 @@ void MainWindow::addGoal(VSSRef::Color team){
             ui->teamLeftScore->setText(QString("%1").arg(leftTeamGoalsScored));
         }
     }
+}
+
+void MainWindow::addGoalLeft(){
+    leftTeamGoalsScored++;
+    ui->teamLeftScore->setText(QString("%1").arg(leftTeamGoalsScored));
+}
+
+void MainWindow::addGoalRight(){
+    rightTeamGoalsScored++;
+    ui->teamRightScore->setText(QString("%1").arg(rightTeamGoalsScored));
+}
+
+void MainWindow::removeGoalLeft(){
+    leftTeamGoalsScored--;
+    if(leftTeamGoalsScored < 0) leftTeamGoalsScored = 0;
+    ui->teamLeftScore->setText(QString("%1").arg(leftTeamGoalsScored));
+}
+
+void MainWindow::removeGoalRight(){
+    rightTeamGoalsScored--;
+    if(rightTeamGoalsScored < 0) rightTeamGoalsScored = 0;
+    ui->teamRightScore->setText(QString("%1").arg(rightTeamGoalsScored));
 }
 
 VSSRef::Quadrant MainWindow::requestQuadrant(){

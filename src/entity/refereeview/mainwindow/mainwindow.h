@@ -50,6 +50,10 @@ private:
 public slots:
     void switchSides();
     void addGoal(VSSRef::Color team);
+    void addGoalLeft();
+    void addGoalRight();
+    void removeGoalLeft();
+    void removeGoalRight();
     void sendFreeBall();
     void sendYellowKickoff();
     void sendBlueKickoff();
