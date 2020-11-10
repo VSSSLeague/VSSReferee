@@ -202,7 +202,6 @@ void VSSReplacer::stopWaiting(){
     _mutex.unlock();
 
     // Place ball at foul location
-    std::cout << "Goleiro fica encima: " << _isGoaliePlacedAtTop << std::endl;
     vector2d ballPlacePos = getBallPlaceByFoul(_foul, _color, _quadrant);
     std::cout << "[VSSReplacer] Ball placed into x: " << ballPlacePos.x << " and y: " << ballPlacePos.y << "\n";
     placeBall(ballPlacePos.x, ballPlacePos.y);
@@ -452,8 +451,6 @@ VSSRef::Frame* VSSReplacer::getGoalKickPlacement(VSSRef::Color color){
         auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
         std::mt19937 mt_rand(seed);
         _isGoaliePlacedAtTop = mt_rand() % 2;
-
-        std::cout << "Botamo o goleiro encima: " << _isGoaliePlacedAtTop << std::endl;
 
         // Insert GK
         VSSRef::Robot *gk = frame->add_robots();
