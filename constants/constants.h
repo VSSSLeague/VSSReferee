@@ -3,6 +3,7 @@
 
 #include <QtCore>
 #include <include/vssref_common.pb.h>
+#include <iostream>
 
 class Constants
 {
