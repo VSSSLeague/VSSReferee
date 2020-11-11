@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     /// Creating constants pointer
-    Constants* constants = new Constants(":/constants/constants.json");
+    Constants* constants = new Constants(QString(PROJECT_PATH) + "/constants/constants.json");
     Utils::setConstants(constants);
 
     /// Parsing from constants
@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
     VSSVisionClient *vssVisionClient = new VSSVisionClient(visionAddress, visionPort);
     VSSReferee *vssReferee = new VSSReferee(vssVisionClient, refereeAddress, refereePort, constants);
     VSSReplacer *vssReplacer = new VSSReplacer(replacerAddress, replacerPort, firaSimAddress, firaSimPort, constants);
-    RefereeView *refView = new RefereeView();
+    RefereeView *refView = new RefereeView(constants);
 
     /// Make connections with signals and slots
     // Foul connetion
@@ -62,6 +62,7 @@ int main(int argc, char *argv[])
 
     // Manual referee connection
     QObject::connect(refView->getUI(), SIGNAL(sendManualCommand(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), vssReferee, SLOT(takeManualCommand(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)));
+    QObject::connect(refView->getUI(), SIGNAL(resetAll()), vssReferee, SLOT(resetAll()));
 
     /// Set team
     // Command line parser, get arguments

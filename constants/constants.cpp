@@ -1,8 +1,13 @@
 #include "constants.h"
 
 Constants::Constants(QString fileName){
+    _fileName = fileName;
+    loadConstants();
+}
+
+void Constants::loadConstants(){
     // Opening file and setting initial config
-    QFile file(fileName);
+    QFile file(_fileName);
     QString args;
     file.open(QIODevice::ReadOnly | QIODevice::Text);
 

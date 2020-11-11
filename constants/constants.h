@@ -8,6 +8,8 @@ class Constants
 {
 public:
     Constants(QString fileName);
+    QString _fileName;
+    void loadConstants();
 
     /// Getters
 

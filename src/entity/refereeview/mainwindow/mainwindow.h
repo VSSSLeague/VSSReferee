@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <src/entity/refereeview/soccerview/soccerview.h>
 #include <include/vssref_common.pb.h>
+#include <constants/constants.h>
 
 #include <QPushButton>
 
@@ -15,7 +16,7 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 public:
-    MainWindow(QWidget *parent);
+    MainWindow(QWidget *parent, Constants *constants);
     ~MainWindow();
 
     // Detection updates
@@ -47,6 +48,10 @@ private:
     int leftTeamGoalsScored;
     int rightTeamGoalsScored;
 
+    // Constants
+    Constants *_constants;
+    Constants* getConstants();
+
 public slots:
     void switchSides();
     void addGoal(VSSRef::Color team);
@@ -63,9 +68,11 @@ public slots:
     void sendBlueGoalKick();
     void sendStart();
     void sendStop();
+    void reloadAll();
 
 signals:
     void sendManualCommand(VSSRef::Foul foul, VSSRef::Color teamColor = VSSRef::Color::NONE, VSSRef::Quadrant quadrant = VSSRef::Quadrant::NO_QUADRANT);
+    void resetAll();
 };
 
 #endif // MAINWINDOW_H

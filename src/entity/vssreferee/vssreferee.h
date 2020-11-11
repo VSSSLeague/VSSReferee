@@ -123,6 +123,7 @@ public slots:
     void teamSent(VSSRef::Color color);     // if a team sent it packet
     void requestGoalie(VSSRef::Color team); // request team goalie
     void takeManualCommand(VSSRef::Foul foul, VSSRef::Color color, VSSRef::Quadrant quadrant); // manual referee commands from UI
+    void resetAll();
 };
 
 #endif // VSSREFEREE_H

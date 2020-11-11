@@ -6,9 +6,10 @@ QString RefereeView::name(){
     return "Referee View";
 }
 
-RefereeView::RefereeView()
+RefereeView::RefereeView(Constants *constants)
 {
-    _refereeUI = new MainWindow(nullptr);
+    _constants = constants;
+    _refereeUI = new MainWindow(nullptr, getConstants());
     _refereeUI->show();
 }
 
@@ -61,4 +62,13 @@ void RefereeView::setTeams(QString teamLeft, VSSRef::Color leftColor, QString te
 
 MainWindow* RefereeView::getUI(){
     return _refereeUI;
+}
+
+Constants* RefereeView::getConstants(){
+    if(_constants == NULL){
+        std::cout << "[ERROR] Referee is requesting constants, but it's NULL\n";
+        return NULL;
+    }
+
+    return _constants;
 }

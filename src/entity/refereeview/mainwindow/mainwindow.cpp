@@ -4,9 +4,11 @@
 #include <QStyle>
 #include <QStyleFactory>
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent, Constants *constants) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    _constants = constants;
 
     // Dark theme
     this->setStyle(QStyleFactory::create("Fusion"));
@@ -69,6 +71,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     // Start and stop
     connect(ui->startGame, SIGNAL(released()), this, SLOT(sendStart()));
     connect(ui->stopGame,  SIGNAL(released()), this, SLOT(sendStop()));
+
+    // Reset game
+    connect(ui->buttonReset, SIGNAL(released()), this, SLOT(reloadAll()));
 
     // Setting initial scores values and colors
     leftTeamGoalsScored = 0;
@@ -236,4 +241,41 @@ void MainWindow::sendStart(){
 
 void MainWindow::sendStop(){
     emit sendManualCommand(VSSRef::Foul::STOP);
+}
+
+void MainWindow::reloadAll(){
+    // Reload all
+    getConstants()->loadConstants();
+
+    // Reset names
+    leftTeamName = getConstants()->getLeftTeamName();
+    rightTeamName = getConstants()->getRightTeamName();
+    ui->teamLeftName->setText(leftTeamName);
+    ui->teamRightName->setText(rightTeamName);
+
+    blueIsLeft = (getConstants()->getLeftTeamColor() == VSSRef::Color::BLUE);
+
+    if(blueIsLeft)  ui->teamLeftScore->setStyleSheet("QLabel { color : #417EFF; }");
+    else            ui->teamLeftScore->setStyleSheet("QLabel { color : #FFF33E; }");
+
+    if(!blueIsLeft) ui->teamRightScore->setStyleSheet("QLabel { color : #417EFF; }");
+    else            ui->teamRightScore->setStyleSheet("QLabel { color : #FFF33E; }");
+
+    // Reset scores
+    leftTeamGoalsScored = 0;
+    ui->teamLeftScore->setText(QString("%1").arg(leftTeamGoalsScored));
+
+    rightTeamGoalsScored = 0;
+    ui->teamRightScore->setText(QString("%1").arg(rightTeamGoalsScored));
+
+    emit resetAll();
+}
+
+Constants* MainWindow::getConstants(){
+    if(_constants == NULL){
+        std::cout << "[ERROR] Referee is requesting constants, but it's NULL\n";
+        return NULL;
+    }
+
+    return _constants;
 }

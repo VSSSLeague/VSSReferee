@@ -707,3 +707,57 @@ void VSSReferee::setGameStartStop(){
     setTeamFoul(VSSRef::Foul::STOP, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT, true);
     _stopTimer.start();
 }
+
+void VSSReferee::resetAll(){
+    // Reset pointers
+    for(int x = 0; x < 2; x++){
+        free(time[x]);
+        free(timers[x]);
+    }
+
+    free(time);
+    free(timers);
+
+    // Reset vars initially
+    _placementIsSet   = false;
+    _blueSent         = false;
+    _yellowSent       = false;
+    _stopEnabled      = false;
+    _manualStop       = false;
+    _manualGameOn     = false;
+    timePassed        = 0;
+    startedGKTimer    = false;
+    startedStuckTimer = false;
+    _startedPenaltyTimer = false;
+    startedDisputateTimer = false;
+    _gameHalf         = VSSRef::Half::FIRST_HALF;
+
+    // Start timers
+    _placementTimer.start();
+    _gameTimer.start();
+    _gkTimer.start();
+    _ballStuckTimer.start();
+    _ballVelTimer.start();
+    _stopTimer.start();
+
+    // Allocating memory to time and timers (for gk checking)
+    time = static_cast<float**>(malloc(2 * sizeof(float *)));
+    for(int x = 0; x < 2; x++){
+        time[x] = static_cast<float*>(malloc(static_cast<unsigned int>(getConstants()->getQtPlayers()) * sizeof(float)));
+    }
+
+    timers = static_cast<Timer**>(malloc(2 * sizeof(Timer *)));
+    for(int x = 0; x < 2; x++){
+        timers[x] = static_cast<Timer*>(malloc(static_cast<unsigned int>(getConstants()->getQtPlayers()) * sizeof(Timer)));
+    }
+
+    // Starting gk checking values and timers
+    for(int x = 0; x < 2; x++){
+        for(int y = 0; y < getConstants()->getQtPlayers(); y++){
+            timers[x][y].start();
+            time[x][y] = 0.0;
+        }
+    }
+
+    setGameStartStop();
+}

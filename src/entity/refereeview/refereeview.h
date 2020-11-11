@@ -7,7 +7,7 @@
 class RefereeView : public Entity
 {
 public:
-    RefereeView();
+    RefereeView(Constants *constants);
     ~RefereeView();
 
     QString name();
@@ -33,6 +33,10 @@ private:
 
     // UI
     static MainWindow *_refereeUI;
+
+    // Constants
+    Constants *_constants;
+    Constants* getConstants();
 };
 
 #endif // REFEREEVIEW_H
