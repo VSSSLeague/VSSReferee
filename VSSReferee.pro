@@ -32,9 +32,11 @@ LIBS *= -lprotobuf -lQt5Core
 # deprecated API in order to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
+DEFINES += PROJECT_PATH=\\\"$${PWD}\\\"
 
 SOURCES += \
         main.cpp \
+        src/constants/constants.cpp \
         src/refereecore.cpp \
         src/world/entities/entity.cpp \
         src/utils/exithandler/exithandler.cpp \
@@ -49,6 +51,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
+    src/constants/constants.h \
     src/refereecore.h \
     src/world/entities/entity.h \
     src/utils/exithandler/exithandler.h \

@@ -7,7 +7,7 @@
 class RefereeCore
 {
 public:
-    RefereeCore();
+    RefereeCore(Constants *constants);
     ~RefereeCore();
 
     // Internal
@@ -15,8 +15,13 @@ public:
     void stop();
 
 private:
+    // Modules
     World *_world;
     Vision *_vision;
+
+    // Constants
+    Constants *_constants;
+    Constants* getConstants();
 };
 
 #endif // REFEREECORE_H

@@ -1,7 +1,8 @@
 #include "world.h"
 
-World::World() {
-
+World::World(Constants *constants) {
+    // Taking constants
+    _constants = constants;
 }
 
 void World::addEntity(Entity *entity, int entityPriotity) {
@@ -40,8 +41,7 @@ void World::startEntities() {
            Entity *entity = *it;
 
            // Set frequency
-           /// TODO: create an constants class to get this frequency
-           entity->setLoopFrequency(60);
+           entity->setLoopFrequency(getConstants()->threadFrequency());
 
            // Start entity
            entity->start();
@@ -86,4 +86,15 @@ void World::stopAndDeleteEntities() {
             delete entity;
         }
     }
+}
+
+Constants* World::getConstants() {
+    if(_constants == nullptr) {
+        std::cout << Text::red("[ERROR] ", true) << Text::bold("Constants with nullptr value at World") + '\n';
+    }
+    else {
+        return _constants;
+    }
+
+    return nullptr;
 }
