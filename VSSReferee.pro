@@ -34,9 +34,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 SOURCES += \
-        main.cpp
+        main.cpp \
+        src/entities/entity.cpp \
+        src/utils/timer/timer.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+HEADERS += \
+    src/entities/entity.h \
+    src/utils/timer/timer.h
