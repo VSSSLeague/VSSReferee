@@ -35,10 +35,13 @@ DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 SOURCES += \
         main.cpp \
-        src/entities/entity.cpp \
+        src/refereecore.cpp \
+        src/world/entities/entity.cpp \
         src/utils/exithandler/exithandler.cpp \
         src/utils/text/text.cpp \
-        src/utils/timer/timer.cpp
+        src/utils/timer/timer.cpp \
+        src/world/entities/vision/vision.cpp \
+        src/world/world.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -46,7 +49,10 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    src/entities/entity.h \
+    src/refereecore.h \
+    src/world/entities/entity.h \
     src/utils/exithandler/exithandler.h \
     src/utils/text/text.h \
-    src/utils/timer/timer.h
+    src/utils/timer/timer.h \
+    src/world/entities/vision/vision.h \
+    src/world/world.h

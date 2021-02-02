@@ -1,5 +1,6 @@
 #include <src/utils/exithandler/exithandler.h>
 #include <src/utils/text/text.h>
+#include <src/refereecore.h>
 
 int main(int argc, char *argv[])
 {
@@ -18,7 +19,15 @@ int main(int argc, char *argv[])
     ExitHandler::setApplication(&app);
     ExitHandler::setup();
 
+    // Initializating referee core
+    RefereeCore *refereeCore = new RefereeCore();
+    refereeCore->start();
+
     bool exec = app.exec();
+
+    // Stopping and deleting referee core
+    refereeCore->stop();
+    delete refereeCore;
 
     return exec;
 }
