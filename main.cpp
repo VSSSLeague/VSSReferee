@@ -1,6 +1,4 @@
 #include <src/utils/exithandler/exithandler.h>
-#include <src/utils/text/text.h>
-#include <src/constants/constants.h>
 #include <src/refereecore.h>
 
 int main(int argc, char *argv[])

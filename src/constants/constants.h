@@ -17,13 +17,16 @@ public:
     // Entities constants getters
     int threadFrequency();
 
-    // Vision constants getters
-
     // Referee constants getters
+
+    // Vision constants getters
+    QString visionAddress();
+    quint16 visionPort();
 
     // Replacer constants getters
 
     // Teams constants getters
+    int qtPlayers();
 
 protected:
     QVariantMap documentMap() { return _documentMap; }
@@ -47,12 +50,15 @@ private:
     void readRefereeConstants();
 
     // Vision constants
+    QString _visionAddress;
+    quint16 _visionPort;
     void readVisionConstants();
 
     // Replacer constants
     void readReplacerConstants();
 
     // Teams constants
+    int _qtPlayers;
     void readTeamConstants();
 };
 

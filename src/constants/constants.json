@@ -1,5 +1,14 @@
 {
     "Entity":{
         "threadFrequency": 60
+    },
+    
+    "Vision":{
+    	"visionAddress": "224.5.23.2",
+    	"visionPort": 10002
+    },
+    
+    "Team":{
+    	"qtPlayers": 3
     }
 }
