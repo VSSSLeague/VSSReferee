@@ -36,6 +36,7 @@ DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 SOURCES += \
         main.cpp \
         src/entities/entity.cpp \
+        src/utils/text/text.cpp \
         src/utils/timer/timer.cpp
 
 # Default rules for deployment.
@@ -45,4 +46,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     src/entities/entity.h \
+    src/utils/text/text.h \
     src/utils/timer/timer.h
