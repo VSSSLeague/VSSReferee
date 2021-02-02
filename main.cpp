@@ -1,5 +1,6 @@
 #include <src/utils/exithandler/exithandler.h>
 #include <src/utils/text/text.h>
+#include <src/constants/constants.h>
 #include <src/refereecore.h>
 
 int main(int argc, char *argv[])
@@ -19,15 +20,22 @@ int main(int argc, char *argv[])
     ExitHandler::setApplication(&app);
     ExitHandler::setup();
 
+    // Initializing constants
+    Constants *constants = new Constants(QString(PROJECT_PATH) + "/src/constants/constants.json");
+
     // Initializating referee core
-    RefereeCore *refereeCore = new RefereeCore();
+    RefereeCore *refereeCore = new RefereeCore(constants);
     refereeCore->start();
 
+    // Wait for app exec
     bool exec = app.exec();
 
     // Stopping and deleting referee core
     refereeCore->stop();
     delete refereeCore;
+
+    // Deleting constants
+    delete constants;
 
     return exec;
 }

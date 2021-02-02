@@ -5,11 +5,12 @@
 #include <QHash>
 
 #include <src/world/entities/entity.h>
+#include <src/constants/constants.h>
 
 class World
 {
 public:
-    World();
+    World(Constants *constants);
 
     // Entities management
     void addEntity(Entity *entity, int entityPriority);
@@ -21,6 +22,10 @@ public:
 private:
     // Hashtable for entities
     QMap<int, QHash<int, Entity*>*> _worldEntities;
+
+    // Constants
+    Constants *_constants;
+    Constants* getConstants();
 };
 
 #endif // WORLD_H
