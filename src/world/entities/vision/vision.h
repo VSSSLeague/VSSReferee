@@ -20,6 +20,7 @@ public:
     QList<quint8> getAvailablePlayers(Colors::Color teamColor);
     Position getPlayerPosition(Colors::Color teamColor, quint8 playerId);
     Position getBallPosition();
+    Velocity getBallVelocity();
 
 private:
     // Entity inherited methods

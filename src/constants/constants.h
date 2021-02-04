@@ -18,6 +18,14 @@ public:
     int threadFrequency();
 
     // Referee constants getters
+    QString refereeAddress();
+    quint16 refereePort();
+    float transitionTime();
+    float ballRadius();
+    float robotLength();
+    float halfTime();
+    float ballMinSpeedForStuck();
+    float stuckedBallTime();
 
     // Vision constants getters
     QString visionAddress();
@@ -27,6 +35,10 @@ public:
 
     // Teams constants getters
     int qtPlayers();
+    QString blueTeamName();
+    QString yellowTeamName();
+    bool blueIsLeftSide();
+    void swapSides();
 
 protected:
     QVariantMap documentMap() { return _documentMap; }
@@ -37,7 +49,6 @@ private:
     QString _fileBuffer;
     QFile _file;
 
-
     // Internal json parse vars
     QJsonDocument _document;
     QVariantMap _documentMap;
@@ -47,6 +58,14 @@ private:
     void readEntityConstants();
 
     // Referee
+    QString _refereeAddress;
+    quint16 _refereePort;
+    float _transitionTime;
+    float _ballRadius;
+    float _robotLength;
+    float _halfTime;
+    float _ballMinSpeedForStuck;
+    float _stuckedBallTime;
     void readRefereeConstants();
 
     // Vision constants
@@ -59,6 +78,9 @@ private:
 
     // Teams constants
     int _qtPlayers;
+    QString _blueTeamName;
+    QString _yellowTeamName;
+    bool _blueIsLeftSide;
     void readTeamConstants();
 };
 

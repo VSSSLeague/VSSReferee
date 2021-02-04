@@ -257,6 +257,14 @@ Position Vision::getBallPosition() {
     return pos;
 }
 
+Velocity Vision::getBallVelocity() {
+    _dataMutex.lockForRead();
+    Velocity vel = _ballObject->getVelocity();
+    _dataMutex.unlock();
+
+    return vel;
+}
+
 Constants* Vision::getConstants() {
     if(_constants == nullptr) {
         std::cout << Text::red("[ERROR] ", true) << Text::bold("Constants with nullptr value at Vision") + '\n';
