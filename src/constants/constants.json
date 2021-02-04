@@ -9,6 +9,24 @@
     },
     
     "Team":{
-    	"qtPlayers": 3
+    	"qtPlayers": 3,
+    	"blueTeamName": "Team Blue",
+    	"yellowTeamName": "Team Yellow",
+    	"blueIsLeftSide": true
+    },
+    
+    "Referee":{
+    	"refereeAddress": "224.5.23.2",
+    	"refereePort": 10006,
+    	"transitionTime": 5.0,
+    	"game":{
+    		"ballRadius": 0.0215,
+    		"robotLength": 0.075,
+    		"halfTime": 300.0
+    	},
+    	"fouls":{
+    		"ballMinSpeedForStuck": 0.1,
+    		"stuckedBallTime": 10.0
+    	}
     }
 }

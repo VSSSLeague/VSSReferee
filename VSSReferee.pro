@@ -39,17 +39,26 @@ SOURCES += \
         include/common.pb.cc \
         include/packet.pb.cc \
         include/replacement.pb.cc \
+        include/vssref_command.pb.cc \
+        include/vssref_common.pb.cc \
+        include/vssref_placement.pb.cc \
         main.cpp \
         src/constants/constants.cpp \
         src/refereecore.cpp \
         src/utils/types/angle/angle.cpp \
+        src/utils/types/field/field.cpp \
         src/utils/types/object/object.cpp \
         src/utils/types/position/position.cpp \
         src/utils/types/velocity/velocity.cpp \
+        src/utils/utils.cpp \
         src/world/entities/entity.cpp \
         src/utils/exithandler/exithandler.cpp \
         src/utils/text/text.cpp \
         src/utils/timer/timer.cpp \
+        src/world/entities/referee/checkers/checker.cpp \
+        src/world/entities/referee/checkers/halftime/checker_halftime.cpp \
+        src/world/entities/referee/checkers/stoppedball/checker_stuckedball.cpp \
+        src/world/entities/referee/referee.cpp \
         src/world/entities/vision/filters/loss/lossfilter.cpp \
         src/world/entities/vision/filters/noise/noisefilter.cpp \
         src/world/entities/vision/filters/kalman/kalmanfilter.cpp \
@@ -68,17 +77,27 @@ HEADERS += \
     include/common.pb.h \
     include/packet.pb.h \
     include/replacement.pb.h \
+    include/vssref_command.pb.h \
+    include/vssref_common.pb.h \
+    include/vssref_placement.pb.h \
     src/constants/constants.h \
     src/refereecore.h \
     src/utils/types/angle/angle.h \
     src/utils/types/color/color.h \
+    src/utils/types/field/field.h \
+    src/utils/types/field/field_default_3v3.h \
     src/utils/types/object/object.h \
     src/utils/types/position/position.h \
     src/utils/types/velocity/velocity.h \
+    src/utils/utils.h \
     src/world/entities/entity.h \
     src/utils/exithandler/exithandler.h \
     src/utils/text/text.h \
     src/utils/timer/timer.h \
+    src/world/entities/referee/checkers/checker.h \
+    src/world/entities/referee/checkers/halftime/checker_halftime.h \
+    src/world/entities/referee/checkers/stoppedball/checker_stuckedball.h \
+    src/world/entities/referee/referee.h \
     src/world/entities/vision/filters/loss/lossfilter.h \
     src/world/entities/vision/filters/noise/noisefilter.h \
     src/world/entities/vision/filters/kalman/kalmanfilter.h \

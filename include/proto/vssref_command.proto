@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+import "vssref_common.proto";
+
+package VSSRef.ref_to_team;
+
+message VSSRef_Command {
+	Foul foul             = 1;
+	Color teamcolor       = 2;
+	Quadrant foulQuadrant = 3;
+	double timestamp      = 4;
+	Half gameHalf         = 5;
+}

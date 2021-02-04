@@ -14,9 +14,16 @@ RefereeCore::~RefereeCore() {
 }
 
 void RefereeCore::start() {
+    // Setup utils
+    Utils::setConstants(getConstants());
+
     // Creating vision pointer and adding it to world with priority 0
     _vision = new Vision(getConstants());
     _world->addEntity(_vision, 0);
+
+    // Creating referee pointer and adding it to world with priority 1
+    _referee = new Referee(_vision, getConstants());
+    _world->addEntity(_referee, 1);
 
     // Starting entities
     _world->startEntities();
