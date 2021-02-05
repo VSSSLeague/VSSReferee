@@ -1,14 +1,13 @@
 #include "referee.h"
 
-#include <QTimer>
-#include <QtConcurrent/QtConcurrent>
-
 #include <include/vssref_command.pb.h>
-#include <src/world/entities/referee/checkers/stoppedball/checker_stuckedball.h>
 
-Referee::Referee(Vision *vision, Constants *constants) : Entity(ENT_REFEREE) {
+Referee::Referee(Vision *vision, Replacer *replacer, Constants *constants) : Entity(ENT_REFEREE) {
     // Take vision pointer
     _vision = vision;
+
+    // Take replacer pointer
+    _replacer = replacer;
 
     // Take constants
     _constants = constants;
@@ -17,6 +16,11 @@ Referee::Referee(Vision *vision, Constants *constants) : Entity(ENT_REFEREE) {
     _refereeAddress = getConstants()->refereeAddress();
     _refereePort = getConstants()->refereePort();
 
+    // Connecting referee to replacer
+    connect(_replacer, SIGNAL(teamsPlaced()), this, SLOT(teamsPlaced()));
+    connect(this, SIGNAL(sendFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), _replacer, SLOT(takeFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)));
+    connect(this, SIGNAL(callReplacer()), _replacer, SLOT(placeTeams()));
+
     // Init signal mapper
     _mapper = new QSignalMapper();
 }
@@ -24,10 +28,15 @@ Referee::Referee(Vision *vision, Constants *constants) : Entity(ENT_REFEREE) {
 void Referee::initialization() {
     // Adding checkers
     // Stucked ball
-    addChecker(new Checker_StuckedBall(_vision/*, this*/, getConstants()), 0);
+    addChecker(new Checker_StuckedBall(_vision, getConstants()), 0);
+
+    // Goalie
+    _goalieChecker = new Checker_Goalie(_vision, getConstants());
+    connect(_goalieChecker, SIGNAL(updateGoalie(VSSRef::Color, quint8)), _replacer, SLOT(takeGoalie(VSSRef::Color, quint8)));
+    addChecker(_goalieChecker, 0);
 
     // HalfTime
-    _halfChecker = new Checker_HalfTime(_vision/*, this*/, getConstants());
+    _halfChecker = new Checker_HalfTime(_vision, getConstants());
     _halfChecker->setReferee(this);
     connect(_halfChecker, SIGNAL(halfPassed()), this, SLOT(halfPassed()));
 
@@ -49,6 +58,9 @@ void Referee::initialization() {
 void Referee::loop() {
     // Run half checker
     _halfChecker->run();
+
+    // Run goalie checker
+    _goalieChecker->run();
 
     // If game is on, run all checks
     if(_lastFoul == VSSRef::Foul::GAME_ON) {
@@ -93,10 +105,16 @@ void Referee::loop() {
 
             // Check if passed transition time
             if(_transitionTimer.getSeconds() >= getConstants()->transitionTime() || teamsPlaced) {
+                // Set control vars
                 _isStopped = true;
                 _resetedTimer = false;
+
+                // Update sent foul to STOP
                 updatePenaltiesInfo(VSSRef::Foul::STOP, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT);
                 sendPenaltiesToNetwork();
+
+                // Call replacer (place teams)
+                emit callReplacer();
             }
         }
         else {
@@ -110,9 +128,12 @@ void Referee::loop() {
 
             // Check if passed transition time
             if(_transitionTimer.getSeconds() >= getConstants()->transitionTime()) {
+                // Reset control vars
                 _isStopped = false;
                 _resetedTimer = false;
                 _teamsPlaced = false;
+
+                // Update sent foul to GAME_ON
                 updatePenaltiesInfo(VSSRef::Foul::GAME_ON, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT);
                 sendPenaltiesToNetwork();
             }
@@ -128,6 +149,10 @@ void Referee::finalization() {
     disconnectClient();
 
     std::cout << Text::blue("[REFEREE] ", true) + Text::bold("Module finished.") + '\n';
+}
+
+bool Referee::isGameOn() {
+    return (_lastFoul == VSSRef::Foul::GAME_ON);
 }
 
 void Referee::connectClient() {
@@ -238,7 +263,7 @@ void Referee::sendPenaltiesToNetwork() {
 
     // Send foul (if is not an state) to replacer
     if(_lastFoul != VSSRef::Foul::GAME_ON && _lastFoul != VSSRef::Foul::STOP) {
-        emit sendFoul(_lastFoul);
+        emit sendFoul(_lastFoul, _lastFoulTeam, _lastFoulQuadrant);
     }
 
     // Reset checkers
@@ -279,12 +304,4 @@ Constants* Referee::getConstants() {
     }
 
     return nullptr;
-}
-
-QPair<VSSRef::Foul, VSSRef::Color> Referee::getLastPenaltyInfo() {
-    _foulMutex.lock();
-    QPair<VSSRef::Foul, VSSRef::Color> penaltyInfo{_lastFoul, _lastFoulTeam};
-    _foulMutex.unlock();
-
-    return penaltyInfo;
 }

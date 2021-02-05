@@ -32,6 +32,10 @@ public:
     quint16 visionPort();
 
     // Replacer constants getters
+    QString replacerAddress();
+    quint16 replacerPort();
+    QString firaAddress();
+    quint16 firaPort();
 
     // Teams constants getters
     int qtPlayers();
@@ -74,6 +78,10 @@ private:
     void readVisionConstants();
 
     // Replacer constants
+    QString _replacerAddress;
+    quint16 _replacerPort;
+    QString _firaAddress;
+    quint16 _firaPort;
     void readReplacerConstants();
 
     // Teams constants

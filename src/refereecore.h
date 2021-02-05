@@ -5,6 +5,7 @@
 #include <src/world/world.h>
 #include <src/world/entities/vision/vision.h>
 #include <src/world/entities/referee/referee.h>
+#include <src/world/entities/replacer/replacer.h>
 
 class RefereeCore
 {
@@ -21,6 +22,7 @@ private:
     World *_world;
     Vision *_vision;
     Referee *_referee;
+    Replacer *_replacer;
 
     // Constants
     Constants *_constants;

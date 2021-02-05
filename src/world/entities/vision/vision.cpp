@@ -72,11 +72,11 @@ void Vision::loop() {
 
                 // Get object
                 /// TODO: this confidence will be used at unified vss league vision software?
-                Object *robotObject = _objects.value(Colors::BLUE)->value(robotId);
+                Object *robotObject = _objects.value(VSSRef::Color::BLUE)->value(robotId);
                 robotObject->updateObject(1.0f, Position(true, robot.x(), robot.y()), Angle(true, robot.orientation()));
 
                 // Update control to true
-                _objectsControl.value(Colors::BLUE)->insert(robotId, true);
+                _objectsControl.value(VSSRef::Color::BLUE)->insert(robotId, true);
             }
 
             // Parse yellow robots
@@ -89,17 +89,17 @@ void Vision::loop() {
 
                 // Get object
                 /// TODO: this confidence will be used at unified vss league vision software?
-                Object *robotObject = _objects.value(Colors::YELLOW)->value(robotId);
+                Object *robotObject = _objects.value(VSSRef::Color::YELLOW)->value(robotId);
                 robotObject->updateObject(1.0f, Position(true, robot.x(), robot.y()), Angle(true, robot.orientation()));
 
                 // Update control to true
-                _objectsControl.value(Colors::YELLOW)->insert(robotId, true);
+                _objectsControl.value(VSSRef::Color::YELLOW)->insert(robotId, true);
             }
 
             // Parse robots that didn't appeared
-            for(int i = Colors::YELLOW; i <= Colors::BLUE; i++) {
+            for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
                 // Take control hash
-                QHash<quint8, bool> *idsControl = _objectsControl.value(Colors::Color(i));
+                QHash<quint8, bool> *idsControl = _objectsControl.value(VSSRef::Color(i));
 
                 // Take ids list and iterate on it
                 QList<quint8> idList = idsControl->keys();
@@ -109,7 +109,7 @@ void Vision::loop() {
                     // If not updated (== false)
                     if(idsControl->value((*it)) == false) {
                         // Take object
-                        Object *robotObject = _objects.value(Colors::Color(i))->value((*it));
+                        Object *robotObject = _objects.value(VSSRef::Color(i))->value((*it));
 
                         // Update it with invalid values
                         robotObject->updateObject(0.0f, Position(false, 0.0, 0.0), Angle(false, 0.0));
@@ -157,17 +157,17 @@ void Vision::initObjects() {
     _ballObject = new Object();
 
     // Init robot objects
-    for(int i = Colors::YELLOW; i <= Colors::BLUE; i++) {
+    for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
         // Init objects
         QHash<quint8, Object*> *teamObjects = new QHash<quint8, Object*>();
-        _objects.insert(Colors::Color(i), teamObjects);
+        _objects.insert(VSSRef::Color(i), teamObjects);
         for(int j = 0; j < getConstants()->qtPlayers(); j++) {
             teamObjects->insert(j, new Object());
         }
 
         // Init objects control
         QHash<quint8, bool> *teamObjectsControl = new QHash<quint8, bool>();
-        _objectsControl.insert(Colors::Color(i), teamObjectsControl);
+        _objectsControl.insert(VSSRef::Color(i), teamObjectsControl);
         for(int j = 0; j < getConstants()->qtPlayers(); j++) {
             teamObjectsControl->insert(j, false);
         }
@@ -179,8 +179,8 @@ void Vision::deleteObjects() {
     delete _ballObject;
 
     // Deleting player objects
-    QList<Colors::Color> teamColors = _objects.keys();
-    QList<Colors::Color>::iterator it;
+    QList<VSSRef::Color> teamColors = _objects.keys();
+    QList<VSSRef::Color>::iterator it;
 
     for(it = teamColors.begin(); it != teamColors.end(); it++) {
         // Take team objects control and delete it
@@ -207,10 +207,10 @@ void Vision::deleteObjects() {
 }
 
 void Vision::clearObjectsControl() {
-    QList<Colors::Color> teamColors = _objects.keys();
+    QList<VSSRef::Color> teamColors = _objects.keys();
 
-    for(int i = Colors::YELLOW; i <= Colors::BLUE; i++) {
-        QHash<quint8, bool> *teamObjectsControl = _objectsControl.value(Colors::Color(i));
+    for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
+        QHash<quint8, bool> *teamObjectsControl = _objectsControl.value(VSSRef::Color(i));
 
         // Take registered ids
         QList<quint8> objectsId = teamObjectsControl->keys();
@@ -220,7 +220,7 @@ void Vision::clearObjectsControl() {
     }
 }
 
-QList<quint8> Vision::getAvailablePlayers(Colors::Color teamColor) {
+QList<quint8> Vision::getAvailablePlayers(VSSRef::Color teamColor) {
     _dataMutex.lockForRead();
     QList<quint8> availableList;
 
@@ -240,7 +240,7 @@ QList<quint8> Vision::getAvailablePlayers(Colors::Color teamColor) {
     return availableList;
 }
 
-Position Vision::getPlayerPosition(Colors::Color teamColor, quint8 playerId) {
+Position Vision::getPlayerPosition(VSSRef::Color teamColor, quint8 playerId) {
     _dataMutex.lockForRead();
     Object *playerObject = _objects.value(teamColor)->value(playerId);
     Position pos = playerObject->getPosition();
