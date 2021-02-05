@@ -6,7 +6,7 @@
 #include <QReadWriteLock>
 
 #include <src/utils/types/object/object.h>
-#include <src/utils/types/color/color.h>
+#include <include/vssref_common.pb.h>
 #include <src/world/entities/entity.h>
 #include <src/constants/constants.h>
 
@@ -17,8 +17,8 @@ public:
     ~Vision();
 
     // Getters
-    QList<quint8> getAvailablePlayers(Colors::Color teamColor);
-    Position getPlayerPosition(Colors::Color teamColor, quint8 playerId);
+    QList<quint8> getAvailablePlayers(VSSRef::Color teamColor);
+    Position getPlayerPosition(VSSRef::Color teamColor, quint8 playerId);
     Position getBallPosition();
     Velocity getBallVelocity();
 
@@ -42,8 +42,8 @@ private:
 
     // Objects
     Object *_ballObject;
-    QMap<Colors::Color, QHash<quint8, Object*>*> _objects;
-    QMap<Colors::Color, QHash<quint8, bool>*> _objectsControl;
+    QMap<VSSRef::Color, QHash<quint8, Object*>*> _objects;
+    QMap<VSSRef::Color, QHash<quint8, bool>*> _objectsControl;
     void initObjects();
     void deleteObjects();
     void clearObjectsControl();

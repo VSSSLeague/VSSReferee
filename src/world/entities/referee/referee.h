@@ -5,15 +5,15 @@
 #include <QSignalMapper>
 
 #include <src/world/entities/entity.h>
-#include <src/world/entities/referee/checkers/halftime/checker_halftime.h>
+#include <src/world/entities/replacer/replacer.h>
+#include <src/world/entities/referee/checkers/checkers.h>
 
 class Referee : public Entity
 {
     Q_OBJECT
 public:
-    Referee(Vision *vision, Constants *constants);
-
-    QPair<VSSRef::Foul, VSSRef::Color> getLastPenaltyInfo();
+    Referee(Vision *vision, Replacer *replacer, Constants *constants);
+    bool isGameOn();
 
 private:
     // Entity inherited methods
@@ -23,6 +23,9 @@ private:
 
     // Vision
     Vision *_vision;
+
+    // Replacer
+    Replacer *_replacer;
 
     // Referee client
     QUdpSocket *_refereeClient;
@@ -57,6 +60,9 @@ private:
     VSSRef::Half _gameHalf;
     float _timeStamp;
 
+    // Goalie management
+    Checker_Goalie *_goalieChecker;
+
     // Foul transition management
     Timer _transitionTimer;
     QMutex _transitionMutex;
@@ -65,7 +71,8 @@ private:
     bool _teamsPlaced;
 
 signals:
-    void sendFoul(VSSRef::Foul foul);
+    void sendFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant);
+    void callReplacer();
 
 public slots:
     void processChecker(QObject *checker);

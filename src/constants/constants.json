@@ -8,6 +8,13 @@
     	"visionPort": 10002
     },
     
+    "Replacer":{
+    	"replacerAddress": "224.5.23.2",
+    	"replacerPort": 10004,
+    	"firaAddress": "127.0.0.1",
+    	"firaPort": 20011
+    },
+    
     "Team":{
     	"qtPlayers": 3,
     	"blueTeamName": "Team Blue",
@@ -17,7 +24,7 @@
     
     "Referee":{
     	"refereeAddress": "224.5.23.2",
-    	"refereePort": 10006,
+    	"refereePort": 10003,
     	"transitionTime": 5.0,
     	"game":{
     		"ballRadius": 0.0215,

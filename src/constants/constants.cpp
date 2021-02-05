@@ -84,6 +84,21 @@ void Constants::readVisionConstants() {
 }
 
 void Constants::readReplacerConstants() {
+    // Taking replacer mapping in json
+    QVariantMap replacerMap = documentMap()["Replacer"].toMap();
+
+    // Filling vars
+    _replacerAddress = replacerMap["replacerAddress"].toString();
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded replacerAddress: '" + _replacerAddress.toStdString() + "'\n");
+
+    _replacerPort = replacerMap["replacerPort"].toUInt();
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded replacerPort: " + std::to_string(_replacerPort)) + '\n';
+
+    _firaAddress = replacerMap["firaAddress"].toString();
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded firaAddress: '" + _firaAddress.toStdString() + "'\n");
+
+    _firaPort = replacerMap["firaPort"].toUInt();
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded firaPort: " + std::to_string(_firaPort)) + '\n';
 
 }
 
@@ -147,6 +162,22 @@ QString Constants::visionAddress() {
 
 quint16 Constants::visionPort() {
     return _visionPort;
+}
+
+QString Constants::replacerAddress() {
+    return _replacerAddress;
+}
+
+quint16 Constants::replacerPort() {
+    return _replacerPort;
+}
+
+QString Constants::firaAddress() {
+    return _firaAddress;
+}
+
+quint16 Constants::firaPort() {
+    return _firaPort;
 }
 
 int Constants::qtPlayers() {

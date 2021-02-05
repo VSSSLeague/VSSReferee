@@ -56,9 +56,11 @@ SOURCES += \
         src/utils/text/text.cpp \
         src/utils/timer/timer.cpp \
         src/world/entities/referee/checkers/checker.cpp \
+        src/world/entities/referee/checkers/goalie/checker_goalie.cpp \
         src/world/entities/referee/checkers/halftime/checker_halftime.cpp \
         src/world/entities/referee/checkers/stoppedball/checker_stuckedball.cpp \
         src/world/entities/referee/referee.cpp \
+        src/world/entities/replacer/replacer.cpp \
         src/world/entities/vision/filters/loss/lossfilter.cpp \
         src/world/entities/vision/filters/noise/noisefilter.cpp \
         src/world/entities/vision/filters/kalman/kalmanfilter.cpp \
@@ -95,9 +97,12 @@ HEADERS += \
     src/utils/text/text.h \
     src/utils/timer/timer.h \
     src/world/entities/referee/checkers/checker.h \
+    src/world/entities/referee/checkers/checkers.h \
+    src/world/entities/referee/checkers/goalie/checker_goalie.h \
     src/world/entities/referee/checkers/halftime/checker_halftime.h \
     src/world/entities/referee/checkers/stoppedball/checker_stuckedball.h \
     src/world/entities/referee/referee.h \
+    src/world/entities/replacer/replacer.h \
     src/world/entities/vision/filters/loss/lossfilter.h \
     src/world/entities/vision/filters/noise/noisefilter.h \
     src/world/entities/vision/filters/kalman/kalmanfilter.h \

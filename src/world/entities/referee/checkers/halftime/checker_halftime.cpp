@@ -11,10 +11,8 @@ void Checker_HalfTime::configure() {
 }
 
 void Checker_HalfTime::run() {
-    QPair<VSSRef::Foul, VSSRef::Color> lastPenaltyInfo = _referee->getLastPenaltyInfo();
-
     // If is game on
-    if(lastPenaltyInfo.first == VSSRef::Foul::GAME_ON) {
+    if(_referee->isGameOn()) {
         // Stop timer
         _timer.stop();
 

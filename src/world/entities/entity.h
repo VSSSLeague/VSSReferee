@@ -10,7 +10,7 @@
 enum EntityType {
     ENT_VISION,
     ENT_REFEREE,
-    ENT_ACTUATOR,
+    ENT_REPLACER,
     ENT_GUI
 };
 
