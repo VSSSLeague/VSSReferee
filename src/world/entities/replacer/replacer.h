@@ -1,4 +1,4 @@
-#ifndef REPLACER_H
+﻿#ifndef REPLACER_H
 #define REPLACER_H
 
 #include <src/world/entities/entity.h>
@@ -59,11 +59,11 @@ private:
     QHash<VSSRef::Color, bool> _placementStatus;
     bool _isGoaliePlacedAtTop;
     Position getBallPlaceByFoul(VSSRef::Foul foul, VSSRef::Color color, VSSRef::Quadrant quadrant);
-    VSSRef::Frame* getPenaltyPlacement(VSSRef::Color color);
-    VSSRef::Frame* getGoalKickPlacement(VSSRef::Color color);
-    VSSRef::Frame* getFreeBallPlacement(VSSRef::Color color);
-    VSSRef::Frame* getKickoffPlacement(VSSRef::Color color);
-    void placeFrame(VSSRef::Frame *frame);
+    VSSRef::Frame getPenaltyPlacement(VSSRef::Color color);
+    VSSRef::Frame getGoalKickPlacement(VSSRef::Color color);
+    VSSRef::Frame getFreeBallPlacement(VSSRef::Color color);
+    VSSRef::Frame getKickoffPlacement(VSSRef::Color color);
+    void placeFrame(VSSRef::Frame frame);
     void placeBall();
     void stopRobots();
 

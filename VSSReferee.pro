@@ -85,7 +85,6 @@ HEADERS += \
     src/constants/constants.h \
     src/refereecore.h \
     src/utils/types/angle/angle.h \
-    src/utils/types/color/color.h \
     src/utils/types/field/field.h \
     src/utils/types/field/field_default_3v3.h \
     src/utils/types/object/object.h \
