@@ -22,9 +22,9 @@ void RefereeCore::start() {
     // Setup utils
     Utils::setConstants(getConstants());
 
-    // Creating vision pointer and adding it to world with priority 0
+    // Creating vision pointer and adding it to world with priority 2
     _vision = new Vision(getConstants());
-    _world->addEntity(_vision, 0);
+    _world->addEntity(_vision, 2);
 
     // Creating replacer pointer
     _replacer = new Replacer(_vision, getConstants());
@@ -33,8 +33,8 @@ void RefereeCore::start() {
     _referee = new Referee(_vision, _replacer, getConstants());
     _world->addEntity(_referee, 1);
 
-    // Adding replacer to world with prio 2
-    _world->addEntity(_replacer, 2);
+    // Adding replacer to world with prio 0
+    _world->addEntity(_replacer, 0);
 
     // Starting entities
     _world->startEntities();

@@ -119,11 +119,10 @@ void Replacer::loop() {
                 // If both placed send signal
                 emit teamsPlaced();
             }
-            else {
-                // If both not placed already, stop all robots in field
-                stopRobots();
-            }
         }
+
+        // Force robots to stop
+        stopRobots();
     }
     else {
         // Reset control vars
@@ -251,9 +250,9 @@ Position Replacer::getBallPlaceByFoul(VSSRef::Foul foul, VSSRef::Color color, VS
     return Position(true, 0.0, 0.0);
 }
 
-VSSRef::Frame* Replacer::getPenaltyPlacement(VSSRef::Color color){
-    VSSRef::Frame *frame = new VSSRef::Frame();
-    frame->set_teamcolor(color);
+VSSRef::Frame Replacer::getPenaltyPlacement(VSSRef::Color color){
+    VSSRef::Frame frame;
+    frame.set_teamcolor(color);
 
     // swap side check
     bool teamIsAtLeft = (color == VSSRef::Color::BLUE && getConstants()->blueIsLeftSide()) || (color == VSSRef::Color::YELLOW && !getConstants()->blueIsLeftSide());
@@ -277,7 +276,7 @@ VSSRef::Frame* Replacer::getPenaltyPlacement(VSSRef::Color color){
     if(color == getFoulColor()){
         // Insert GK
         if(players.size() == 0) return frame;
-        VSSRef::Robot *gk = frame->add_robots();
+        VSSRef::Robot *gk = frame.add_robots();
         gk->set_robot_id(getGoalie(color));
         gk->set_orientation(0.0);
         gk->set_x(factor * ((Field_Default_3v3::kFieldLength / 2000.0) - getConstants()->robotLength()));
@@ -285,7 +284,7 @@ VSSRef::Frame* Replacer::getPenaltyPlacement(VSSRef::Color color){
 
         // Attacker
         if(players.size() == 0) return frame;
-        VSSRef::Robot *striker = frame->add_robots();
+        VSSRef::Robot *striker = frame.add_robots();
         striker->set_robot_id(players.takeFirst());
         striker->set_orientation(0.0);
         striker->set_x((-factor) * (markX - (2.0 * getConstants()->robotLength())));
@@ -293,7 +292,7 @@ VSSRef::Frame* Replacer::getPenaltyPlacement(VSSRef::Color color){
 
         // Support / Second Attacker
         if(players.size() == 0) return frame;
-        VSSRef::Robot *support = frame->add_robots();
+        VSSRef::Robot *support = frame.add_robots();
         support->set_robot_id(players.takeFirst());
         support->set_orientation(0.0);
         support->set_x(factor * (1.5 * getConstants()->robotLength()));
@@ -302,7 +301,7 @@ VSSRef::Frame* Replacer::getPenaltyPlacement(VSSRef::Color color){
     else{
         // Insert GK
         if(players.size() == 0) return frame;
-        VSSRef::Robot *gk = frame->add_robots();
+        VSSRef::Robot *gk = frame.add_robots();
         gk->set_robot_id(getGoalie(color));
         gk->set_orientation(0.0);
         gk->set_x(factor * ((Field_Default_3v3::kFieldLength/2000.0) - (getConstants()->robotLength()/2.0)));
@@ -310,7 +309,7 @@ VSSRef::Frame* Replacer::getPenaltyPlacement(VSSRef::Color color){
 
         // Attacker
         if(players.size() == 0) return frame;
-        VSSRef::Robot *striker = frame->add_robots();
+        VSSRef::Robot *striker = frame.add_robots();
         striker->set_robot_id(players.takeFirst());
         striker->set_orientation(0.0);
         striker->set_x((-factor) * (1.5 * getConstants()->robotLength()));
@@ -318,7 +317,7 @@ VSSRef::Frame* Replacer::getPenaltyPlacement(VSSRef::Color color){
 
         // Support / Second Attacker
         if(players.size() == 0) return frame;
-        VSSRef::Robot *support = frame->add_robots();
+        VSSRef::Robot *support = frame.add_robots();
         support->set_robot_id(players.takeFirst());
         support->set_orientation(0.0);
         support->set_x((-factor) * (1.5 * getConstants()->robotLength()));
@@ -328,9 +327,9 @@ VSSRef::Frame* Replacer::getPenaltyPlacement(VSSRef::Color color){
     return frame;
 }
 
-VSSRef::Frame* Replacer::getGoalKickPlacement(VSSRef::Color color){
-    VSSRef::Frame *frame = new VSSRef::Frame();
-    frame->set_teamcolor(color);
+VSSRef::Frame Replacer::getGoalKickPlacement(VSSRef::Color color){
+    VSSRef::Frame frame;
+    frame.set_teamcolor(color);
 
     // swap side check
     bool teamIsAtLeft = (color == VSSRef::Color::BLUE && getConstants()->blueIsLeftSide()) || (color == VSSRef::Color::YELLOW && !getConstants()->blueIsLeftSide());
@@ -359,7 +358,7 @@ VSSRef::Frame* Replacer::getGoalKickPlacement(VSSRef::Color color){
 
         // Insert GK
         if(players.size() == 0) return frame;
-        VSSRef::Robot *gk = frame->add_robots();
+        VSSRef::Robot *gk = frame.add_robots();
         gk->set_robot_id(getGoalie(color));
         if(_isGoaliePlacedAtTop){
             gk->set_orientation(factor * -45.0);
@@ -374,7 +373,7 @@ VSSRef::Frame* Replacer::getGoalKickPlacement(VSSRef::Color color){
 
         // Attacker
         if(players.size() == 0) return frame;
-        VSSRef::Robot *striker = frame->add_robots();
+        VSSRef::Robot *striker = frame.add_robots();
         striker->set_robot_id(players.takeFirst());
         striker->set_orientation(0.0);
         striker->set_x((factor) * (markX + getConstants()->robotLength()));
@@ -382,7 +381,7 @@ VSSRef::Frame* Replacer::getGoalKickPlacement(VSSRef::Color color){
 
         // Support / Second Attacker
         if(players.size() == 0) return frame;
-        VSSRef::Robot *support = frame->add_robots();
+        VSSRef::Robot *support = frame.add_robots();
         support->set_robot_id(players.takeFirst());
         support->set_orientation(0.0);
         support->set_x((factor) * (markX - getConstants()->robotLength()));
@@ -391,7 +390,7 @@ VSSRef::Frame* Replacer::getGoalKickPlacement(VSSRef::Color color){
     else{
         // Insert GK
         if(players.size() == 0) return frame;
-        VSSRef::Robot *gk = frame->add_robots();
+        VSSRef::Robot *gk = frame.add_robots();
         gk->set_robot_id(getGoalie(color));
         gk->set_orientation(0.0);
         gk->set_x(factor * ((Field_Default_3v3::kFieldLength/2000.0) - (getConstants()->robotLength())));
@@ -399,7 +398,7 @@ VSSRef::Frame* Replacer::getGoalKickPlacement(VSSRef::Color color){
 
         // Attacker
         if(players.size() == 0) return frame;
-        VSSRef::Robot *striker = frame->add_robots();
+        VSSRef::Robot *striker = frame.add_robots();
         striker->set_robot_id(players.takeFirst());
         striker->set_orientation(0.0);
         striker->set_x((-factor) * (markX - (2.0 * getConstants()->robotLength())));
@@ -407,7 +406,7 @@ VSSRef::Frame* Replacer::getGoalKickPlacement(VSSRef::Color color){
 
         // Support / Second Attacker
         if(players.size() == 0) return frame;
-        VSSRef::Robot *support = frame->add_robots();
+        VSSRef::Robot *support = frame.add_robots();
         support->set_robot_id(players.takeFirst());
         support->set_orientation(0.0);
         support->set_x((-factor) * (markX - (3.0 * getConstants()->robotLength())));
@@ -417,9 +416,9 @@ VSSRef::Frame* Replacer::getGoalKickPlacement(VSSRef::Color color){
     return frame;
 }
 
-VSSRef::Frame* Replacer::getFreeBallPlacement(VSSRef::Color color){
-    VSSRef::Frame *frame = new VSSRef::Frame();
-    frame->set_teamcolor(color);
+VSSRef::Frame Replacer::getFreeBallPlacement(VSSRef::Color color){
+    VSSRef::Frame frame;
+    frame.set_teamcolor(color);
 
     // swap side check
     bool teamIsAtLeft = (color == VSSRef::Color::BLUE && getConstants()->blueIsLeftSide()) || (color == VSSRef::Color::YELLOW && !getConstants()->blueIsLeftSide());
@@ -450,7 +449,7 @@ VSSRef::Frame* Replacer::getFreeBallPlacement(VSSRef::Color color){
     // First discover if FB will occur at our side
     if(teamIsAtLeft){
         if(players.size() == 0) return frame;
-        VSSRef::Robot *gk = frame->add_robots();
+        VSSRef::Robot *gk = frame.add_robots();
         gk->set_robot_id(getGoalie(color));
         gk->set_orientation(0.0);
         gk->set_x(factor * ((Field_Default_3v3::kFieldLength / 2000.0) - getConstants()->robotLength()));
@@ -464,7 +463,7 @@ VSSRef::Frame* Replacer::getFreeBallPlacement(VSSRef::Color color){
 
         // Attacker
         if(players.size() == 0) return frame;
-        VSSRef::Robot *striker = frame->add_robots();
+        VSSRef::Robot *striker = frame.add_robots();
         striker->set_robot_id(players.takeFirst());
         striker->set_orientation(0.0);
         striker->set_x(markX - 0.2);
@@ -472,7 +471,7 @@ VSSRef::Frame* Replacer::getFreeBallPlacement(VSSRef::Color color){
 
         // Support
         if(players.size() == 0) return frame;
-        VSSRef::Robot *support = frame->add_robots();
+        VSSRef::Robot *support = frame.add_robots();
         support->set_robot_id(players.takeFirst());
         support->set_orientation(0.0);
 
@@ -496,7 +495,7 @@ VSSRef::Frame* Replacer::getFreeBallPlacement(VSSRef::Color color){
     }
     else{
         if(players.size() == 0) return frame;
-        VSSRef::Robot *gk = frame->add_robots();
+        VSSRef::Robot *gk = frame.add_robots();
         gk->set_robot_id(getGoalie(color));
         gk->set_orientation(0.0);
         gk->set_x(factor * ((Field_Default_3v3::kFieldLength / 2000.0) - getConstants()->robotLength()));
@@ -510,7 +509,7 @@ VSSRef::Frame* Replacer::getFreeBallPlacement(VSSRef::Color color){
 
         // Attacker
         if(players.size() == 0) return frame;
-        VSSRef::Robot *striker = frame->add_robots();
+        VSSRef::Robot *striker = frame.add_robots();
         striker->set_robot_id(players.takeFirst());
         striker->set_orientation(0.0);
         striker->set_x(markX + 0.2);
@@ -518,7 +517,7 @@ VSSRef::Frame* Replacer::getFreeBallPlacement(VSSRef::Color color){
 
         // Support
         if(players.size() == 0) return frame;
-        VSSRef::Robot *support = frame->add_robots();
+        VSSRef::Robot *support = frame.add_robots();
         support->set_robot_id(players.takeFirst());
         support->set_orientation(0.0);
 
@@ -544,9 +543,9 @@ VSSRef::Frame* Replacer::getFreeBallPlacement(VSSRef::Color color){
     return frame;
 }
 
-VSSRef::Frame* Replacer::getKickoffPlacement(VSSRef::Color color){
-    VSSRef::Frame *frame = new VSSRef::Frame();
-    frame->set_teamcolor(color);
+VSSRef::Frame Replacer::getKickoffPlacement(VSSRef::Color color){
+    VSSRef::Frame frame;
+    frame.set_teamcolor(color);
 
     // swap side check
     bool teamIsAtLeft = (color == VSSRef::Color::BLUE && getConstants()->blueIsLeftSide()) || (color == VSSRef::Color::YELLOW && !getConstants()->blueIsLeftSide());
@@ -564,7 +563,7 @@ VSSRef::Frame* Replacer::getKickoffPlacement(VSSRef::Color color){
 
     // Goalkeeper
     if(players.size() == 0) return frame;
-    VSSRef::Robot *gk = frame->add_robots();
+    VSSRef::Robot *gk = frame.add_robots();
     gk->set_robot_id(getGoalie(color));
     gk->set_orientation(0.0);
     gk->set_x(factor * ((Field_Default_3v3::kFieldLength / 2000.0) - getConstants()->robotLength()));
@@ -572,7 +571,7 @@ VSSRef::Frame* Replacer::getKickoffPlacement(VSSRef::Color color){
 
     // Attacker
     if(players.size() == 0) return frame;
-    VSSRef::Robot *striker = frame->add_robots();
+    VSSRef::Robot *striker = frame.add_robots();
     striker->set_robot_id(players.takeFirst());
     striker->set_orientation(0.0);
     striker->set_x(factor * Field_Default_3v3::kCenterRadius/1000.0);
@@ -580,7 +579,7 @@ VSSRef::Frame* Replacer::getKickoffPlacement(VSSRef::Color color){
 
     // Support
     if(players.size() == 0) return frame;
-    VSSRef::Robot *support = frame->add_robots();
+    VSSRef::Robot *support = frame.add_robots();
     support->set_robot_id(players.takeFirst());
     support->set_orientation(0.0);
     support->set_x(factor * (Field_Default_3v3::kCenterRadius/1000.0 * 2.0));
@@ -589,17 +588,17 @@ VSSRef::Frame* Replacer::getKickoffPlacement(VSSRef::Color color){
     return frame;
 }
 
-void Replacer::placeFrame(VSSRef::Frame *frame) {
+void Replacer::placeFrame(VSSRef::Frame frame) {
     // Create aux vars
     fira_message::sim_to_ref::Packet packet;
     fira_message::sim_to_ref::Replacement *command = new fira_message::sim_to_ref::Replacement();
     std::string msg;
 
     // Create robot commands
-    for(int i = 0; i < frame->robots_size(); i++) {
+    for(int i = 0; i < frame.robots_size(); i++) {
         fira_message::sim_to_ref::RobotReplacement *robotPlacement = command->add_robots();
         fira_message::Robot *robotPosition = new fira_message::Robot();
-        VSSRef::Robot frameRobot = frame->robots(i);
+        VSSRef::Robot frameRobot = frame.robots(i);
 
         // Set robot position / data
         robotPosition->set_robot_id(frameRobot.robot_id());
@@ -610,8 +609,8 @@ void Replacer::placeFrame(VSSRef::Frame *frame) {
         robotPosition->set_vy(0.0);
 
         // Check if is foul goalie and if it is placed at top or not
-        if(frame->teamcolor() == getFoulColor()) {
-            if(Utils::isInsideGoalArea(frame->teamcolor(), Position(true, frameRobot.x(), frameRobot.y()))){
+        if(frame.teamcolor() == getFoulColor()) {
+            if(Utils::isInsideGoalArea(frame.teamcolor(), Position(true, frameRobot.x(), frameRobot.y()))){
                 if(frameRobot.y() >= 0) {
                     _isGoaliePlacedAtTop = true;
                 }
@@ -623,7 +622,7 @@ void Replacer::placeFrame(VSSRef::Frame *frame) {
 
         // Set placement data
         robotPlacement->set_turnon(true);
-        robotPlacement->set_yellowteam((frame->teamcolor() == VSSRef::Color::YELLOW) ? true : false);
+        robotPlacement->set_yellowteam((frame.teamcolor() == VSSRef::Color::YELLOW) ? true : false);
         robotPlacement->set_allocated_position(robotPosition);
     }
 
@@ -634,7 +633,7 @@ void Replacer::placeFrame(VSSRef::Frame *frame) {
     packet.SerializeToString(&msg);
 
     if(_firaClient->write(msg.c_str(), msg.length()) == -1){
-       std::cout << Text::cyan("[REPLACER] ", true) + Text::red("FiraClient failed to write to socket.", true) + '\n';
+       std::cout << Text::blue("[REPLACER] ", true) + Text::red("FiraClient failed to write to socket.", true) + '\n';
     }
 }
 
@@ -665,7 +664,7 @@ void Replacer::placeBall() {
     packet.SerializeToString(&msg);
 
     if(_firaClient->write(msg.c_str(), msg.length()) == -1){
-       std::cout << Text::cyan("[REPLACER] ", true) + Text::red("FiraClient failed to write to socket.", true) + '\n';
+       std::cout << Text::blue("[REPLACER] ", true) + Text::red("FiraClient failed to write to socket.", true) + '\n';
     }
 }
 
@@ -689,7 +688,7 @@ void Replacer::stopRobots() {
     command.SerializeToString(&msg);
 
     if(_firaClient->write(msg.c_str(), msg.length()) == -1){
-       std::cout << Text::cyan("[REPLACER] ", true) + Text::red("FiraClient failed to write to socket.", true) + '\n';
+       std::cout << Text::blue("[REPLACER] ", true) + Text::red("FiraClient failed to write to socket.", true) + '\n';
     }
 }
 
@@ -703,7 +702,7 @@ void Replacer::placeTeams() {
             VSSRef::Frame teamFrame = _placement.take(VSSRef::Color(i));
 
             // Send frame to network
-            placeFrame(&teamFrame);
+            placeFrame(teamFrame);
 
             // Add new empty frame
             _placement.insert(VSSRef::Color(i), VSSRef::Frame());
@@ -711,7 +710,7 @@ void Replacer::placeTeams() {
         // if team not placed, take default positions
         else {
             // Take default frame
-            VSSRef::Frame *defaultFrame;
+            VSSRef::Frame defaultFrame;
 
             switch(lastFoul) {
                 case VSSRef::Foul::FREE_BALL:{
@@ -731,7 +730,7 @@ void Replacer::placeTeams() {
                 }
                 break;
                 default:{
-                    defaultFrame = new VSSRef::Frame();
+                    defaultFrame = VSSRef::Frame();
                 }
                 break;
             }
