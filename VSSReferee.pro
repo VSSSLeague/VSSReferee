@@ -45,6 +45,7 @@ SOURCES += \
         main.cpp \
         src/constants/constants.cpp \
         src/refereecore.cpp \
+        src/soccerview/soccerview.cpp \
         src/utils/types/angle/angle.cpp \
         src/utils/types/field/field.cpp \
         src/utils/types/object/object.cpp \
@@ -55,10 +56,13 @@ SOURCES += \
         src/utils/exithandler/exithandler.cpp \
         src/utils/text/text.cpp \
         src/utils/timer/timer.cpp \
+        src/world/entities/referee/checkers/ballplay/checker_ballplay.cpp \
         src/world/entities/referee/checkers/checker.cpp \
         src/world/entities/referee/checkers/goalie/checker_goalie.cpp \
         src/world/entities/referee/checkers/halftime/checker_halftime.cpp \
         src/world/entities/referee/checkers/stoppedball/checker_stuckedball.cpp \
+        src/world/entities/referee/checkers/twoattackers/checker_twoattackers.cpp \
+        src/world/entities/referee/checkers/twodefenders/checker_twodefenders.cpp \
         src/world/entities/referee/referee.cpp \
         src/world/entities/replacer/replacer.cpp \
         src/world/entities/vision/filters/loss/lossfilter.cpp \
@@ -84,6 +88,7 @@ HEADERS += \
     include/vssref_placement.pb.h \
     src/constants/constants.h \
     src/refereecore.h \
+    src/soccerview/soccerview.h \
     src/utils/types/angle/angle.h \
     src/utils/types/field/field.h \
     src/utils/types/field/field_default_3v3.h \
@@ -95,11 +100,14 @@ HEADERS += \
     src/utils/exithandler/exithandler.h \
     src/utils/text/text.h \
     src/utils/timer/timer.h \
+    src/world/entities/referee/checkers/ballplay/checker_ballplay.h \
     src/world/entities/referee/checkers/checker.h \
     src/world/entities/referee/checkers/checkers.h \
     src/world/entities/referee/checkers/goalie/checker_goalie.h \
     src/world/entities/referee/checkers/halftime/checker_halftime.h \
     src/world/entities/referee/checkers/stoppedball/checker_stuckedball.h \
+    src/world/entities/referee/checkers/twoattackers/checker_twoattackers.h \
+    src/world/entities/referee/checkers/twodefenders/checker_twodefenders.h \
     src/world/entities/referee/referee.h \
     src/world/entities/replacer/replacer.h \
     src/world/entities/vision/filters/loss/lossfilter.h \
@@ -109,3 +117,9 @@ HEADERS += \
     src/world/entities/vision/filters/kalman/state/kalmanstate.h \
     src/world/entities/vision/vision.h \
     src/world/world.h
+
+FORMS += \
+    src/soccerview/soccerview.ui
+
+RESOURCES += \
+    rsc/resources.qrc

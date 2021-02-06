@@ -1,6 +1,7 @@
 #ifndef REFEREECORE_H
 #define REFEREECORE_H
 
+#include <src/soccerview/soccerview.h>
 #include <src/utils/utils.h>
 #include <src/world/world.h>
 #include <src/world/entities/vision/vision.h>
@@ -23,6 +24,9 @@ private:
     Vision *_vision;
     Referee *_referee;
     Replacer *_replacer;
+
+    // GUI
+    SoccerView *_soccerView;
 
     // Constants
     Constants *_constants;

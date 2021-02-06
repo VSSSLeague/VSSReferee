@@ -6,7 +6,7 @@
 class Checker_StuckedBall : public Checker
 {
 public:
-    // Using Foul constructor
+    // Using Checker constructor
     using Checker::Checker;
 
     // Foul inherited methods
@@ -20,6 +20,9 @@ private:
 
     // Last stuck check
     bool _isLastStuckAtGoalArea;
+
+    // Utils
+    bool havePlayersNearlyBall(VSSRef::Color teamColor);
 };
 
 #endif // CHECKER_STUCKEDBALL_H

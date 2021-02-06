@@ -17,8 +17,8 @@
     
     "Team":{
     	"qtPlayers": 3,
-    	"blueTeamName": "Team Blue",
-    	"yellowTeamName": "Team Yellow",
+    	"blueTeamName": "Maracatronics",
+    	"yellowTeamName": "RobotBulls",
     	"blueIsLeftSide": true
     },
     

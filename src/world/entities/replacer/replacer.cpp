@@ -176,6 +176,8 @@ void Replacer::takeGoalie(VSSRef::Color color, quint8 playerId) {
 }
 
 void Replacer::takeFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant) {
+    if(foul == VSSRef::Foul::GAME_ON || foul == VSSRef::Foul::STOP) return ;
+
     _foulMutex.lock();
     _foul = foul;
     _foulColor = foulColor;
@@ -637,6 +639,7 @@ void Replacer::placeFrame(VSSRef::Frame frame) {
     }
 }
 
+/// TODO: check how to call this function in stop -> game_on transition
 void Replacer::placeBall() {
     // Create aux vars
     fira_message::sim_to_ref::Packet packet;
