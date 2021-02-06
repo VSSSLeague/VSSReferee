@@ -63,6 +63,11 @@ private:
     // Goalie management
     Checker_Goalie *_goalieChecker;
 
+    // Atk and def checkers
+    Checker_TwoAttackers *_twoAtkChecker;
+    Checker_TwoDefenders *_twoDefChecker;
+    Checker_BallPlay *_ballPlayChecker;
+
     // Foul transition management
     Timer _transitionTimer;
     QMutex _transitionMutex;
@@ -72,6 +77,7 @@ private:
 
 signals:
     void sendFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant);
+    void sendTimestamp(float timestamp, VSSRef::Half half);
     void callReplacer();
 
 public slots:

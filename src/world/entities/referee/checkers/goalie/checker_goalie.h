@@ -7,7 +7,7 @@ class Checker_Goalie : public Checker
 {
     Q_OBJECT
 public:
-    // Using Foul constructor
+    // Using Checker constructor
     using Checker::Checker;
 
     // Foul inherited methods

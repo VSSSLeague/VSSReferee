@@ -33,7 +33,13 @@ void Checker_StuckedBall::run() {
                 // Check if timer passed max stuck time
                 if(_timer.getSeconds() >= getConstants()->stuckedBallTime()) {
                     // Set penalties and emit that an foul occured
-                    setPenaltiesInfo(VSSRef::Foul::PENALTY_KICK, ((i == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE), VSSRef::Quadrant::NO_QUADRANT);
+                    // If have ball disputation (nearly ball of both teams)
+                    if(havePlayersNearlyBall(VSSRef::Color::BLUE) && havePlayersNearlyBall(VSSRef::Color::YELLOW)) {
+                        setPenaltiesInfo(VSSRef::Foul::FREE_BALL, VSSRef::Color::NONE, Utils::getBallQuadrant(ballPosition));
+                    }
+                    else {
+                        setPenaltiesInfo(VSSRef::Foul::PENALTY_KICK, ((i == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE), VSSRef::Quadrant::NO_QUADRANT);
+                    }
                     emit foulOccured();
 
                     // Reset timer
@@ -71,4 +77,19 @@ void Checker_StuckedBall::run() {
         // Reset timer
         _timer.start();
     }
+}
+
+bool Checker_StuckedBall::havePlayersNearlyBall(VSSRef::Color teamColor) {
+    QList<quint8> avPlayers = getVision()->getAvailablePlayers(teamColor);
+    Position ballPosition = getVision()->getBallPosition();
+
+    for(int i = 0; i < avPlayers.size(); i++) {
+        Position playerPosition = getVision()->getPlayerPosition(teamColor, avPlayers.at(i));
+        /// TODO: check this distance value later
+        if(Utils::distance(playerPosition, ballPosition) <= 1.5 * getConstants()->robotLength()) {
+            return true;
+        }
+    }
+
+    return false;
 }

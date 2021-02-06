@@ -118,9 +118,6 @@ Position Utils::rotatePoint(Position point, float angle){
 }
 
 VSSRef::Quadrant Utils::getBallQuadrant(Position ballPos){
-    if(isInsideGoalArea(VSSRef::Color::BLUE, ballPos) || isInsideGoalArea(VSSRef::Color::YELLOW, ballPos))
-        return VSSRef::Quadrant::NO_QUADRANT;
-
     /// Quadrants
     // Quadrant 1 (top-right)
     // Quadrant 2 (top-left)

@@ -30,6 +30,16 @@ void Referee::initialization() {
     // Stucked ball
     addChecker(new Checker_StuckedBall(_vision, getConstants()), 0);
 
+    // Two attackers
+    addChecker(_twoAtkChecker = new Checker_TwoAttackers(_vision, getConstants()), 1);
+
+    // Two defenders
+    addChecker(_twoDefChecker = new Checker_TwoDefenders(_vision, getConstants()), 1);
+
+    // Ball play
+    addChecker(_ballPlayChecker = new Checker_BallPlay(_vision, getConstants()), 2);
+    _ballPlayChecker->setAtkDefCheckers(_twoAtkChecker, _twoDefChecker);
+
     // Goalie
     _goalieChecker = new Checker_Goalie(_vision, getConstants());
     connect(_goalieChecker, SIGNAL(updateGoalie(VSSRef::Color, quint8)), _replacer, SLOT(takeGoalie(VSSRef::Color, quint8)));
@@ -59,8 +69,8 @@ void Referee::loop() {
     // Run half checker
     _halfChecker->run();
 
-    // Run goalie checker
-    _goalieChecker->run();
+    // Send timestamp
+    emit sendTimestamp(_halfChecker->getTimeStamp(), _gameHalf);
 
     // If game is on, run all checks
     if(_lastFoul == VSSRef::Foul::GAME_ON) {
@@ -104,7 +114,7 @@ void Referee::loop() {
             _transitionMutex.unlock();
 
             // Check if passed transition time
-            if(_transitionTimer.getSeconds() >= getConstants()->transitionTime() || teamsPlaced) {
+            if(_transitionTimer.getSeconds() >= getConstants()->transitionTime() || (teamsPlaced && _transitionTimer.getSeconds() >= (getConstants()->transitionTime() / 2.0))) {
                 // Set control vars
                 _isStopped = true;
                 _resetedTimer = false;
@@ -261,10 +271,8 @@ void Referee::sendPenaltiesToNetwork() {
     // Debug sent foul
     std::cout << Text::blue("[REFEREE] ", true) + Text::yellow("[" + VSSRef::Half_Name(_gameHalf) + ":" + std::to_string(_halfChecker->getTimeStamp()) + "] ", true) + Text::bold("Sent command '" + VSSRef::Foul_Name(_lastFoul) + "' for team '" + VSSRef::Color_Name(_lastFoulTeam) + "' at quadrant '" + VSSRef::Quadrant_Name(_lastFoulQuadrant)) + "'\n";
 
-    // Send foul (if is not an state) to replacer
-    if(_lastFoul != VSSRef::Foul::GAME_ON && _lastFoul != VSSRef::Foul::STOP) {
-        emit sendFoul(_lastFoul, _lastFoulTeam, _lastFoulQuadrant);
-    }
+    // Send foul
+    emit sendFoul(_lastFoul, _lastFoulTeam, _lastFoulQuadrant);
 
     // Reset checkers
     resetCheckers();

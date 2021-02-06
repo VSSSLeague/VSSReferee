@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>teams/maracatronics.png</file>
+        <file>teams/default.png</file>
+        <file>teams/robotbulls.png</file>
+    </qresource>
+</RCC>

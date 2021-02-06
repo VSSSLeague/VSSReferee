@@ -11,11 +11,15 @@ RefereeCore::RefereeCore(Constants *constants) {
     qRegisterMetaType<VSSRef::Color>("VSSRef::Color");
     qRegisterMetaType<VSSRef::Foul>("VSSRef::Foul");
     qRegisterMetaType<VSSRef::Quadrant>("VSSRef::Quadrant");
+    qRegisterMetaType<VSSRef::Half>("VSSRef::Half");
 }
 
 RefereeCore::~RefereeCore() {
     // Deleting world module
     delete _world;
+
+    // Deleting GUI
+    delete _soccerView;
 }
 
 void RefereeCore::start() {
@@ -35,6 +39,16 @@ void RefereeCore::start() {
 
     // Adding replacer to world with prio 0
     _world->addEntity(_replacer, 0);
+
+    // Creating GUI
+    _soccerView = new SoccerView(getConstants());
+
+    // Make GUI connections with modules
+    QObject::connect(_referee, SIGNAL(sendFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), _soccerView, SLOT(takeFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)));
+    QObject::connect(_referee, SIGNAL(sendTimestamp(float, VSSRef::Half)), _soccerView, SLOT(takeTimeStamp(float, VSSRef::Half)));
+
+    // Show GUI
+    _soccerView->show();
 
     // Starting entities
     _world->startEntities();
