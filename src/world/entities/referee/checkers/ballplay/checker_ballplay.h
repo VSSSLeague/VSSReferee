@@ -6,6 +6,7 @@
 
 class Checker_BallPlay : public Checker
 {
+    Q_OBJECT
 public:
     // Using Checker constructor
     using Checker::Checker;
@@ -23,10 +24,15 @@ private:
     bool _isPlayRunning;
     bool _possiblePenalty;
     bool _possibleGoalKick;
+    bool _possibleGoal;
 
     // Checkers
     Checker_TwoAttackers *_checkerTwoAtk;
     Checker_TwoDefenders *_checkerTwoDef;
+
+signals:
+    void emitGoal(VSSRef::Color forTeam);
+    void emitSuggestion(bool possibleGoal, bool possibleGoalKick, bool possiblePenalty);
 };
 
 #endif // CHECKER_BALLPLAY_H

@@ -95,7 +95,7 @@
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QLabel" name="label_7">
+    <widget class="QLabel" name="leftTeamGoals">
      <property name="geometry">
       <rect>
        <x>140</x>
@@ -128,7 +128,7 @@
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
     </widget>
-    <widget class="QLabel" name="label_8">
+    <widget class="QLabel" name="rightTeamGoals">
      <property name="geometry">
       <rect>
        <x>380</x>
@@ -216,7 +216,7 @@ color:white;</string>
      <property name="font">
       <font>
        <family>Manjari</family>
-       <pointsize>13</pointsize>
+       <pointsize>12</pointsize>
        <weight>50</weight>
        <bold>false</bold>
       </font>
@@ -285,8 +285,8 @@ color: white;</string>
     <zorder>statusColor</zorder>
     <zorder>leftTeamLogo</zorder>
     <zorder>rightTeamLogo</zorder>
-    <zorder>label_7</zorder>
-    <zorder>label_8</zorder>
+    <zorder>leftTeamGoals</zorder>
+    <zorder>rightTeamGoals</zorder>
     <zorder>gameTime</zorder>
     <zorder>halfTime</zorder>
     <zorder>leftTeamName</zorder>
@@ -313,6 +313,9 @@ color: white;</string>
        <height>25</height>
       </rect>
      </property>
+     <property name="whatsThis">
+      <string>STOP</string>
+     </property>
      <property name="text">
       <string>Stop</string>
      </property>
@@ -325,6 +328,9 @@ color: white;</string>
        <width>90</width>
        <height>25</height>
       </rect>
+     </property>
+     <property name="whatsThis">
+      <string>YELLOW</string>
      </property>
      <property name="text">
       <string>Yellow</string>
@@ -357,11 +363,14 @@ color: white;</string>
        <height>25</height>
       </rect>
      </property>
+     <property name="whatsThis">
+      <string>GAME_ON</string>
+     </property>
      <property name="text">
       <string>Start</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="goalKick_2">
+    <widget class="QPushButton" name="addGoal">
      <property name="geometry">
       <rect>
        <x>205</x>
@@ -374,7 +383,7 @@ color: white;</string>
       <string>Add Goal</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="goalKick_4">
+    <widget class="QPushButton" name="addMinute">
      <property name="geometry">
       <rect>
        <x>205</x>
@@ -387,7 +396,7 @@ color: white;</string>
       <string>Add Min</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="goalKick_5">
+    <widget class="QPushButton" name="addSecond">
      <property name="geometry">
       <rect>
        <x>305</x>
@@ -408,6 +417,9 @@ color: white;</string>
        <width>31</width>
        <height>25</height>
       </rect>
+     </property>
+     <property name="whatsThis">
+      <string>QUADRANT_1</string>
      </property>
      <property name="text">
       <string>Q1</string>
@@ -433,6 +445,9 @@ color: white;</string>
        <width>90</width>
        <height>25</height>
       </rect>
+     </property>
+     <property name="whatsThis">
+      <string>BLUE</string>
      </property>
      <property name="text">
       <string>Blue</string>
@@ -475,6 +490,9 @@ color: white;</string>
        <height>25</height>
       </rect>
      </property>
+     <property name="whatsThis">
+      <string>FREE_BALL</string>
+     </property>
      <property name="text">
       <string>Free_Ball</string>
      </property>
@@ -487,6 +505,9 @@ color: white;</string>
        <width>31</width>
        <height>25</height>
       </rect>
+     </property>
+     <property name="whatsThis">
+      <string>QUADRANT_3</string>
      </property>
      <property name="text">
       <string>Q3</string>
@@ -510,6 +531,9 @@ color: white;</string>
        <height>25</height>
       </rect>
      </property>
+     <property name="whatsThis">
+      <string>PENALTY_KICK</string>
+     </property>
      <property name="text">
       <string>Penalty_Kick</string>
      </property>
@@ -522,6 +546,9 @@ color: white;</string>
        <width>95</width>
        <height>25</height>
       </rect>
+     </property>
+     <property name="whatsThis">
+      <string>GOAL_KICK</string>
      </property>
      <property name="text">
       <string>Goal_Kick</string>
@@ -536,11 +563,14 @@ color: white;</string>
        <height>25</height>
       </rect>
      </property>
+     <property name="whatsThis">
+      <string>KICKOFF</string>
+     </property>
      <property name="text">
       <string>Kickoff</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="goalKick_3">
+    <widget class="QPushButton" name="rmvGoal">
      <property name="geometry">
       <rect>
        <x>305</x>
@@ -578,6 +608,9 @@ color: white;</string>
        <height>25</height>
       </rect>
      </property>
+     <property name="whatsThis">
+      <string>QUADRANT_2</string>
+     </property>
      <property name="text">
       <string>Q2</string>
      </property>
@@ -599,6 +632,9 @@ color: white;</string>
        <width>31</width>
        <height>25</height>
       </rect>
+     </property>
+     <property name="whatsThis">
+      <string>QUADRANT_4</string>
      </property>
      <property name="text">
       <string>Q4</string>
@@ -666,7 +702,7 @@ color: white;</string>
  </resources>
  <connections/>
  <buttongroups>
-  <buttongroup name="quadrantButtons"/>
   <buttongroup name="forButtons"/>
+  <buttongroup name="quadrantButtons"/>
  </buttongroups>
 </ui>
