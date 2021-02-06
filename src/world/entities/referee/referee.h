@@ -8,11 +8,14 @@
 #include <src/world/entities/replacer/replacer.h>
 #include <src/world/entities/referee/checkers/checkers.h>
 
+// Abstract SoccerView
+class SoccerView;
+
 class Referee : public Entity
 {
     Q_OBJECT
 public:
-    Referee(Vision *vision, Replacer *replacer, Constants *constants);
+    Referee(Vision *vision, Replacer *replacer, SoccerView *soccerView, Constants *constants);
     bool isGameOn();
 
 private:
@@ -26,6 +29,9 @@ private:
 
     // Replacer
     Replacer *_replacer;
+
+    // SoccerView
+    SoccerView *_soccerView;
 
     // Referee client
     QUdpSocket *_refereeClient;
@@ -58,6 +64,7 @@ private:
     // Half and timestamp management
     Checker_HalfTime *_halfChecker;
     VSSRef::Half _gameHalf;
+    VSSRef::Color _halfKickoff;
     float _timeStamp;
 
     // Goalie management
@@ -74,6 +81,8 @@ private:
     bool _resetedTimer;
     bool _isStopped;
     bool _teamsPlaced;
+    bool _wasManualStop;
+    void resetTransitionVars();
 
 signals:
     void sendFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant);
@@ -84,6 +93,7 @@ public slots:
     void processChecker(QObject *checker);
     void halfPassed();
     void teamsPlaced();
+    void takeManualFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant);
 };
 
 #endif // REFEREE_H

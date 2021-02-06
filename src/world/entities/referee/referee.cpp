@@ -1,13 +1,20 @@
 #include "referee.h"
 
-#include <include/vssref_command.pb.h>
+#include <chrono>
+#include <random>
 
-Referee::Referee(Vision *vision, Replacer *replacer, Constants *constants) : Entity(ENT_REFEREE) {
+#include <include/vssref_command.pb.h>
+#include <src/soccerview/soccerview.h>
+
+Referee::Referee(Vision *vision, Replacer *replacer, SoccerView *soccerView, Constants *constants) : Entity(ENT_REFEREE) {
     // Take vision pointer
     _vision = vision;
 
     // Take replacer pointer
     _replacer = replacer;
+
+    // Take SoccerView
+    _soccerView = soccerView;
 
     // Take constants
     _constants = constants;
@@ -38,6 +45,7 @@ void Referee::initialization() {
 
     // Ball play
     addChecker(_ballPlayChecker = new Checker_BallPlay(_vision, getConstants()), 2);
+    connect(_ballPlayChecker, SIGNAL(emitGoal(VSSRef::Color)), _soccerView, SLOT(addGoal(VSSRef::Color)));
     _ballPlayChecker->setAtkDefCheckers(_twoAtkChecker, _twoDefChecker);
 
     // Goalie
@@ -54,6 +62,11 @@ void Referee::initialization() {
     _gameHalf = VSSRef::NO_HALF;
     _isStopped = false;
     _teamsPlaced = false;
+
+    // Take first kickoff team
+    auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+    std::mt19937 mt_rand(seed);
+    _halfKickoff = VSSRef::Color(mt_rand() % 2); // take random half kickoff (initially)
 
     // Connect
     connectClient();
@@ -95,9 +108,7 @@ void Referee::loop() {
         }
 
         // Reset transition management vars
-        _isStopped = false;
-        _resetedTimer = false;
-        _teamsPlaced = false;
+        resetTransitionVars();
     }
     // Else if game is not on, wait, go to stop and set game on again
     else {
@@ -136,13 +147,8 @@ void Referee::loop() {
             // Stop timer
             _transitionTimer.stop();
 
-            // Check if passed transition time
-            if(_transitionTimer.getSeconds() >= getConstants()->transitionTime()) {
-                // Reset control vars
-                _isStopped = false;
-                _resetedTimer = false;
-                _teamsPlaced = false;
-
+            // Check if passed transition time (if was manual stop, waits 5 min instead of 5 seconds)
+            if(_transitionTimer.getSeconds() >= (_wasManualStop ? 60 * getConstants()->transitionTime() : getConstants()->transitionTime())) {
                 // Update sent foul to GAME_ON
                 updatePenaltiesInfo(VSSRef::Foul::GAME_ON, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT);
                 sendPenaltiesToNetwork();
@@ -239,12 +245,24 @@ void Referee::deleteCheckers() {
     }
 }
 
+void Referee::resetTransitionVars() {
+    _transitionTimer.start();
+    _resetedTimer = false;
+    _isStopped = false;
+    _teamsPlaced = false;
+    _wasManualStop = false;
+}
+
 void Referee::updatePenaltiesInfo(VSSRef::Foul foul, VSSRef::Color foulTeam, VSSRef::Quadrant foulQuadrant) {
+    // Update info
     _foulMutex.lock();
     _lastFoul = foul;
     _lastFoulTeam = foulTeam;
     _lastFoulQuadrant = foulQuadrant;
     _foulMutex.unlock();
+
+    // Reset transition vars
+    resetTransitionVars();
 }
 
 void Referee::sendPenaltiesToNetwork() {
@@ -285,13 +303,16 @@ void Referee::processChecker(QObject *checker) {
 }
 
 void Referee::halfPassed() {
-    // Update half
+    // Update half and kickoff
     int half = (_gameHalf % 2) + 1;
     _gameHalf = VSSRef::Half(half);
+    int kickoff = ((_halfKickoff + 1) % 2);
+    _halfKickoff = VSSRef::Color(kickoff);
+
     std::cout << Text::blue("[REFEREE] ", true) + Text::bold("Half passed, now at " + VSSRef::Half_Name(_gameHalf)) + '\n';
 
     // Update penaltie info for an kickoff
-    updatePenaltiesInfo(VSSRef::Foul::KICKOFF, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT);
+    updatePenaltiesInfo(VSSRef::Foul::KICKOFF, _halfKickoff, VSSRef::Quadrant::NO_QUADRANT);
 
     // Send to network
     sendPenaltiesToNetwork();
@@ -301,6 +322,19 @@ void Referee::teamsPlaced() {
     _transitionMutex.lock();
     _teamsPlaced = true;
     _transitionMutex.unlock();
+}
+
+void Referee::takeManualFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant) {
+    // Update penalties info
+    updatePenaltiesInfo(foul, foulColor, foulQuadrant);
+
+    if(foul == VSSRef::Foul::STOP) {
+        _isStopped = true;
+        _wasManualStop = true;
+    }
+
+    // Send to network
+    sendPenaltiesToNetwork();
 }
 
 Constants* Referee::getConstants() {

@@ -18,6 +18,7 @@ public:
     static float distanceToLine(const Position &s1, const Position &s2, const Position &point);
     static float distanceToSegment(const Position &s1, const Position &s2, const Position &point);
     static bool isInsideGoalArea(VSSRef::Color teamColor, Position pos);
+    static bool isBallInsideGoal(VSSRef::Color teamColor, Position pos);
     static Position rotatePoint(Position point, float angle);
     static VSSRef::Quadrant getBallQuadrant(Position ballPos);
     static void setConstants(Constants *constants);

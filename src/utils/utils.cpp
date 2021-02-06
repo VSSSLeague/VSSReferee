@@ -110,6 +110,34 @@ bool Utils::isInsideGoalArea(VSSRef::Color teamColor, Position pos){
     return false;
 }
 
+bool Utils::isBallInsideGoal(VSSRef::Color teamColor, Position pos) {
+    float goal_x = (Field_Default_3v3::kFieldLength/2.0) / 1000.0 + getConstants()->ballRadius();
+    float goal_y = (Field_Default_3v3::kDefenseStretch / 2.0) / 1000.0;
+
+    if(teamColor == VSSRef::Color::BLUE){
+        if(getConstants()->blueIsLeftSide()){
+            if(pos.x() < -goal_x && abs(pos.y()) < goal_y)
+                return true;
+        }
+        else{
+            if(pos.x() > goal_x && abs(pos.y()) < goal_y)
+                return true;
+        }
+    }
+    else if(teamColor == VSSRef::Color::YELLOW){
+        if(getConstants()->blueIsLeftSide()){
+            if(pos.x() > goal_x && abs(pos.y()) < goal_y)
+                return true;
+        }
+        else{
+            if(pos.x() < -goal_x && abs(pos.y()) < goal_y)
+                return true;
+        }
+    }
+
+    return false;
+}
+
 Position Utils::rotatePoint(Position point, float angle){
     float xNew = point.x() * cos(angle) - point.y() * sin(angle);
     float yNew = point.x() * sin(angle) - point.y() * cos(angle);

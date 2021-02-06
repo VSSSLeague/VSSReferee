@@ -30,22 +30,23 @@ void RefereeCore::start() {
     _vision = new Vision(getConstants());
     _world->addEntity(_vision, 2);
 
+    // Creating GUI
+    _soccerView = new SoccerView(getConstants());
+
     // Creating replacer pointer
     _replacer = new Replacer(_vision, getConstants());
 
     // Creating referee pointer and adding it to world with priority 1
-    _referee = new Referee(_vision, _replacer, getConstants());
+    _referee = new Referee(_vision, _replacer, _soccerView, getConstants());
     _world->addEntity(_referee, 1);
 
     // Adding replacer to world with prio 0
     _world->addEntity(_replacer, 0);
 
-    // Creating GUI
-    _soccerView = new SoccerView(getConstants());
-
     // Make GUI connections with modules
     QObject::connect(_referee, SIGNAL(sendFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), _soccerView, SLOT(takeFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)));
     QObject::connect(_referee, SIGNAL(sendTimestamp(float, VSSRef::Half)), _soccerView, SLOT(takeTimeStamp(float, VSSRef::Half)));
+    QObject::connect(_soccerView, SIGNAL(sendManualFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), _referee, SLOT(takeManualFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)));
 
     // Show GUI
     _soccerView->show();
