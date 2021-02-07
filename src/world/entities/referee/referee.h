@@ -49,7 +49,7 @@ private:
     VSSRef::Color _lastFoulTeam;
     VSSRef::Quadrant _lastFoulQuadrant;
     QMutex _foulMutex;
-    void updatePenaltiesInfo(VSSRef::Foul foul, VSSRef::Color foulTeam, VSSRef::Quadrant foulQuadrant);
+    void updatePenaltiesInfo(VSSRef::Foul foul, VSSRef::Color foulTeam, VSSRef::Quadrant foulQuadrant, bool isManual = false);
     void sendPenaltiesToNetwork();
 
     // Checker management

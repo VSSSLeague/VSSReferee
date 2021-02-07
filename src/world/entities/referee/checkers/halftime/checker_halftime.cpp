@@ -13,6 +13,8 @@ void Checker_HalfTime::configure() {
 void Checker_HalfTime::run() {
     // If is game on
     if(_referee->isGameOn()) {
+        _secondsMutex.lock();
+
         // Stop timer
         _timer.stop();
 
@@ -24,6 +26,8 @@ void Checker_HalfTime::run() {
             _secondsPassed = 0;
             emit halfPassed();
         }
+
+        _secondsMutex.unlock();
     }
 
     // Restart timer
@@ -35,5 +39,15 @@ void Checker_HalfTime::setReferee(Referee *referee) {
 }
 
 float Checker_HalfTime::getTimeStamp() {
-    return _secondsPassed;
+    _secondsMutex.lock();
+    float timeStamp = _secondsPassed;
+    _secondsMutex.unlock();
+
+    return timeStamp;
+}
+
+void Checker_HalfTime::receiveTime(int seconds) {
+    _secondsMutex.lock();
+    _secondsPassed = std::max(0.0f, _secondsPassed - seconds);
+    _secondsMutex.unlock();
 }

@@ -85,7 +85,35 @@ void SoccerView::setupButtons() {
     _buttons.push_back(ui->startGame);
     _buttons.push_back(ui->stopGame);
 
-    // Connect buttons to signal mapper
+    // Connecting goal buttons to lambda
+    connect(ui->addGoal, &QPushButton::released, [this](){
+        // Take team to add
+        VSSRef::Color calledColor = VSSRef::Color();
+        VSSRef::Color_Parse(ui->forButtons->checkedButton()->whatsThis().toUpper().toStdString(), &calledColor);
+
+        // Add
+        addGoal(calledColor);
+    });
+
+    connect(ui->rmvGoal, &QPushButton::released, [this](){
+        // Take team to add
+        VSSRef::Color calledColor = VSSRef::Color();
+        VSSRef::Color_Parse(ui->forButtons->checkedButton()->whatsThis().toUpper().toStdString(), &calledColor);
+
+        // Add
+        removeGoal(calledColor);
+    });
+
+    // Connecting time buttons to lambda
+    connect(ui->addMinute, &QPushButton::released, [this](){
+        emit addTime(60);
+    });
+
+    connect(ui->addSecond, &QPushButton::released, [this](){
+        emit addTime(1);
+    });
+
+    // Connect foul buttons to signal mapper
     for(int i = 0; i < _buttons.size(); i++) {
         QPushButton *button = _buttons.at(i);
 
@@ -230,6 +258,28 @@ void SoccerView::addGoal(VSSRef::Color color) {
     setupGoals();
 }
 
+void SoccerView::removeGoal(VSSRef::Color color) {
+    /// TODO: check if can turn this better
+    if(color == VSSRef::Color::BLUE) {
+        if(getConstants()->blueIsLeftSide()) {
+            _leftTeamGoals = std::max(0, _leftTeamGoals - 1);
+        }
+        else{
+            _rightTeamGoals = std::max(0, _rightTeamGoals - 1);
+        }
+    }
+    else if(color == VSSRef::Color::YELLOW) {
+        if(!getConstants()->blueIsLeftSide()) {
+            _leftTeamGoals = std::max(0, _leftTeamGoals - 1);
+        }
+        else{
+            _rightTeamGoals = std::max(0, _rightTeamGoals - 1);
+        }
+    }
+
+    setupGoals();
+}
+
 void SoccerView::processButton(QWidget *button) {
     QPushButton *castedButton = static_cast<QPushButton*>(button);
 
@@ -248,7 +298,7 @@ void SoccerView::processButton(QWidget *button) {
     std::cout << "Parsed " + VSSRef::Foul_Name(calledFoul) + ":" + VSSRef::Color_Name(calledColor) + ":" + VSSRef::Quadrant_Name(calledQuadrant) + '\n';
 
     // Emit manual foul
-    emit sendManualFoul(calledFoul, calledColor, calledQuadrant);
+    emit sendManualFoul(calledFoul, (calledFoul == VSSRef::Foul::FREE_BALL) ? VSSRef::Color::NONE : calledColor, (calledFoul != VSSRef::Foul::FREE_BALL) ? VSSRef::Quadrant::NO_QUADRANT : calledQuadrant);
 }
 
 Constants* SoccerView::getConstants() {

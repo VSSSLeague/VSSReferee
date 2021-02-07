@@ -57,6 +57,7 @@ void Referee::initialization() {
     _halfChecker = new Checker_HalfTime(_vision, getConstants());
     _halfChecker->setReferee(this);
     connect(_halfChecker, SIGNAL(halfPassed()), this, SLOT(halfPassed()));
+    connect(_soccerView, SIGNAL(addTime(int)), _halfChecker, SLOT(receiveTime(int)), Qt::DirectConnection);
 
     // Set default initial state
     _gameHalf = VSSRef::NO_HALF;
@@ -253,7 +254,7 @@ void Referee::resetTransitionVars() {
     _wasManualStop = false;
 }
 
-void Referee::updatePenaltiesInfo(VSSRef::Foul foul, VSSRef::Color foulTeam, VSSRef::Quadrant foulQuadrant) {
+void Referee::updatePenaltiesInfo(VSSRef::Foul foul, VSSRef::Color foulTeam, VSSRef::Quadrant foulQuadrant, bool isManual) {
     // Update info
     _foulMutex.lock();
     _lastFoul = foul;
@@ -262,7 +263,9 @@ void Referee::updatePenaltiesInfo(VSSRef::Foul foul, VSSRef::Color foulTeam, VSS
     _foulMutex.unlock();
 
     // Reset transition vars
-    resetTransitionVars();
+    if(isManual) {
+        resetTransitionVars();
+    }
 }
 
 void Referee::sendPenaltiesToNetwork() {
@@ -326,7 +329,7 @@ void Referee::teamsPlaced() {
 
 void Referee::takeManualFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant) {
     // Update penalties info
-    updatePenaltiesInfo(foul, foulColor, foulQuadrant);
+    updatePenaltiesInfo(foul, foulColor, foulQuadrant, true);
 
     if(foul == VSSRef::Foul::STOP) {
         _isStopped = true;
