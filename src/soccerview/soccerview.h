@@ -44,11 +44,13 @@ private:
 
 signals:
     void sendManualFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant);
+    void addTime(int seconds);
 
 public slots:
     void takeFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant);
     void takeTimeStamp(float timestamp, VSSRef::Half half);
     void addGoal(VSSRef::Color color);
+    void removeGoal(VSSRef::Color color);
     void processButton(QWidget *button);
 };
 

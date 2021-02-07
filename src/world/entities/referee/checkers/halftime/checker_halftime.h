@@ -30,12 +30,16 @@ private:
 
     // Seconds
     float _secondsPassed;
+    QMutex _secondsMutex;
 
     // Referee
     Referee *_referee;
 
 signals:
     void halfPassed();
+
+public slots:
+    void receiveTime(int seconds);
 };
 
 #endif // CHECKER_HALFTIME_H
