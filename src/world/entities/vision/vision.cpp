@@ -119,6 +119,8 @@ void Vision::loop() {
 
             // Release mutex
             _dataMutex.unlock();
+
+            emit visionUpdated();
         }
     }
 }
@@ -247,6 +249,15 @@ Position Vision::getPlayerPosition(VSSRef::Color teamColor, quint8 playerId) {
     _dataMutex.unlock();
 
     return pos;
+}
+
+Angle Vision::getPlayerOrientation(VSSRef::Color teamColor, quint8 playerId) {
+    _dataMutex.lockForRead();
+    Object *playerObject = _objects.value(teamColor)->value(playerId);
+    Angle ori = playerObject->getOrientation();
+    _dataMutex.unlock();
+
+    return ori;
 }
 
 Position Vision::getBallPosition() {

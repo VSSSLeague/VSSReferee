@@ -33,6 +33,9 @@ void RefereeCore::start() {
     // Creating GUI
     _soccerView = new SoccerView(getConstants());
 
+    // Setting Vision to FieldView
+    _soccerView->getFieldView()->setVisionModule(_vision);
+
     // Creating replacer pointer
     _replacer = new Replacer(_vision, getConstants());
 
@@ -47,6 +50,7 @@ void RefereeCore::start() {
     QObject::connect(_referee, SIGNAL(sendFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), _soccerView, SLOT(takeFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)));
     QObject::connect(_referee, SIGNAL(sendTimestamp(float, VSSRef::Half)), _soccerView, SLOT(takeTimeStamp(float, VSSRef::Half)));
     QObject::connect(_soccerView, SIGNAL(sendManualFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), _referee, SLOT(takeManualFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)));
+    QObject::connect(_vision, SIGNAL(visionUpdated()), _soccerView->getFieldView(), SLOT(updateField()));
 
     // Show GUI
     _soccerView->show();

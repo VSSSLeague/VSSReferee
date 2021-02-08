@@ -21,7 +21,7 @@ UI_DIR = tmp/moc
 RCC_DIR = tmp/rc
 
 # Project libs
-LIBS *= -lprotobuf -lQt5Core
+LIBS *= -lprotobuf -lQt5Core -lGLU
 
 # Compiling .proto files
 system(echo "Compiling protobuf files" && cd include/proto && protoc --cpp_out=../ *.proto && cd ../..)
@@ -45,6 +45,8 @@ SOURCES += \
         main.cpp \
         src/constants/constants.cpp \
         src/refereecore.cpp \
+        src/soccerview/fieldview/fieldview.cpp \
+        src/soccerview/fieldview/gltext/gltext.cpp \
         src/soccerview/soccerview.cpp \
         src/utils/types/angle/angle.cpp \
         src/utils/types/field/field.cpp \
@@ -88,6 +90,8 @@ HEADERS += \
     include/vssref_placement.pb.h \
     src/constants/constants.h \
     src/refereecore.h \
+    src/soccerview/fieldview/fieldview.h \
+    src/soccerview/fieldview/gltext/gltext.h \
     src/soccerview/soccerview.h \
     src/utils/types/angle/angle.h \
     src/utils/types/field/field.h \

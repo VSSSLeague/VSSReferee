@@ -7,6 +7,7 @@
 #include <src/constants/constants.h>
 #include <src/world/entities/referee/referee.h>
 #include <include/vssref_common.pb.h>
+#include <src/soccerview/fieldview/fieldview.h>
 
 namespace Ui {
 class SoccerView;
@@ -18,6 +19,8 @@ class SoccerView : public QMainWindow
 public:
     explicit SoccerView(Constants *constants, QWidget *parent = nullptr);
     ~SoccerView();
+
+    FieldView *getFieldView();
 
 private:
     Ui::SoccerView *ui;

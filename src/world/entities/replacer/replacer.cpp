@@ -121,14 +121,20 @@ void Replacer::loop() {
             }
         }
 
-        // Force robots to stop
-        stopRobots();
+        if(!_placedLastPosition) {
+            placeBall(_lastBallPosition);
+            _placedLastPosition = true;
+        }
     }
     else {
         // Reset control vars
         for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
             _placementStatus.insert(VSSRef::Color(i), false);
         }
+
+        // Update last ball data
+        _lastBallPosition = _vision->getBallPosition();
+        _placedLastPosition = false;
     }
 }
 
@@ -640,7 +646,7 @@ void Replacer::placeFrame(VSSRef::Frame frame) {
 }
 
 /// TODO: check how to call this function in stop -> game_on transition
-void Replacer::placeBall() {
+void Replacer::placeBall(Position ballPos) {
     // Create aux vars
     fira_message::sim_to_ref::Packet packet;
     fira_message::sim_to_ref::Replacement *command = new fira_message::sim_to_ref::Replacement();
@@ -648,9 +654,6 @@ void Replacer::placeBall() {
 
     // Create ball place command
     fira_message::sim_to_ref::BallReplacement *ballPlacement = new fira_message::sim_to_ref::BallReplacement();
-
-    // Set ball information
-    Position ballPos = getBallPlaceByFoul(getFoul(), getFoulColor(), getFoulQuadrant());
 
     ballPlacement->set_x(ballPos.x());
     ballPlacement->set_y(ballPos.y());
@@ -665,30 +668,6 @@ void Replacer::placeBall() {
 
     // Send to network
     packet.SerializeToString(&msg);
-
-    if(_firaClient->write(msg.c_str(), msg.length()) == -1){
-       std::cout << Text::blue("[REPLACER] ", true) + Text::red("FiraClient failed to write to socket.", true) + '\n';
-    }
-}
-
-void Replacer::stopRobots() {
-    // Create aux vars
-    fira_message::sim_to_ref::Packet command;
-    std::string msg;
-
-    // Create robot commands
-    for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
-        for(int j = 0; j < getConstants()->qtPlayers(); j++) {
-            // Set robot data
-            fira_message::sim_to_ref::Command *robotCommand = command.mutable_cmd()->add_robot_commands();
-            robotCommand->set_yellowteam((i == VSSRef::Color::YELLOW) ? true : false);
-            robotCommand->set_id(j);
-            robotCommand->set_wheel_left(0.0f);
-            robotCommand->set_wheel_right(0.0f);
-        }
-    }
-
-    command.SerializeToString(&msg);
 
     if(_firaClient->write(msg.c_str(), msg.length()) == -1){
        std::cout << Text::blue("[REPLACER] ", true) + Text::red("FiraClient failed to write to socket.", true) + '\n';
@@ -743,7 +722,8 @@ void Replacer::placeTeams() {
         }
     }
 
-    placeBall();
+    Position foulBallPosition = getBallPlaceByFoul(_foul, _foulColor, _foulQuadrant);
+    placeBall(foulBallPosition);
 
     // Mark foul as processed
     _foulMutex.lock();

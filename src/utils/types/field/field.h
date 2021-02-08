@@ -45,5 +45,4 @@ public:
   FieldTriangle(const std::string& marking_name, double p1_x_, double p1_y_, double p2_x_, double p2_y_, double p3_x_, double p3_y_, double thickness_);
 };
 
-
 #endif // FIELD_H
