@@ -25,6 +25,10 @@ SoccerView::~SoccerView()
     delete ui;
 }
 
+FieldView* SoccerView::getFieldView() {
+    return (ui->openGLWidget);
+}
+
 void SoccerView::setupTeams() {
     QString leftName, rightName;
 

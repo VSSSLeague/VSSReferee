@@ -59,8 +59,11 @@ private:
     QHash<VSSRef::Color, bool> _placementStatus;
     bool _isGoaliePlacedAtTop;
     void placeFrame(VSSRef::Frame frame);
-    void placeBall();
-    void stopRobots();
+    void placeBall(Position ballPos);
+
+    // Last data (maintain ball stopped)
+    Position _lastBallPosition;
+    bool _placedLastPosition;
 
     // Default placement utils
     Position getBallPlaceByFoul(VSSRef::Foul foul, VSSRef::Color color, VSSRef::Quadrant quadrant);

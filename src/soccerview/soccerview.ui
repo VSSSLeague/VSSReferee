@@ -20,7 +20,7 @@
    <bool>false</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QOpenGLWidget" name="openGLWidget">
+   <widget class="FieldView" name="openGLWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -697,6 +697,13 @@ color: white;</string>
    </widget>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>FieldView</class>
+   <extends>QOpenGLWidget</extends>
+   <header location="global">src/soccerview/fieldview/fieldview.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="../../rsc/resources.qrc"/>
  </resources>

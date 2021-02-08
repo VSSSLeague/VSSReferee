@@ -12,6 +12,7 @@
 
 class Vision : public Entity
 {
+    Q_OBJECT
 public:
     Vision(Constants *constants);
     ~Vision();
@@ -19,6 +20,7 @@ public:
     // Getters
     QList<quint8> getAvailablePlayers(VSSRef::Color teamColor);
     Position getPlayerPosition(VSSRef::Color teamColor, quint8 playerId);
+    Angle getPlayerOrientation(VSSRef::Color teamColor, quint8 playerId);
     Position getBallPosition();
     Velocity getBallVelocity();
 
@@ -50,6 +52,9 @@ private:
 
     // Data management
     QReadWriteLock _dataMutex;
+
+signals:
+    void visionUpdated();
 };
 
 #endif // VISION_H
