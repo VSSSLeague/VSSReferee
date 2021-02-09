@@ -1,5 +1,9 @@
 #include "fieldview.h"
 
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#define FIELD_COLOR 0.208, 0.208, 0.208, 1.0
+#define FIELD_LINES_COLOR 1.0, 1.0, 1.0, 1.0
+
 FieldView::FieldView(QWidget *parent) : QGLWidget(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer | QGL::SampleBuffers), parent) {
     // Reset view
     resetView();
@@ -246,19 +250,35 @@ void FieldView::drawRobot(VSSRef::Color teamColor, quint8 robotId, QVector2D rob
     sprintf(buffer, "%d", robotId);
     glText.drawString(robotPosition, 0, 50, buffer, GLText::CenterAligned, GLText::MiddleAligned);
 
-    // Take team color
-    // Take team color
-    switch(teamColor) {
-    case VSSRef::Color::BLUE:{
+    // Take team color (draw robot border)
+    switch (teamColor) {
+    case VSSRef::Color::BLUE: {
         glColor3d(0.2549, 0.4941, 1.0);
     }
     break;
-    case VSSRef::Color::YELLOW:{
+    case VSSRef::Color::YELLOW: {
         glColor3d(1.0, 0.9529, 0.2431);
     }
     break;
-    default:{
+    default: {
         glColor3d(0.5882,0.5882,0.5882);
+    }
+    break;
+    }
+    drawQuad(QVector2D(-35, 35), QVector2D(35,-35), RobotZ);
+
+    // Take team color (draw shape)
+    switch(teamColor) {
+    case VSSRef::Color::BLUE:{
+        glColor3d(0.0706, 0.2314, 0.6275);
+    }
+    break;
+    case VSSRef::Color::YELLOW:{
+        glColor3d(0.8, 0.6157, 0.0);
+    }
+    break;
+    default:{
+        glColor3d(0.2745,0.2745,0.2745);
     }
     break;
     }

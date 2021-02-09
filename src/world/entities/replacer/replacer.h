@@ -59,11 +59,14 @@ private:
     QHash<VSSRef::Color, bool> _placementStatus;
     bool _isGoaliePlacedAtTop;
     void placeFrame(VSSRef::Frame frame);
-    void placeBall(Position ballPos);
 
     // Last data (maintain ball stopped)
     Position _lastBallPosition;
+    Velocity _lastBallVelocity;
     bool _placedLastPosition;
+    QHash<VSSRef::Color, QHash<quint8, fira_message::Robot*>*> _lastFrame;
+    QMutex _lastDataMutex;
+    void clearLastData();
 
     // Default placement utils
     Position getBallPlaceByFoul(VSSRef::Foul foul, VSSRef::Color color, VSSRef::Quadrant quadrant);
@@ -71,6 +74,8 @@ private:
     VSSRef::Frame getGoalKickPlacement(VSSRef::Color color);
     VSSRef::Frame getFreeBallPlacement(VSSRef::Color color);
     VSSRef::Frame getKickoffPlacement(VSSRef::Color color);
+    VSSRef::Frame getOutsideFieldPlacement(VSSRef::Color color);
+    VSSRef::Frame getPenaltyShootoutPlacement(VSSRef::Color color, bool placeAttacker);
 
 signals:
     void teamsPlaced();
@@ -79,7 +84,10 @@ public slots:
     void takeGoalie(VSSRef::Color color, quint8 playerId);
     void takeFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant);
     void placeTeams();
-
+    void placeOutside(VSSRef::Foul foul, VSSRef::Color oppositeTeam);
+    void saveFrameAndBall();
+    void placeLastFrameAndBall();
+    void placeBall(Position ballPos, Velocity ballVelocity = Velocity(true, 0.0, 0.0));
 };
 
 #endif // REPLACER_H

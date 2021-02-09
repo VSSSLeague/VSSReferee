@@ -251,6 +251,15 @@ Position Vision::getPlayerPosition(VSSRef::Color teamColor, quint8 playerId) {
     return pos;
 }
 
+Velocity Vision::getPlayerVelocity(VSSRef::Color teamColor, quint8 playerId) {
+    _dataMutex.lockForRead();
+    Object *playerObject = _objects.value(teamColor)->value(playerId);
+    Velocity vel = playerObject->getVelocity();
+    _dataMutex.unlock();
+
+    return vel;
+}
+
 Angle Vision::getPlayerOrientation(VSSRef::Color teamColor, quint8 playerId) {
     _dataMutex.lockForRead();
     Object *playerObject = _objects.value(teamColor)->value(playerId);

@@ -27,6 +27,10 @@ Referee::Referee(Vision *vision, Replacer *replacer, SoccerView *soccerView, Con
     connect(_replacer, SIGNAL(teamsPlaced()), this, SLOT(teamsPlaced()));
     connect(this, SIGNAL(sendFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), _replacer, SLOT(takeFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)));
     connect(this, SIGNAL(callReplacer()), _replacer, SLOT(placeTeams()));
+    connect(this, SIGNAL(placeOutside(VSSRef::Foul, VSSRef::Color)), _replacer, SLOT(placeOutside(VSSRef::Foul, VSSRef::Color)));
+    connect(this, SIGNAL(saveFrame()), _replacer, SLOT(saveFrameAndBall()), Qt::DirectConnection);
+    connect(this, SIGNAL(placeFrame()), _replacer, SLOT(placeLastFrameAndBall()), Qt::DirectConnection);
+    connect(this, SIGNAL(placeBall(Position, Velocity)), _replacer, SLOT(placeBall(Position, Velocity)), Qt::DirectConnection);
 
     // Init signal mapper
     _mapper = new QSignalMapper();
@@ -46,6 +50,7 @@ void Referee::initialization() {
     // Ball play
     addChecker(_ballPlayChecker = new Checker_BallPlay(_vision, getConstants()), 2);
     connect(_ballPlayChecker, SIGNAL(emitGoal(VSSRef::Color)), _soccerView, SLOT(addGoal(VSSRef::Color)));
+    connect(_ballPlayChecker, SIGNAL(emitSuggestion(QString, VSSRef::Color)), _soccerView, SLOT(addSuggestion(QString, VSSRef::Color)));
     _ballPlayChecker->setAtkDefCheckers(_twoAtkChecker, _twoDefChecker);
 
     // Goalie
@@ -63,6 +68,8 @@ void Referee::initialization() {
     _gameHalf = VSSRef::NO_HALF;
     _isStopped = false;
     _teamsPlaced = false;
+    _isToPlaceOutside = false;
+    _placedLast = true;
 
     // Take first kickoff team
     auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
@@ -85,6 +92,30 @@ void Referee::loop() {
 
     // Send timestamp
     emit sendTimestamp(_halfChecker->getTimeStamp(), _gameHalf);
+
+    // Game halted just return
+    if(_gameHalted) {
+        emit placeBall(_lastBallPosition, _lastBallVelocity);
+        return ;
+    }
+
+    // In long stop, check if timer has passed the defined time
+    if(_longStop) {
+        _transitionTimer.stop();
+
+        if(_transitionTimer.getSeconds() >= (60 * getConstants()->transitionTime())) {
+            resetTransitionVars();
+
+            // Check if last foul is stop
+            if(_lastFoul == VSSRef::Foul::STOP) {
+                // Set isStopped as true (avoid double stop)
+                _isStopped = true;
+            }
+
+            sendPenaltiesToNetwork();
+        }
+        return ;
+    }
 
     // If game is on, run all checks
     if(_lastFoul == VSSRef::Foul::GAME_ON) {
@@ -131,12 +162,17 @@ void Referee::loop() {
                 _isStopped = true;
                 _resetedTimer = false;
 
+                // Call replacer (place teams)
+                emit callReplacer();
+
+                if(_isToPlaceOutside) {
+                    emit placeOutside(_lastFoul, (_lastFoulTeam == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE);
+                    _isToPlaceOutside = false;
+                }
+
                 // Update sent foul to STOP
                 updatePenaltiesInfo(VSSRef::Foul::STOP, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT);
                 sendPenaltiesToNetwork();
-
-                // Call replacer (place teams)
-                emit callReplacer();
             }
         }
         else {
@@ -148,8 +184,8 @@ void Referee::loop() {
             // Stop timer
             _transitionTimer.stop();
 
-            // Check if passed transition time (if was manual stop, waits 5 min instead of 5 seconds)
-            if(_transitionTimer.getSeconds() >= (_wasManualStop ? 60 * getConstants()->transitionTime() : getConstants()->transitionTime())) {
+            // Check if passed transition time
+            if(_transitionTimer.getSeconds() >= getConstants()->transitionTime()) {
                 // Update sent foul to GAME_ON
                 updatePenaltiesInfo(VSSRef::Foul::GAME_ON, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT);
                 sendPenaltiesToNetwork();
@@ -169,7 +205,7 @@ void Referee::finalization() {
 }
 
 bool Referee::isGameOn() {
-    return (_lastFoul == VSSRef::Foul::GAME_ON);
+    return (_lastFoul == VSSRef::Foul::GAME_ON && !_gameHalted && !_longStop);
 }
 
 void Referee::connectClient() {
@@ -251,7 +287,8 @@ void Referee::resetTransitionVars() {
     _resetedTimer = false;
     _isStopped = false;
     _teamsPlaced = false;
-    _wasManualStop = false;
+    _gameHalted = false;
+    _longStop = false;
 }
 
 void Referee::updatePenaltiesInfo(VSSRef::Foul foul, VSSRef::Color foulTeam, VSSRef::Quadrant foulQuadrant, bool isManual) {
@@ -301,6 +338,13 @@ void Referee::sendPenaltiesToNetwork() {
 
 void Referee::processChecker(QObject *checker) {
     Checker *occurredChecker = static_cast<Checker*>(checker);
+
+    if(occurredChecker->penalty() == VSSRef::Foul::HALT) {
+        sendControlFoul(occurredChecker->penalty());
+        _gameHalted = true;
+        return ;
+    }
+
     updatePenaltiesInfo(occurredChecker->penalty(), occurredChecker->teamColor(), occurredChecker->quadrant());
     sendPenaltiesToNetwork();
 }
@@ -317,8 +361,9 @@ void Referee::halfPassed() {
     // Update penaltie info for an kickoff
     updatePenaltiesInfo(VSSRef::Foul::KICKOFF, _halfKickoff, VSSRef::Quadrant::NO_QUADRANT);
 
-    // Send to network
-    sendPenaltiesToNetwork();
+    // Call long stop (5min)
+    sendControlFoul(VSSRef::Foul::STOP);
+    _longStop = true;
 }
 
 void Referee::teamsPlaced() {
@@ -327,17 +372,70 @@ void Referee::teamsPlaced() {
     _transitionMutex.unlock();
 }
 
-void Referee::takeManualFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant) {
-    // Update penalties info
-    updatePenaltiesInfo(foul, foulColor, foulQuadrant, true);
+void Referee::sendControlFoul(VSSRef::Foul foul) {
+    // Take copy of last foul
+    VSSRef::Foul lastFoul = _lastFoul;
+    VSSRef::Quadrant lastFoulQuadrant = _lastFoulQuadrant;
+    VSSRef::Color lastFoulTeam = _lastFoulTeam;
 
-    if(foul == VSSRef::Foul::STOP) {
-        _isStopped = true;
-        _wasManualStop = true;
+    // If foul is halt
+    if(foul == VSSRef::Foul::HALT) {
+        // Take ball last data (before stopping)
+        _placedLast = false;
+        _lastBallPosition = _vision->getBallPosition();
+        _lastBallVelocity = _vision->getBallVelocity();
+        emit saveFrame();
     }
+
+    // Update penalties info
+    updatePenaltiesInfo(foul, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT, true);
 
     // Send to network
     sendPenaltiesToNetwork();
+
+    // Back penalties to last penalty info
+    updatePenaltiesInfo(lastFoul, lastFoulTeam, lastFoulQuadrant, true);
+}
+
+void Referee::takeManualFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant, bool isToPlaceOutside) {
+    if(foul == VSSRef::Foul::GAME_ON) {
+        // Reset transitions vars
+        resetTransitionVars();
+
+        // Check if last foul is stop
+        if(_lastFoul == VSSRef::Foul::STOP) {
+            // Set isStopped as true (avoid double stop)
+            _isStopped = true;
+        }
+
+        if(!_placedLast) {
+            emit placeFrame();
+            _placedLast = true;
+        }
+
+        // Re-send last penalties to network
+        sendPenaltiesToNetwork();
+    }
+    else if(foul == VSSRef::Foul::HALT) {
+        // Call halt
+        sendControlFoul(foul);
+        _gameHalted = true;
+    }
+    else if(foul == VSSRef::Foul::STOP) {
+        // Call long stop
+        sendControlFoul(foul);
+        _longStop = true;
+    }
+    else {
+        // Update penalties info
+        updatePenaltiesInfo(foul, foulColor, foulQuadrant, true);
+
+        // Send to network
+        sendPenaltiesToNetwork();
+
+        // Set to place outside if needed
+        _isToPlaceOutside = isToPlaceOutside;
+    }
 }
 
 Constants* Referee::getConstants() {
