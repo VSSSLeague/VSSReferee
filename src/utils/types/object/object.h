@@ -9,7 +9,7 @@
 class Object
 {
 public:
-    Object();
+    Object(bool useKalman);
     ~Object();
 
     // Getters
@@ -36,6 +36,10 @@ private:
     LossFilter _lossFilter;
     NoiseFilter _noiseFilter;
     KalmanFilter _kalmanFilter;
+
+    // Use kalman control
+    bool _useKalman;
+    Timer _velTimer;
 };
 
 #endif // OBJECT_H

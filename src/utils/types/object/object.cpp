@@ -1,6 +1,7 @@
 #include "object.h"
 
-Object::Object() {
+Object::Object(bool useKalman) {
+    _useKalman = useKalman;
     setInvalid();
 }
 
@@ -54,11 +55,15 @@ void Object::updateObject(float confidence, Position pos, Angle orientation) {
                 setInvalid();
             }
             // If object is not lost already and is safe
-            else if(!isObjectLoss() && isObjectSafe()){
+            else if((!isObjectLoss() && isObjectSafe()) && _useKalman){
                 // Predict with Kalman
                 _kalmanFilter.predict();
                 _position = _kalmanFilter.getPosition();
                 _velocity = _kalmanFilter.getVelocity();
+            }
+            else if((!isObjectLoss() && isObjectSafe()) && !_useKalman) {
+                // Reset vel timer
+                _velTimer.start();
             }
         }
     }
@@ -78,13 +83,28 @@ void Object::updateObject(float confidence, Position pos, Angle orientation) {
                 // Reset loss filter
                 _lossFilter.startLoss();
 
-                // Iterate in kalman filter
-                _kalmanFilter.iterate(pos);
+                if(_useKalman) {
+                    // Iterate in kalman filter
+                    _kalmanFilter.iterate(pos);
 
-                // Update positions, orientations, velocity and confidence
-                _position.setPosition(true, _kalmanFilter.getPosition().x(), _kalmanFilter.getPosition().y());
-                _velocity = _kalmanFilter.getVelocity();
-                _orientation = orientation;
+                    // Update positions, orientations, velocity and confidence
+                    _position.setPosition(true, _kalmanFilter.getPosition().x(), _kalmanFilter.getPosition().y());
+                    _velocity = _kalmanFilter.getVelocity();
+                    _orientation = orientation;
+                }
+                else {
+                    // Stop timer (get speed)
+                    _velTimer.stop();
+                    float vx = (pos.x() - _position.x()) / _velTimer.getSeconds();
+                    float vy = (pos.y() - _position.y()) / _velTimer.getSeconds();
+
+                    _position.setPosition(true, pos.x(), pos.y());
+                    _velocity.setVelocity(true, vx, vy);
+                    _orientation = orientation;
+
+                    // Start timer again (reset to next it)
+                    _velTimer.start();
+                }
             }
             // If object is unsafe yet (noise is running)
             else {
@@ -102,5 +122,6 @@ void Object::setInvalid() {
     _position.setInvalid();
     _velocity.setInvalid();
     _orientation.setInvalid();
+    _velTimer.start();
     _confidence = 0.0;
 }

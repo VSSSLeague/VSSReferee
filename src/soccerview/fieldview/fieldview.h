@@ -17,7 +17,8 @@ class FieldView : public QGLWidget
     Q_OBJECT
 public:
     FieldView(QWidget *parent = 0);
-    void setVisionModule(Vision *vision);
+    void setVisionModule(Vision *visionPointer);
+    void setConstants(Constants *constantsPointer);
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -52,6 +53,10 @@ private:
     // Vision
     Vision *vision;
     Vision* getVision();
+
+    // Constants
+    Constants *constants;
+    Constants* getConstants();
 
     // Util functions
     void recomputeProjection();

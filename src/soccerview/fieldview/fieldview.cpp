@@ -19,6 +19,10 @@ void FieldView::setVisionModule(Vision *visionPointer) {
     vision = visionPointer;
 }
 
+void FieldView::setConstants(Constants *constantsPointer) {
+    constants = constantsPointer;
+}
+
 void FieldView::recomputeProjection() {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -138,11 +142,23 @@ void FieldView::drawFieldLines() {
     }
 
     // Draw left goal lines
+    if(getConstants()->blueIsLeftSide()) {
+        glColor3d(0.2549, 0.4941, 1.0);
+    }
+    else {
+        glColor3d(1.0, 0.9529, 0.2431);
+    }
     for(size_t i = 0; i < Field_Default_3v3::kNumLeftGoalLines; i++) {
         const FieldLine& line = Field_Default_3v3::kLeftGoalLines[i];
         drawFieldLine(line);
     }
 
+    if(getConstants()->blueIsLeftSide()) {
+        glColor3d(1.0, 0.9529, 0.2431);
+    }
+    else {
+        glColor3d(0.2549, 0.4941, 1.0);
+    }
     // Draw right goal lines
     for(size_t i = 0; i < Field_Default_3v3::kNumRightGoalLines; i++) {
         const FieldLine& line = Field_Default_3v3::kRightGoalLines[i];
@@ -150,6 +166,7 @@ void FieldView::drawFieldLines() {
     }
 
     // Draw field arcs
+    glColor4f(FIELD_LINES_COLOR);
     for(size_t i = 0; i < Field_Default_3v3::kNumFieldArcs; i++) {
         const FieldCircularArc& arc = Field_Default_3v3::kFieldArcs[i];
         const double half_thickness = 0.5 * arc.thickness;
@@ -354,6 +371,17 @@ Vision* FieldView::getVision() {
     }
     else {
         return vision;
+    }
+
+    return nullptr;
+}
+
+Constants* FieldView::getConstants() {
+    if(vision == nullptr) {
+        std::cout << Text::red("[ERROR] ", true) << Text::bold("Constants with nullptr value at FieldView") + '\n';
+    }
+    else {
+        return constants;
     }
 
     return nullptr;
