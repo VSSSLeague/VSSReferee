@@ -1,9 +1,6 @@
 #ifndef FIELDVIEW_H
 #define FIELDVIEW_H
 
-#define FIELD_COLOR 0.25, 0.25, 0.25, 1.0
-#define FIELD_LINES_COLOR 1.0, 1.0, 1.0, 1.0
-
 #include <QGLWidget>
 #include <QMutex>
 #include <QMouseEvent>
@@ -41,8 +38,8 @@ private:
     static constexpr double FieldZ = 1.0;
     static constexpr double BallZ = 2.0;
     static constexpr double RobotZ = 3.0;
-    static const int PreferedWidth = 683; // widgetWidth * 1.12
-    static const int PreferedHeight = 392; // widgetHeight * 12.12
+    static const int PreferedWidth = 750; // widgetWidth * 1.23
+    static const int PreferedHeight = 516; // widgetHeight * 1.23
     static constexpr double MinRedrawInterval = 0.01; ///Minimum time between graphics updates (limits the fps)
 
     // Mouse events

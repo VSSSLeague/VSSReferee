@@ -59,3 +59,13 @@ bool Checker_TwoDefenders::isTwoPlayersDefending() {
 
     return false;
 }
+
+VSSRef::Color Checker_TwoDefenders::defendingTeam() {
+    for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
+        if(_twoDefending.value(VSSRef::Color(i))) {
+            return VSSRef::Color(i);
+        }
+    }
+
+    return VSSRef::Color::NONE;
+}

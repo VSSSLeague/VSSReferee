@@ -48,6 +48,7 @@ private:
     VSSRef::Foul _lastFoul;
     VSSRef::Color _lastFoulTeam;
     VSSRef::Quadrant _lastFoulQuadrant;
+    bool _isToPlaceOutside;
     QMutex _foulMutex;
     void updatePenaltiesInfo(VSSRef::Foul foul, VSSRef::Color foulTeam, VSSRef::Quadrant foulQuadrant, bool isManual = false);
     void sendPenaltiesToNetwork();
@@ -81,19 +82,32 @@ private:
     bool _resetedTimer;
     bool _isStopped;
     bool _teamsPlaced;
-    bool _wasManualStop;
     void resetTransitionVars();
+
+    // Game control
+    void sendControlFoul(VSSRef::Foul foul);
+    bool _gameHalted;
+    bool _longStop;
+
+    // Halt placement
+    Position _lastBallPosition;
+    Velocity _lastBallVelocity;
+    bool _placedLast;
 
 signals:
     void sendFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant);
     void sendTimestamp(float timestamp, VSSRef::Half half);
     void callReplacer();
+    void placeOutside(VSSRef::Foul foul, VSSRef::Color teamColor);
+    void saveFrame();
+    void placeFrame();
+    void placeBall(Position position, Velocity velocity);
 
 public slots:
     void processChecker(QObject *checker);
     void halfPassed();
     void teamsPlaced();
-    void takeManualFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant);
+    void takeManualFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant, bool isToPlaceOutside = false);
 };
 
 #endif // REFEREE_H

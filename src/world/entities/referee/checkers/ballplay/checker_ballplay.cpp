@@ -26,9 +26,13 @@ void Checker_BallPlay::run() {
         _isPlayRunning = true;
         if(!_possiblePenalty) {
             _possiblePenalty = _checkerTwoDef->isTwoPlayersDefending();
+            if(_possiblePenalty)
+                emit emitSuggestion(VSSRef::Foul_Name(VSSRef::Foul::PENALTY_KICK).c_str(), (_checkerTwoDef->defendingTeam() == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE);
         }
         if(!_possibleGoalKick) {
             _possibleGoalKick = _checkerTwoAtk->isTwoPlayersAttacking();
+            if(_possibleGoalKick)
+                emit emitSuggestion(VSSRef::Foul_Name(VSSRef::Foul::GOAL_KICK).c_str(), _checkerTwoAtk->attackingTeam());
         }
     }
     else {
@@ -47,12 +51,20 @@ void Checker_BallPlay::run() {
                         setPenaltiesInfo(VSSRef::Foul::KICKOFF, VSSRef::Color(i), VSSRef::Quadrant::NO_QUADRANT);
                         emit foulOccured();
                     }
+                    else{
+                        // If occurred penalty or goal kick, send an goal suggestion
+                        emit emitSuggestion("GOAL", (i == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE);
+                    }
                 }
             }
 
             if(_possibleGoalKick || _possiblePenalty) {
-                // If any of them occurred, send suggestion
-                emit emitSuggestion(_possibleGoal, _possibleGoalKick, _possiblePenalty);
+                // If any of them occurred, send HALT command
+                setPenaltiesInfo(VSSRef::Foul::HALT);
+                emit foulOccured();
+
+                // Add game on suggestion if not possible goal
+                if(!_possibleGoal) emit emitSuggestion("GAME_ON");
 
                 // Debug
                 std::cout << Text::red("[PLAY] ", true) + Text::bold("Possible goal: " + std::to_string(_possibleGoal) + ", Possible penalty: " + std::to_string(_possiblePenalty) + " and Possible goalkick: " + std::to_string(_possibleGoalKick)) + '\n';

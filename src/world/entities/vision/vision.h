@@ -20,6 +20,7 @@ public:
     // Getters
     QList<quint8> getAvailablePlayers(VSSRef::Color teamColor);
     Position getPlayerPosition(VSSRef::Color teamColor, quint8 playerId);
+    Velocity getPlayerVelocity(VSSRef::Color teamColor, quint8 playerId);
     Angle getPlayerOrientation(VSSRef::Color teamColor, quint8 playerId);
     Position getBallPosition();
     Velocity getBallVelocity();

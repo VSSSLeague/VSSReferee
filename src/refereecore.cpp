@@ -12,6 +12,8 @@ RefereeCore::RefereeCore(Constants *constants) {
     qRegisterMetaType<VSSRef::Foul>("VSSRef::Foul");
     qRegisterMetaType<VSSRef::Quadrant>("VSSRef::Quadrant");
     qRegisterMetaType<VSSRef::Half>("VSSRef::Half");
+    qRegisterMetaType<Position>("Position");
+    qRegisterMetaType<Velocity>("Velocity");
 }
 
 RefereeCore::~RefereeCore() {
@@ -49,7 +51,7 @@ void RefereeCore::start() {
     // Make GUI connections with modules
     QObject::connect(_referee, SIGNAL(sendFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), _soccerView, SLOT(takeFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)));
     QObject::connect(_referee, SIGNAL(sendTimestamp(float, VSSRef::Half)), _soccerView, SLOT(takeTimeStamp(float, VSSRef::Half)));
-    QObject::connect(_soccerView, SIGNAL(sendManualFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), _referee, SLOT(takeManualFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)));
+    QObject::connect(_soccerView, SIGNAL(sendManualFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant, bool)), _referee, SLOT(takeManualFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant, bool)));
     QObject::connect(_vision, SIGNAL(visionUpdated()), _soccerView->getFieldView(), SLOT(updateField()));
 
     // Show GUI

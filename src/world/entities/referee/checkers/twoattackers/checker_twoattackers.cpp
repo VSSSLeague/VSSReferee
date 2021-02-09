@@ -59,3 +59,13 @@ bool Checker_TwoAttackers::isTwoPlayersAttacking() {
 
     return false;
 }
+
+VSSRef::Color Checker_TwoAttackers::attackingTeam() {
+    for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
+        if(_twoAttacking.value(VSSRef::Color(i))) {
+           return VSSRef::Color(i);
+        }
+    }
+
+    return VSSRef::Color::NONE;
+}

@@ -596,6 +596,111 @@ VSSRef::Frame Replacer::getKickoffPlacement(VSSRef::Color color){
     return frame;
 }
 
+VSSRef::Frame Replacer::getOutsideFieldPlacement(VSSRef::Color color){
+    VSSRef::Frame frame;
+    frame.set_teamcolor(color);
+
+    // swap side check
+    bool teamIsAtLeft = (color == VSSRef::Color::BLUE && getConstants()->blueIsLeftSide()) || (color == VSSRef::Color::YELLOW && !getConstants()->blueIsLeftSide());
+
+    float factor = 1.0;
+    if(teamIsAtLeft)
+        factor = -1.0;
+
+    QList<quint8> players = _vision->getAvailablePlayers(color);
+    for(int i = 0; i < players.size(); i++) {
+        if(players.at(i) == getGoalie(color)) {
+            players.removeAt(i);
+        }
+    }
+
+    // Goalkeeper
+    if(players.size() == 0) return frame;
+    VSSRef::Robot *gk = frame.add_robots();
+    gk->set_robot_id(getGoalie(color));
+    gk->set_orientation(0.0);
+    gk->set_x(factor * ((Field_Default_3v3::kFieldLength / 2000.0) - getConstants()->robotLength()));
+    gk->set_y(-0.8);
+
+    // Attacker
+    if(players.size() == 0) return frame;
+    VSSRef::Robot *striker = frame.add_robots();
+    striker->set_robot_id(players.takeFirst());
+    striker->set_orientation(0.0);
+    striker->set_x(factor * Field_Default_3v3::kCenterRadius/1000.0);
+    striker->set_y(-0.8);
+
+    // Support
+    if(players.size() == 0) return frame;
+    VSSRef::Robot *support = frame.add_robots();
+    support->set_robot_id(players.takeFirst());
+    support->set_orientation(0.0);
+    support->set_x(factor * (Field_Default_3v3::kCenterRadius/1000.0 * 2.0));
+    support->set_y(-0.8);
+
+    return frame;
+}
+
+VSSRef::Frame Replacer::getPenaltyShootoutPlacement(VSSRef::Color color, bool placeAttacker){
+    VSSRef::Frame frame;
+    frame.set_teamcolor(color);
+
+    // swap side check
+    bool teamIsAtLeft = (color == VSSRef::Color::BLUE && getConstants()->blueIsLeftSide()) || (color == VSSRef::Color::YELLOW && !getConstants()->blueIsLeftSide());
+
+    float factor = 1.0;
+    if(teamIsAtLeft)
+        factor = -1.0;
+
+    float markX = (Field_Default_3v3::kFieldLength / 1000.0)/2.0 - 0.375;
+
+    QList<quint8> players = _vision->getAvailablePlayers(color);
+    for(int i = 0; i < players.size(); i++) {
+        if(players.at(i) == getGoalie(color)) {
+            players.removeAt(i);
+        }
+    }
+
+    // Goalkeeper
+    if(players.size() == 0) return frame;
+    VSSRef::Robot *gk = frame.add_robots();
+    gk->set_robot_id(getGoalie(color));
+    gk->set_orientation(0.0);
+    if(!placeAttacker) {
+        gk->set_x(factor * ((Field_Default_3v3::kFieldLength / 2000.0) - getConstants()->robotLength()));
+        gk->set_y(0.0);
+    }
+    else {
+        gk->set_x(factor * ((Field_Default_3v3::kFieldLength / 2000.0) - getConstants()->robotLength()));
+        gk->set_y(-0.8);
+    }
+
+    // Attacker
+    if(players.size() == 0) return frame;
+    VSSRef::Robot *striker = frame.add_robots();
+    striker->set_robot_id(players.takeFirst());
+    striker->set_orientation(0.0);
+    if(placeAttacker) {
+        striker->set_x((-factor) * (markX - (2.0 * getConstants()->robotLength())));
+        striker->set_y(0.0);
+    }
+    else {
+        striker->set_x((-factor) * (markX - (2.0 * getConstants()->robotLength())));
+        striker->set_y(-0.8);
+    }
+
+
+    // Support
+    if(players.size() == 0) return frame;
+    VSSRef::Robot *support = frame.add_robots();
+    support->set_robot_id(players.takeFirst());
+    support->set_orientation(0.0);
+    support->set_x(factor * (Field_Default_3v3::kCenterRadius/1000.0 * 2.0));
+    support->set_y(-0.8);
+
+    return frame;
+}
+
 void Replacer::placeFrame(VSSRef::Frame frame) {
     // Create aux vars
     fira_message::sim_to_ref::Packet packet;
@@ -646,7 +751,7 @@ void Replacer::placeFrame(VSSRef::Frame frame) {
 }
 
 /// TODO: check how to call this function in stop -> game_on transition
-void Replacer::placeBall(Position ballPos) {
+void Replacer::placeBall(Position ballPos, Velocity ballVelocity) {
     // Create aux vars
     fira_message::sim_to_ref::Packet packet;
     fira_message::sim_to_ref::Replacement *command = new fira_message::sim_to_ref::Replacement();
@@ -657,8 +762,8 @@ void Replacer::placeBall(Position ballPos) {
 
     ballPlacement->set_x(ballPos.x());
     ballPlacement->set_y(ballPos.y());
-    ballPlacement->set_vx(0.0);
-    ballPlacement->set_vx(0.0);
+    ballPlacement->set_vx(ballVelocity.vx());
+    ballPlacement->set_vy(ballVelocity.vy());
 
     // Setting replacement into command
     command->set_allocated_ball(ballPlacement);
@@ -729,6 +834,151 @@ void Replacer::placeTeams() {
     _foulMutex.lock();
     _foulProcessed = true;
     _foulMutex.unlock();
+}
+
+void Replacer::placeOutside(VSSRef::Foul foul, VSSRef::Color oppositeTeam) {
+    if(foul == VSSRef::Foul::KICKOFF) {
+        VSSRef::Frame removedFrame;
+
+        // Filling frames
+        removedFrame = getOutsideFieldPlacement(oppositeTeam);
+
+        // Send frames to network
+        placeFrame(removedFrame);
+    }
+    else if(foul == VSSRef::Foul::PENALTY_KICK) {
+        VSSRef::Frame removedFrameKicker;
+        VSSRef::Frame removedFrameGoalie;
+
+        // Filling frames
+        removedFrameKicker = getPenaltyShootoutPlacement((oppositeTeam == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE, true);
+        removedFrameGoalie = getPenaltyShootoutPlacement(oppositeTeam, false);
+
+        // Send frames to network
+        placeFrame(removedFrameKicker);
+        placeFrame(removedFrameGoalie);
+    }
+}
+
+void Replacer::clearLastData() {
+    // Take team frames
+    for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
+        if(_lastFrame.contains(VSSRef::Color(i))) {
+            // Take hash
+            QHash<quint8, fira_message::Robot*> *hash = _lastFrame.value(VSSRef::Color(i));
+
+            // Take keys
+            QList<quint8> keys = hash->keys();
+            for(int j = 0; j < keys.size(); j++) {
+                // Take robot
+                fira_message::Robot *robot = hash->value(keys.at(j));
+
+                // Delete
+                delete robot;
+            }
+
+            // Clear hash
+            hash->clear();
+        }
+    }
+
+    _lastFrame.clear();
+}
+
+void Replacer::saveFrameAndBall() {
+    _lastDataMutex.lock();
+
+    // Update last ball data
+    _lastBallPosition = _vision->getBallPosition();
+    _lastBallVelocity = _vision->getBallVelocity();
+
+    // Take team frames
+    for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
+        // Creating hash
+        if(!_lastFrame.contains(VSSRef::Color(i))) {
+            _lastFrame.insert(VSSRef::Color(i), new QHash<quint8, fira_message::Robot*>());
+        }
+
+        // Taking hash
+        QHash<quint8, fira_message::Robot*> *hash = _lastFrame.value(VSSRef::Color(i));
+
+        // Taking available robots
+        QList<quint8> avPlayers = _vision->getAvailablePlayers(VSSRef::Color(i));
+        for(int j = 0; j < avPlayers.size(); j++) {
+            // Creating RobotReplacement
+            if(!hash->contains(avPlayers.at(j))) {
+                hash->insert(avPlayers.at(j), new fira_message::Robot());
+            }
+
+            // Taking data from vision
+            Position robotPosition = _vision->getPlayerPosition(VSSRef::Color(i), avPlayers.at(j));
+            Angle robotOrientation = _vision->getPlayerOrientation(VSSRef::Color(i), avPlayers.at(j));
+            Velocity robotVelocity = _vision->getPlayerVelocity(VSSRef::Color(i), avPlayers.at(j));
+
+            // Filling robot data
+            fira_message::Robot *robotData = hash->value(avPlayers.at(j));
+            robotData->set_robot_id(avPlayers.at(j));
+            robotData->set_x(robotPosition.x());
+            robotData->set_y(robotPosition.y());
+            robotData->set_vx(robotVelocity.vx());
+            robotData->set_vy(robotVelocity.vy());
+            robotData->set_orientation(robotOrientation.value() * (180.0 / M_PI));
+        }
+    }
+
+    _lastDataMutex.unlock();
+}
+
+void Replacer::placeLastFrameAndBall() {
+    _lastDataMutex.lock();
+
+    // Place ball
+    placeBall(_lastBallPosition, _lastBallVelocity);
+
+    // Create robot commands
+    for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
+        // Taking hash and av players
+        QHash<quint8, fira_message::Robot*> *lastTeamFrame = _lastFrame.value(VSSRef::Color(i));
+        QList<quint8> avPlayers = _vision->getAvailablePlayers(VSSRef::Color(i));
+
+        // Create aux vars
+        fira_message::sim_to_ref::Packet packet;
+        fira_message::sim_to_ref::Replacement *command = new fira_message::sim_to_ref::Replacement();
+        std::string msg;
+
+        for(int j = 0; j < avPlayers.size(); j++) {
+            // Avoid take data if player is not contained in last frame
+            if(!lastTeamFrame->contains(avPlayers.at(j))) {
+                continue;
+            }
+
+            // Creating robot in command
+            fira_message::sim_to_ref::RobotReplacement *robotPlacement = command->add_robots();
+
+            // Taking data from hash
+            fira_message::Robot *robot = new fira_message::Robot();
+            robot->CopyFrom(*lastTeamFrame->value(avPlayers.at(j)));
+
+            // Setting data to robotPlacement
+            robotPlacement->set_turnon(true);
+            robotPlacement->set_yellowteam((i == VSSRef::Color::BLUE) ? false : true);
+            robotPlacement->set_allocated_position(robot);
+        }
+
+        // Set replacement to packet
+        packet.set_allocated_replace(command);
+
+        // Send to network
+        packet.SerializeToString(&msg);
+
+        if(_firaClient->write(msg.c_str(), msg.length()) == -1){
+           std::cout << Text::blue("[REPLACER] ", true) + Text::red("FiraClient failed to write to socket.", true) + '\n';
+        }
+    }
+
+    clearLastData();
+
+    _lastDataMutex.unlock();
 }
 
 Constants* Replacer::getConstants() {

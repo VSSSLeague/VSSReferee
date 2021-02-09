@@ -25,6 +25,7 @@ private:
     bool _possiblePenalty;
     bool _possibleGoalKick;
     bool _possibleGoal;
+    VSSRef::Color _possibleGoalTeam;
 
     // Checkers
     Checker_TwoAttackers *_checkerTwoAtk;
@@ -32,7 +33,7 @@ private:
 
 signals:
     void emitGoal(VSSRef::Color forTeam);
-    void emitSuggestion(bool possibleGoal, bool possibleGoalKick, bool possiblePenalty);
+    void emitSuggestion(QString suggestion, VSSRef::Color forTeam = VSSRef::Color::NONE);
 };
 
 #endif // CHECKER_BALLPLAY_H

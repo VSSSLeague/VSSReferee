@@ -16,6 +16,7 @@ public:
 
     // Flag getter
     bool isTwoPlayersDefending();
+    VSSRef::Color defendingTeam();
 
 private:
     // Timers

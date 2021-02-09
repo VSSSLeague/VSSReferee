@@ -45,8 +45,13 @@ private:
     int _leftTeamGoals;
     int _rightTeamGoals;
 
+    // Suggestions
+    QList<QWidget*> _widgets;
+    QMutex _suggestionsMutex;
+    void deleteSuggestions();
+
 signals:
-    void sendManualFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant);
+    void sendManualFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant, bool isToPlaceOutside = false);
     void addTime(int seconds);
 
 public slots:
@@ -55,6 +60,7 @@ public slots:
     void addGoal(VSSRef::Color color);
     void removeGoal(VSSRef::Color color);
     void processButton(QWidget *button);
+    void addSuggestion(QString suggestion, VSSRef::Color forColor = VSSRef::Color::NONE);
 };
 
 #endif // SOCCERVIEW_H
