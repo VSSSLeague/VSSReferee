@@ -21,9 +21,11 @@ public:
     QString refereeAddress();
     quint16 refereePort();
     float transitionTime();
+    QString gameType();
     float ballRadius();
     float robotLength();
     float halfTime();
+    float overtimeHalfTime();
     float ballMinSpeedForStuck();
     float stuckedBallTime();
     float ballInAreaMaxTime();
@@ -71,9 +73,11 @@ private:
     QString _refereeAddress;
     quint16 _refereePort;
     float _transitionTime;
+    QString _gameType;
     float _ballRadius;
     float _robotLength;
     float _halfTime;
+    float _overtimeHalfTime;
     float _ballMinSpeedForStuck;
     float _stuckedBallTime;
     float _ballInAreaMaxTime;

@@ -58,11 +58,11 @@ void Checker_BallPlay::run() {
                 if(Utils::isBallInsideGoal(VSSRef::Color(i), ballPos)) {
                     // Mark possible goal
                     _possibleGoal = true;
+                    _possibleGoalTeam = (i == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE;
 
                     // Check if not occurred possible penalty or goal kick
                     if(!_possiblePenalty && !_possibleGoalKick) {
                         // Send as valid goal
-                        _possibleGoalTeam = (i == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE;
                         emit emitGoal(_possibleGoalTeam);
 
                         setPenaltiesInfo(VSSRef::Foul::KICKOFF, VSSRef::Color(i), VSSRef::Quadrant::NO_QUADRANT);
@@ -71,7 +71,7 @@ void Checker_BallPlay::run() {
                     else{
                         if(getConstants()->useRefereeSuggestions()) {
                             // If occurred penalty or goal kick, send an goal suggestion
-                            emit emitSuggestion("GOAL", (i == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE);
+                            emit emitSuggestion("GOAL", _possibleGoalTeam);
                         }
                     }
                 }

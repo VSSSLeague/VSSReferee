@@ -53,6 +53,9 @@ void Constants::readRefereeConstants() {
     QVariantMap gameParamsMap = refereeMap["game"].toMap();
 
     // Filling vars
+    _gameType = gameParamsMap["gameType"].toString();
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded gameType: '" + _gameType.toStdString() + "'\n");
+
     _ballRadius = gameParamsMap["ballRadius"].toFloat();
     std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded ballRadius: '" + std::to_string(_ballRadius) + "'\n");
 
@@ -61,6 +64,9 @@ void Constants::readRefereeConstants() {
 
     _halfTime = gameParamsMap["halfTime"].toFloat();
     std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded halfTime: '" + std::to_string(_halfTime) + "'\n");
+
+    _overtimeHalfTime = gameParamsMap["overtimeHalfTime"].toFloat();
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded overtimeHalfTime: '" + std::to_string(_overtimeHalfTime) + "'\n");
 
     // Fouls
     // Taking fouls mapping in json
@@ -164,6 +170,10 @@ float Constants::transitionTime() {
     return _transitionTime;
 }
 
+QString Constants::gameType() {
+    return _gameType;
+}
+
 float Constants::ballRadius() {
     return _ballRadius;
 }
@@ -174,6 +184,10 @@ float Constants::robotLength() {
 
 float Constants::halfTime() {
     return _halfTime;
+}
+
+float Constants::overtimeHalfTime() {
+    return _overtimeHalfTime;
 }
 
 float Constants::ballMinSpeedForStuck() {

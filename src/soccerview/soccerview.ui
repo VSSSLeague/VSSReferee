@@ -30,7 +30,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QGroupBox" name="groupBox_2">
+   <widget class="QGroupBox" name="scoreboard">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -776,7 +776,7 @@ color: white;</string>
  </resources>
  <connections/>
  <buttongroups>
-  <buttongroup name="quadrantButtons"/>
   <buttongroup name="forButtons"/>
+  <buttongroup name="quadrantButtons"/>
  </buttongroups>
 </ui>

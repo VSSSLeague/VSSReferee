@@ -18,6 +18,9 @@ SoccerView::SoccerView(Constants *constants, QWidget *parent) :
     setupTeams();
     setupGoals();
     setupButtons();
+
+    // Set scoreboard gameType
+    ui->scoreboard->setTitle(getConstants()->gameType());
 }
 
 SoccerView::~SoccerView()
@@ -27,6 +30,18 @@ SoccerView::~SoccerView()
 
 FieldView* SoccerView::getFieldView() {
     return (ui->openGLWidget);
+}
+
+QString SoccerView::getStage() {
+    return (ui->scoreboard->title());
+}
+
+int SoccerView::getLeftTeamGoals() {
+    return _leftTeamGoals;
+}
+
+int SoccerView::getRightTeamGoals() {
+    return _rightTeamGoals;
 }
 
 void SoccerView::setupTeams() {
@@ -279,9 +294,23 @@ void SoccerView::takeFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Qu
 
 }
 
-void SoccerView::takeTimeStamp(float timestamp, VSSRef::Half half) {
-    int min = (getConstants()->halfTime() - timestamp) / 60.0;
-    int sec = (getConstants()->halfTime() - timestamp) - (min * 60.0);
+void SoccerView::takeTimeStamp(float halftime, float timestamp, VSSRef::Half half, bool isEndGame) {
+    // If is penalty shootouts, set infinite time
+    if(half == VSSRef::Half::PENALTY_SHOOTOUTS) {
+        ui->halfTime->setText(QString(VSSRef::Half_Name(half).c_str()));
+        ui->gameTime->setText("∞");
+        return ;
+    }
+
+    // If is end game
+    if(isEndGame) {
+        ui->halfTime->setText(QString("Game ended"));
+        ui->gameTime->setText("END");
+        return ;
+    }
+
+    int min = (halftime - timestamp) / 60.0;
+    int sec = (halftime - timestamp) - (min * 60.0);
 
     // Seting gameTime
     char minStr[5], secStr[5];
