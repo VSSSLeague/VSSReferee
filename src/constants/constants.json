@@ -32,9 +32,11 @@
     	"refereePort": 10003,
     	"transitionTime": 5.0,
     	"game":{
+    		"gameType": "Group_Phase",
     		"ballRadius": 0.0215,
     		"robotLength": 0.075,
-    		"halfTime": 300.0
+    		"halfTime": 300.0,
+    		"overtimeHalfTime": 180.0
     	},
     	"fouls":{
     		"useRefereeSuggestions": true,

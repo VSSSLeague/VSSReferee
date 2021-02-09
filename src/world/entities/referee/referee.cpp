@@ -69,6 +69,7 @@ void Referee::initialization() {
     _isStopped = false;
     _teamsPlaced = false;
     _isToPlaceOutside = false;
+    _isEndGame = false;
     _placedLast = true;
 
     // Take first kickoff team
@@ -90,8 +91,8 @@ void Referee::loop() {
     // Run half checker
     _halfChecker->run();
 
-    // Send timestamp
-    emit sendTimestamp(_halfChecker->getTimeStamp(), _gameHalf);
+    // Send timestampaa
+    emit sendTimestamp((_halfChecker->isOvertime() ? getConstants()->overtimeHalfTime() : getConstants()->halfTime()), _halfChecker->getTimeStamp(), _gameHalf, _isEndGame);
 
     // Game halted just return
     if(_gameHalted) {
@@ -350,16 +351,51 @@ void Referee::processChecker(QObject *checker) {
 }
 
 void Referee::halfPassed() {
-    // Update half and kickoff
-    int half = (_gameHalf % 2) + 1;
+    // Check actual half
+    // If has at second half, check if is needed to go to overtime
+    if(_gameHalf == VSSRef::Half::SECOND_HALF) {
+        // If eq goals (go to overtime)
+        if((_soccerView->getLeftTeamGoals() == _soccerView->getRightTeamGoals()) && _soccerView->getStage().toLower() != "group_phase") {
+            _halfChecker->setIsOvertime(true);
+        }
+        else {
+            // halt game (end game)
+            sendControlFoul(VSSRef::Foul::HALT);
+            _gameHalted = true;
+            _isEndGame = true;
+            return ;
+        }
+    }
+    // If has at end of overtime, check if is need to go to penalty shootouts
+    else if(_gameHalf == VSSRef::Half::OVERTIME_SECOND_HALF) {
+        // If not eq goals (not go to penalty shootouts)
+        if((_soccerView->getLeftTeamGoals() != _soccerView->getRightTeamGoals())) {
+            // halt game (end game)
+            sendControlFoul(VSSRef::Foul::HALT);
+            _gameHalted = true;
+            _isEndGame = true;
+            return ;
+        }
+        else {
+            // Set halftime checker to penalty shootout
+            _halfChecker->setIsPenaltyShootout(true);
+        }
+    }
+
+    // If passed, update half and kickoff
+    int half = (_gameHalf % 5) + 1;
     _gameHalf = VSSRef::Half(half);
     int kickoff = ((_halfKickoff + 1) % 2);
     _halfKickoff = VSSRef::Color(kickoff);
-
     std::cout << Text::blue("[REFEREE] ", true) + Text::bold("Half passed, now at " + VSSRef::Half_Name(_gameHalf)) + '\n';
 
     // Update penaltie info for an kickoff
-    updatePenaltiesInfo(VSSRef::Foul::KICKOFF, _halfKickoff, VSSRef::Quadrant::NO_QUADRANT);
+    if(_gameHalf == VSSRef::Half::PENALTY_SHOOTOUTS) {
+        updatePenaltiesInfo(VSSRef::Foul::GAME_ON, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT);
+    }
+    else {
+        updatePenaltiesInfo(VSSRef::Foul::KICKOFF, _halfKickoff, VSSRef::Quadrant::NO_QUADRANT);
+    }
 
     // Call long stop (5min)
     sendControlFoul(VSSRef::Foul::STOP);

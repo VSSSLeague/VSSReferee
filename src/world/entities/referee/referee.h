@@ -82,6 +82,7 @@ private:
     bool _resetedTimer;
     bool _isStopped;
     bool _teamsPlaced;
+    bool _isEndGame;
     void resetTransitionVars();
 
     // Game control
@@ -96,7 +97,7 @@ private:
 
 signals:
     void sendFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant);
-    void sendTimestamp(float timestamp, VSSRef::Half half);
+    void sendTimestamp(float halftime, float timestamp, VSSRef::Half half, bool isEndGame);
     void callReplacer();
     void placeOutside(VSSRef::Foul foul, VSSRef::Color teamColor);
     void saveFrame();

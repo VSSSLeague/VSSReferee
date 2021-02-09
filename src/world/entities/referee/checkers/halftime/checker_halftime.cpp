@@ -11,6 +11,11 @@ void Checker_HalfTime::configure() {
 }
 
 void Checker_HalfTime::run() {
+    int halfTime = ((_isOvertime) ? getConstants()->overtimeHalfTime() : getConstants()->halfTime());
+    if(_isPenaltyShootout) {
+        halfTime = INT32_MAX;
+    }
+
     // If is game on
     if(_referee->isGameOn()) {
         _secondsMutex.lock();
@@ -19,10 +24,10 @@ void Checker_HalfTime::run() {
         _timer.stop();
 
         // Add passed time to seconds
-        _secondsPassed += _timer.getSeconds();
+        if(!_isPenaltyShootout) _secondsPassed += _timer.getSeconds();
 
         // Check if half passed
-        if(_secondsPassed >= getConstants()->halfTime()) {
+        if(_secondsPassed >= halfTime) {
             _secondsPassed = 0;
             emit halfPassed();
         }
@@ -44,6 +49,18 @@ float Checker_HalfTime::getTimeStamp() {
     _secondsMutex.unlock();
 
     return timeStamp;
+}
+
+bool Checker_HalfTime::isOvertime() {
+    return _isOvertime;
+}
+
+void Checker_HalfTime::setIsOvertime(bool isOvertime) {
+    _isOvertime = isOvertime;
+}
+
+void Checker_HalfTime::setIsPenaltyShootout(bool isPenaltyShootout) {
+    _isPenaltyShootout = isPenaltyShootout;
 }
 
 void Checker_HalfTime::receiveTime(int seconds) {

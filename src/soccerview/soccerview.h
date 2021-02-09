@@ -21,6 +21,9 @@ public:
     ~SoccerView();
 
     FieldView *getFieldView();
+    QString getStage();
+    int getLeftTeamGoals();
+    int getRightTeamGoals();
 
 private:
     Ui::SoccerView *ui;
@@ -56,7 +59,7 @@ signals:
 
 public slots:
     void takeFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant);
-    void takeTimeStamp(float timestamp, VSSRef::Half half);
+    void takeTimeStamp(float halftime, float timestamp, VSSRef::Half half, bool isEndGame);
     void addGoal(VSSRef::Color color);
     void removeGoal(VSSRef::Color color);
     void processButton(QWidget *button);

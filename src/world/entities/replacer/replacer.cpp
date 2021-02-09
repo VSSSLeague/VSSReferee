@@ -641,6 +641,7 @@ VSSRef::Frame Replacer::getOutsideFieldPlacement(VSSRef::Color color){
     return frame;
 }
 
+/// TODO: CHECK HOW TO TAKE THE GOALIE / ATTACKER FROM TEAMS! (NOT REMOVE THEM!!!!!!)
 VSSRef::Frame Replacer::getPenaltyShootoutPlacement(VSSRef::Color color, bool placeAttacker){
     VSSRef::Frame frame;
     frame.set_teamcolor(color);

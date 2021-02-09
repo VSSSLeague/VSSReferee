@@ -24,6 +24,11 @@ public:
     // Get timestamp
     float getTimeStamp();
 
+    // Overtime control
+    bool isOvertime();
+    void setIsOvertime(bool isOvertime);
+    void setIsPenaltyShootout(bool isPenaltyShootout);
+
 private:
     // Timer
     Timer _timer;
@@ -31,6 +36,8 @@ private:
     // Seconds
     float _secondsPassed;
     QMutex _secondsMutex;
+    bool _isOvertime;
+    bool _isPenaltyShootout;
 
     // Referee
     Referee *_referee;
