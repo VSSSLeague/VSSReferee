@@ -28,10 +28,14 @@ public:
     float stuckedBallTime();
     float ballInAreaMaxTime();
     bool useRefereeSuggestions();
+    bool maintainSpeedAtSuggestions();
 
     // Vision constants getters
     QString visionAddress();
     quint16 visionPort();
+    bool useKalman();
+    int noiseTime();
+    int lossTime();
 
     // Replacer constants getters
     QString replacerAddress();
@@ -74,11 +78,15 @@ private:
     float _stuckedBallTime;
     float _ballInAreaMaxTime;
     bool _useRefereeSuggestions;
+    bool _maintainSpeedAtSuggestions;
     void readRefereeConstants();
 
     // Vision constants
     QString _visionAddress;
     quint16 _visionPort;
+    bool _useKalman;
+    int _noiseTime;
+    int _lossTime;
     void readVisionConstants();
 
     // Replacer constants

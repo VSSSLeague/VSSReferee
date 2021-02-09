@@ -384,7 +384,7 @@ void Referee::sendControlFoul(VSSRef::Foul foul) {
         _placedLast = false;
         _lastBallPosition = _vision->getBallPosition();
         _lastBallVelocity = _vision->getBallVelocity();
-        emit saveFrame();
+        if(getConstants()->maintainSpeedAtSuggestions()) emit saveFrame();
     }
 
     // Update penalties info
@@ -409,7 +409,7 @@ void Referee::takeManualFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef:
         }
 
         if(!_placedLast) {
-            emit placeFrame();
+            if(getConstants()->maintainSpeedAtSuggestions()) emit placeFrame();
             _placedLast = true;
         }
 

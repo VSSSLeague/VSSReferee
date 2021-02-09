@@ -35,8 +35,9 @@ void RefereeCore::start() {
     // Creating GUI
     _soccerView = new SoccerView(getConstants());
 
-    // Setting Vision to FieldView
+    // Setting Vision and Constants to FieldView
     _soccerView->getFieldView()->setVisionModule(_vision);
+    _soccerView->getFieldView()->setConstants(_constants);
 
     // Creating replacer pointer
     _replacer = new Replacer(_vision, getConstants());

@@ -156,7 +156,7 @@ void Vision::bindAndConnect() {
 
 void Vision::initObjects() {
     // Init ball object
-    _ballObject = new Object();
+    _ballObject = new Object(getConstants()->useKalman());
 
     // Init robot objects
     for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
@@ -164,7 +164,7 @@ void Vision::initObjects() {
         QHash<quint8, Object*> *teamObjects = new QHash<quint8, Object*>();
         _objects.insert(VSSRef::Color(i), teamObjects);
         for(int j = 0; j < getConstants()->qtPlayers(); j++) {
-            teamObjects->insert(j, new Object());
+            teamObjects->insert(j, new Object(getConstants()->useKalman()));
         }
 
         // Init objects control

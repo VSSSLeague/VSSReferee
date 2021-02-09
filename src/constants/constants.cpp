@@ -1,5 +1,8 @@
 #include "constants.h"
 
+#include <src/world/entities/vision/filters/loss/lossfilter.h>
+#include <src/world/entities/vision/filters/noise/noisefilter.h>
+
 Constants::Constants(QString fileName) {
     // Taking fileName
     _fileName = fileName;
@@ -75,6 +78,10 @@ void Constants::readRefereeConstants() {
 
     _useRefereeSuggestions = foulsMap["useRefereeSuggestions"].toBool();
     std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded useRefereeSuggestions: '" + std::to_string(_useRefereeSuggestions) + "'\n");
+
+    _maintainSpeedAtSuggestions = foulsMap["maintainSpeedAtSuggestions"].toBool();
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded maintainSpeedAtSuggestions: '" + std::to_string(_maintainSpeedAtSuggestions) + "'\n");
+
 }
 
 void Constants::readVisionConstants() {
@@ -87,6 +94,21 @@ void Constants::readVisionConstants() {
 
     _visionPort = visionMap["visionPort"].toUInt();
     std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded visionPort: " + std::to_string(_visionPort)) + '\n';
+
+    // Filter constants
+    QVariantMap filterMap = visionMap["filters"].toMap();
+
+    _useKalman = filterMap["useKalman"].toBool();
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded useKalman: " + std::to_string(_useKalman)) + '\n';
+
+    _noiseTime = filterMap["noiseTime"].toInt();
+    NoiseFilter::setNoiseTime(_noiseTime);
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded noiseTime: " + std::to_string(_noiseTime)) + '\n';
+
+    _lossTime = filterMap["lossTime"].toInt();
+    LossFilter::setLossTime(_lossTime);
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded lossTime: " + std::to_string(_lossTime)) + '\n';
+
 }
 
 void Constants::readReplacerConstants() {
@@ -170,12 +192,28 @@ bool Constants::useRefereeSuggestions() {
     return _useRefereeSuggestions;
 }
 
+bool Constants::maintainSpeedAtSuggestions() {
+    return _maintainSpeedAtSuggestions;
+}
+
 QString Constants::visionAddress() {
     return _visionAddress;
 }
 
 quint16 Constants::visionPort() {
     return _visionPort;
+}
+
+bool Constants::useKalman() {
+    return _useKalman;
+}
+
+int Constants::noiseTime() {
+    return _noiseTime;
+}
+
+int Constants::lossTime() {
+    return _lossTime;
 }
 
 QString Constants::replacerAddress() {

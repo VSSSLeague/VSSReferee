@@ -5,7 +5,12 @@
     
     "Vision":{
     	"visionAddress": "224.0.0.1",
-    	"visionPort": 10002
+    	"visionPort": 10002,
+    	"filters":{
+    		"useKalman": false,
+    		"noiseTime": 100,
+    		"lossTime": 100
+    	}
     },
     
     "Replacer":{
@@ -33,6 +38,7 @@
     	},
     	"fouls":{
     		"useRefereeSuggestions": true,
+    		"maintainSpeedAtSuggestions": true,
     		"ballMinSpeedForStuck": 0.1,
     		"stuckedBallTime": 10.0,
     		"ballInAreaMaxTime": 3.0
