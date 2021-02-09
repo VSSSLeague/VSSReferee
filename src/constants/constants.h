@@ -26,6 +26,8 @@ public:
     float halfTime();
     float ballMinSpeedForStuck();
     float stuckedBallTime();
+    float ballInAreaMaxTime();
+    bool useRefereeSuggestions();
 
     // Vision constants getters
     QString visionAddress();
@@ -70,6 +72,8 @@ private:
     float _halfTime;
     float _ballMinSpeedForStuck;
     float _stuckedBallTime;
+    float _ballInAreaMaxTime;
+    bool _useRefereeSuggestions;
     void readRefereeConstants();
 
     // Vision constants

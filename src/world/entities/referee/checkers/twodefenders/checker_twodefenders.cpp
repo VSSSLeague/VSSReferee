@@ -37,8 +37,8 @@ void Checker_TwoDefenders::run() {
         if(countAtAllieGoal >= 2 && Utils::isInsideGoalArea(VSSRef::Color(i), ballPosition)) {
             _twoDefending.insert(VSSRef::Color(i), true);
             _timers.value(VSSRef::Color(i))->stop();
-            // TODO: change this timer for constants later
-            if(_timers.value(VSSRef::Color(i))->getSeconds() >= 2.0) {
+
+            if(_timers.value(VSSRef::Color(i))->getSeconds() >= getConstants()->ballInAreaMaxTime() && !getConstants()->useRefereeSuggestions()) {
                 setPenaltiesInfo(VSSRef::Foul::PENALTY_KICK, oppositeColor, VSSRef::Quadrant::NO_QUADRANT);
                 emit foulOccured();
             }
@@ -58,6 +58,16 @@ bool Checker_TwoDefenders::isTwoPlayersDefending() {
     }
 
     return false;
+}
+
+float Checker_TwoDefenders::getTimer() {
+    for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
+        if(_twoDefending.value(VSSRef::Color(i))) {
+            return _timers.value(VSSRef::Color(i))->getSeconds();
+        }
+    }
+
+    return 0.0f;
 }
 
 VSSRef::Color Checker_TwoDefenders::defendingTeam() {

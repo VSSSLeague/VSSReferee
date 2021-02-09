@@ -69,6 +69,12 @@ void Constants::readRefereeConstants() {
 
     _stuckedBallTime = foulsMap["stuckedBallTime"].toFloat();
     std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded stuckedBallTime: '" + std::to_string(_stuckedBallTime) + "'\n");
+
+    _ballInAreaMaxTime = foulsMap["ballInAreaMaxTime"].toFloat();
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded ballInAreaMaxTime: '" + std::to_string(_ballInAreaMaxTime) + "'\n");
+
+    _useRefereeSuggestions = foulsMap["useRefereeSuggestions"].toBool();
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded useRefereeSuggestions: '" + std::to_string(_useRefereeSuggestions) + "'\n");
 }
 
 void Constants::readVisionConstants() {
@@ -154,6 +160,14 @@ float Constants::ballMinSpeedForStuck() {
 
 float Constants::stuckedBallTime() {
     return _stuckedBallTime;
+}
+
+float Constants::ballInAreaMaxTime() {
+    return _ballInAreaMaxTime;
+}
+
+bool Constants::useRefereeSuggestions() {
+    return _useRefereeSuggestions;
 }
 
 QString Constants::visionAddress() {
