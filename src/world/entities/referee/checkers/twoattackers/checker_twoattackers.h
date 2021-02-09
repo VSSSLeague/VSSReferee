@@ -16,6 +16,7 @@ public:
 
     // Flag getter
     bool isTwoPlayersAttacking();
+    float getTimer();
     VSSRef::Color attackingTeam();
 
 private:

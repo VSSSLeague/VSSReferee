@@ -18,9 +18,6 @@ SoccerView::SoccerView(Constants *constants, QWidget *parent) :
     setupTeams();
     setupGoals();
     setupButtons();
-
-    // Add default GAME_ON suggestion
-    addSuggestion("GAME_ON");
 }
 
 SoccerView::~SoccerView()

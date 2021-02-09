@@ -32,8 +32,10 @@
     		"halfTime": 300.0
     	},
     	"fouls":{
+    		"useRefereeSuggestions": true,
     		"ballMinSpeedForStuck": 0.1,
-    		"stuckedBallTime": 10.0
+    		"stuckedBallTime": 10.0,
+    		"ballInAreaMaxTime": 3.0
     	}
     }
 }

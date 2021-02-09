@@ -27,6 +27,10 @@ private:
     bool _possibleGoal;
     VSSRef::Color _possibleGoalTeam;
 
+    // Ball in area management
+    Timer _areaTimer;
+    bool _areaTimerControl;
+
     // Checkers
     Checker_TwoAttackers *_checkerTwoAtk;
     Checker_TwoDefenders *_checkerTwoDef;
