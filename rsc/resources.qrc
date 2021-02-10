@@ -3,5 +3,19 @@
         <file>teams/maracatronics.png</file>
         <file>teams/default.png</file>
         <file>teams/robotbulls.png</file>
+        <file>teams/rodetas.png</file>
+        <file>teams/robotech.png</file>
+        <file>teams/roboime.png</file>
+        <file>teams/robocin.png</file>
+        <file>teams/rinobot.png</file>
+        <file>teams/pinguimbots.png</file>
+        <file>teams/pequimecanico.png</file>
+        <file>teams/ger.png</file>
+        <file>teams/furgbot.png</file>
+        <file>teams/unball.png</file>
+        <file>teams/poti.png</file>
+        <file>teams/itandroids.png</file>
+        <file>teams/warthog.png</file>
+        <file>teams/nhao.png</file>
     </qresource>
 </RCC>

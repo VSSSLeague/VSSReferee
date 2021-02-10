@@ -56,6 +56,10 @@ void SoccerView::setupTeams() {
     ui->rightTeamName->setText(rightName);
     ui->rightTeamName->setStyleSheet(getConstants()->blueIsLeftSide() ? "color: #FCEE44;" : "color: #779FFF;");
 
+    // Remove spaces to take logo
+    leftName.remove(" ");
+    rightName.remove(" ");
+
     // Setup left logo
     QPixmap pixMap = QPixmap(":/teams/" + leftName.toLower() + ".png");
     if(!pixMap.isNull()) {
@@ -306,6 +310,8 @@ void SoccerView::takeTimeStamp(float halftime, float timestamp, VSSRef::Half hal
     if(isEndGame) {
         ui->halfTime->setText(QString("Game ended"));
         ui->gameTime->setText("END");
+        ui->refereeSuggestions->setEnabled(false);
+        ui->manualReferee->setEnabled(false);
         return ;
     }
 
