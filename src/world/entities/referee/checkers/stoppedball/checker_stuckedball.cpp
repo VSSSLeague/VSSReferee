@@ -13,7 +13,6 @@ void Checker_StuckedBall::configure() {
 void Checker_StuckedBall::run() {
     // If ball valid and is stucked (low velocity)
     if(!getVision()->getBallPosition().isInvalid() && getVision()->getBallVelocity().abs() <= getConstants()->ballMinSpeedForStuck()) {
-
         // Take ball position
         Position ballPosition = getVision()->getBallPosition();
 
