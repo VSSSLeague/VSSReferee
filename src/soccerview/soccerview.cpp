@@ -383,7 +383,7 @@ void SoccerView::processButton(QWidget *button) {
     emit sendManualFoul(calledFoul, (calledFoul == VSSRef::Foul::FREE_BALL) ? VSSRef::Color::NONE : calledColor, (calledFoul != VSSRef::Foul::FREE_BALL) ? VSSRef::Quadrant::NO_QUADRANT : calledQuadrant);
 }
 
-void SoccerView::addSuggestion(QString suggestion, VSSRef::Color forColor) {
+void SoccerView::addSuggestion(QString suggestion, VSSRef::Color forColor, VSSRef::Quadrant atQuadrant) {
     _suggestionsMutex.lock();
 
     int qtWidgets = _widgets.size() / 2;
@@ -396,7 +396,7 @@ void SoccerView::addSuggestion(QString suggestion, VSSRef::Color forColor) {
     ui->suggestionGrid->addWidget(label, qtWidgets, 0, Qt::AlignCenter);
 
     QPushButton *accept = new QPushButton("Accept");
-    connect(accept, &QPushButton::released, [this, forColor, label](){
+    connect(accept, &QPushButton::released, [this, forColor, atQuadrant, label](){
         if(label->whatsThis() == "GOAL") {
             addGoal(forColor);
 
@@ -406,7 +406,7 @@ void SoccerView::addSuggestion(QString suggestion, VSSRef::Color forColor) {
             VSSRef::Foul suggestedFoul = VSSRef::Foul();
             VSSRef::Foul_Parse(label->whatsThis().toStdString(), &suggestedFoul);
 
-            emit sendManualFoul(suggestedFoul, forColor, VSSRef::Quadrant::NO_QUADRANT);
+            emit sendManualFoul(suggestedFoul, forColor, atQuadrant);
         }
 
         deleteSuggestions();
