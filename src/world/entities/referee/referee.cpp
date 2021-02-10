@@ -353,7 +353,7 @@ void Referee::processChecker(QObject *checker) {
     if(_isPenaltyShootout && !(occurredChecker->name() == "Checker_BallPlay")) {
         return ;
     }
-    else {
+    else if(_isPenaltyShootout && occurredChecker->name() == "Checker_BallPlay"){
         // Send penalty foul to place outside
         takeManualFoul(occurredChecker->penalty(), occurredChecker->teamColor(), VSSRef::NO_QUADRANT, true);
         return ;
