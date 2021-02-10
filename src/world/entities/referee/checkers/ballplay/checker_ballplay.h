@@ -18,6 +18,7 @@ public:
 
     // Set checkers
     void setAtkDefCheckers(Checker_TwoAttackers *twoAtk, Checker_TwoDefenders *twoDef);
+    void setIsPenaltyShootout(bool isPenaltyShootout, VSSRef::Color firstPenaltyTeam);
 
 private:
     // Flag control
@@ -26,6 +27,11 @@ private:
     bool _possibleGoalKick;
     bool _possibleGoal;
     VSSRef::Color _possibleGoalTeam;
+
+    // Penalty management
+    bool _isPenaltyShootout;
+    VSSRef::Color _penaltyTeam;
+    void setNextTeam();
 
     // Ball in area management
     Timer _areaTimer;

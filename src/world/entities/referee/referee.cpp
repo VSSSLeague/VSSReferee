@@ -52,6 +52,7 @@ void Referee::initialization() {
     connect(_ballPlayChecker, SIGNAL(emitGoal(VSSRef::Color)), _soccerView, SLOT(addGoal(VSSRef::Color)));
     connect(_ballPlayChecker, SIGNAL(emitSuggestion(QString, VSSRef::Color, VSSRef::Quadrant)), _soccerView, SLOT(addSuggestion(QString, VSSRef::Color, VSSRef::Quadrant)));
     _ballPlayChecker->setAtkDefCheckers(_twoAtkChecker, _twoDefChecker);
+    _ballPlayChecker->setIsPenaltyShootout(false, VSSRef::Color::NONE);
 
     // Goalie
     _goalieChecker = new Checker_Goalie(_vision, getConstants());
@@ -61,6 +62,7 @@ void Referee::initialization() {
     // HalfTime
     _halfChecker = new Checker_HalfTime(_vision, getConstants());
     _halfChecker->setReferee(this);
+    _halfChecker->setIsPenaltyShootout(false);
     connect(_halfChecker, SIGNAL(halfPassed()), this, SLOT(halfPassed()));
     connect(_soccerView, SIGNAL(addTime(int)), _halfChecker, SLOT(receiveTime(int)), Qt::DirectConnection);
 
@@ -70,6 +72,7 @@ void Referee::initialization() {
     _teamsPlaced = false;
     _isToPlaceOutside = false;
     _isEndGame = false;
+    _isPenaltyShootout = false;
     _placedLast = true;
 
     // Take first kickoff team
@@ -206,7 +209,7 @@ void Referee::finalization() {
 }
 
 bool Referee::isGameOn() {
-    return (_lastFoul == VSSRef::Foul::GAME_ON && !_gameHalted && !_longStop);
+    return (_lastFoul == VSSRef::Foul::GAME_ON && !_gameHalted && !_longStop && !_isPenaltyShootout);
 }
 
 void Referee::connectClient() {
@@ -346,6 +349,16 @@ void Referee::processChecker(QObject *checker) {
         return ;
     }
 
+    // In penaltyShootout, only hear commands from checker ball play
+    if(_isPenaltyShootout && !(occurredChecker->name() == "Checker_BallPlay")) {
+        return ;
+    }
+    else {
+        // Send penalty foul to place outside
+        takeManualFoul(occurredChecker->penalty(), occurredChecker->teamColor(), VSSRef::NO_QUADRANT, true);
+        return ;
+    }
+
     updatePenaltiesInfo(occurredChecker->penalty(), occurredChecker->teamColor(), occurredChecker->quadrant());
     sendPenaltiesToNetwork();
 }
@@ -379,6 +392,7 @@ void Referee::halfPassed() {
         else {
             // Set halftime checker to penalty shootout
             _halfChecker->setIsPenaltyShootout(true);
+            _isPenaltyShootout = true;
         }
     }
 
@@ -389,11 +403,15 @@ void Referee::halfPassed() {
     _halfKickoff = VSSRef::Color(kickoff);
     std::cout << Text::blue("[REFEREE] ", true) + Text::bold("Half passed, now at " + VSSRef::Half_Name(_gameHalf)) + '\n';
 
-    // Update penaltie info for an kickoff
+    // If is penalty shootout, set penalty kick for one team
     if(_gameHalf == VSSRef::Half::PENALTY_SHOOTOUTS) {
-        updatePenaltiesInfo(VSSRef::Foul::GAME_ON, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT);
+        takeManualFoul(VSSRef::Foul::PENALTY_KICK, _halfKickoff, VSSRef::Quadrant::NO_QUADRANT, true);
+        _ballPlayChecker->setIsPenaltyShootout(true, _halfKickoff);
+        return ;
     }
+    // If not is penalty shootout, call kickoff normally
     else {
+        // Update penaltie info for an kickoff
         updatePenaltiesInfo(VSSRef::Foul::KICKOFF, _halfKickoff, VSSRef::Quadrant::NO_QUADRANT);
     }
 
