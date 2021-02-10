@@ -83,6 +83,7 @@ private:
     bool _isStopped;
     bool _teamsPlaced;
     bool _isEndGame;
+    bool _isPenaltyShootout;
     void resetTransitionVars();
 
     // Game control

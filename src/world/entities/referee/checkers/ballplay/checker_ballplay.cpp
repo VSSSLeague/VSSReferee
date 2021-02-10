@@ -9,6 +9,16 @@ void Checker_BallPlay::setAtkDefCheckers(Checker_TwoAttackers *twoAtk, Checker_T
     _checkerTwoDef = twoDef;
 }
 
+void Checker_BallPlay::setIsPenaltyShootout(bool isPenaltyShootout, VSSRef::Color firstPenaltyTeam) {
+    _isPenaltyShootout = isPenaltyShootout;
+    _penaltyTeam = firstPenaltyTeam;
+}
+
+void Checker_BallPlay::setNextTeam() {
+    int nextTeam = ((_penaltyTeam + 1) % 2);
+    _penaltyTeam = VSSRef::Color(nextTeam);
+}
+
 void Checker_BallPlay::configure() {
     // Reset control
     _isPlayRunning = false;
@@ -41,7 +51,7 @@ void Checker_BallPlay::run() {
         }
 
         // Update passed timer if an foul has detected ( >= ballInAreaMaxTime() will halt game )
-        if((_possibleGoalKick || _possiblePenalty) && getConstants()->useRefereeSuggestions()) {
+        if((_possibleGoalKick || _possiblePenalty) && getConstants()->useRefereeSuggestions() && !_isPenaltyShootout) {
             _areaTimer.stop();
             if(_areaTimer.getSeconds() >= getConstants()->ballInAreaMaxTime()) {
                 _areaTimerControl = true;
@@ -65,7 +75,17 @@ void Checker_BallPlay::run() {
                         // Send as valid goal
                         emit emitGoal(_possibleGoalTeam);
 
-                        setPenaltiesInfo(VSSRef::Foul::KICKOFF, VSSRef::Color(i), VSSRef::Quadrant::NO_QUADRANT);
+                        // If is penalty shootout
+                        if(_isPenaltyShootout) {
+                            setNextTeam();
+                            setPenaltiesInfo(VSSRef::Foul::PENALTY_KICK, _penaltyTeam, VSSRef::Quadrant::NO_QUADRANT);
+                            emit foulOccured();
+                            return ;
+                        }
+                        else {
+                            setPenaltiesInfo(VSSRef::Foul::KICKOFF, VSSRef::Color(i), VSSRef::Quadrant::NO_QUADRANT);
+                        }
+
                         emit foulOccured();
                     }
                     else{
@@ -146,6 +166,13 @@ void Checker_BallPlay::run() {
 
                 // Debug
                 //std::cout << Text::red("[PLAY] ", true) + Text::bold("Possible goal: " + std::to_string(_possibleGoal) + ", Possible penalty: " + std::to_string(_possiblePenalty) + " and Possible goalkick: " + std::to_string(_possibleGoalKick)) + '\n';
+            }
+            else {
+                if(_isPenaltyShootout) {
+                    setNextTeam();
+                    setPenaltiesInfo(VSSRef::Foul::PENALTY_KICK, _penaltyTeam, VSSRef::Quadrant::NO_QUADRANT);
+                    emit foulOccured();
+                }
             }
 
             // Reset running control var
