@@ -26,8 +26,8 @@ Referee::Referee(Vision *vision, Replacer *replacer, SoccerView *soccerView, Con
     // Connecting referee to replacer
     connect(_replacer, SIGNAL(teamsPlaced()), this, SLOT(teamsPlaced()));
     connect(this, SIGNAL(sendFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), _replacer, SLOT(takeFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)));
-    connect(this, SIGNAL(callReplacer()), _replacer, SLOT(placeTeams()));
-    connect(this, SIGNAL(placeOutside(VSSRef::Foul, VSSRef::Color)), _replacer, SLOT(placeOutside(VSSRef::Foul, VSSRef::Color)));
+    connect(this, SIGNAL(callReplacer()), _replacer, SLOT(placeTeams()), Qt::DirectConnection);
+    connect(this, SIGNAL(placeOutside(VSSRef::Foul, VSSRef::Color)), _replacer, SLOT(placeOutside(VSSRef::Foul, VSSRef::Color)), Qt::DirectConnection);
     connect(this, SIGNAL(saveFrame()), _replacer, SLOT(saveFrameAndBall()), Qt::DirectConnection);
     connect(this, SIGNAL(placeFrame()), _replacer, SLOT(placeLastFrameAndBall()), Qt::DirectConnection);
     connect(this, SIGNAL(placeBall(Position, Velocity)), _replacer, SLOT(placeBall(Position, Velocity)), Qt::DirectConnection);
@@ -50,7 +50,7 @@ void Referee::initialization() {
     // Ball play
     addChecker(_ballPlayChecker = new Checker_BallPlay(_vision, getConstants()), 2);
     connect(_ballPlayChecker, SIGNAL(emitGoal(VSSRef::Color)), _soccerView, SLOT(addGoal(VSSRef::Color)));
-    connect(_ballPlayChecker, SIGNAL(emitSuggestion(QString, VSSRef::Color)), _soccerView, SLOT(addSuggestion(QString, VSSRef::Color)));
+    connect(_ballPlayChecker, SIGNAL(emitSuggestion(QString, VSSRef::Color, VSSRef::Quadrant)), _soccerView, SLOT(addSuggestion(QString, VSSRef::Color, VSSRef::Quadrant)));
     _ballPlayChecker->setAtkDefCheckers(_twoAtkChecker, _twoDefChecker);
 
     // Goalie

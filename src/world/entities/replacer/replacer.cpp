@@ -641,7 +641,6 @@ VSSRef::Frame Replacer::getOutsideFieldPlacement(VSSRef::Color color){
     return frame;
 }
 
-/// TODO: CHECK HOW TO TAKE THE GOALIE / ATTACKER FROM TEAMS! (NOT REMOVE THEM!!!!!!)
 VSSRef::Frame Replacer::getPenaltyShootoutPlacement(VSSRef::Color color, bool placeAttacker){
     VSSRef::Frame frame;
     frame.set_teamcolor(color);
@@ -653,51 +652,64 @@ VSSRef::Frame Replacer::getPenaltyShootoutPlacement(VSSRef::Color color, bool pl
     if(teamIsAtLeft)
         factor = -1.0;
 
-    float markX = (Field_Default_3v3::kFieldLength / 1000.0)/2.0 - 0.375;
+    // Taking available players
+    VSSRef::Frame lastFrame = _placement.value(color);
 
-    QList<quint8> players = _vision->getAvailablePlayers(color);
-    for(int i = 0; i < players.size(); i++) {
-        if(players.at(i) == getGoalie(color)) {
-            players.removeAt(i);
+    // The chosen id (keeper or atk)
+    quint8 id = 255;
+
+    // Taking attacker
+    if(placeAttacker) {
+        // Get the closest player to ball
+        float bestDistance = 999.0f;
+        for(int i = 0; i < lastFrame.robots_size(); i++) {
+            VSSRef::Robot robot = lastFrame.robots(i);
+            Position playerPosition = Position(true, robot.x(), robot.y());
+            Position futureBallPosition = getBallPlaceByFoul(VSSRef::Foul::PENALTY_KICK, color, VSSRef::Quadrant::NO_QUADRANT);
+
+            float distBall = Utils::distance(playerPosition, futureBallPosition);
+            if(distBall < bestDistance) {
+                bestDistance = distBall;
+                id = robot.robot_id();
+            }
+        }
+    }
+    // Taking goalie
+    else {
+        // Get the player inside goal area
+        for(int i = 0; i < lastFrame.robots_size(); i++) {
+            VSSRef::Robot robot = lastFrame.robots(i);
+            Position playerPosition = Position(true, robot.x(), robot.y());
+            if(Utils::isInsideGoalArea(color, playerPosition)) {
+                id = robot.robot_id();
+                break;
+            }
         }
     }
 
-    // Goalkeeper
-    if(players.size() == 0) return frame;
-    VSSRef::Robot *gk = frame.add_robots();
-    gk->set_robot_id(getGoalie(color));
-    gk->set_orientation(0.0);
-    if(!placeAttacker) {
-        gk->set_x(factor * ((Field_Default_3v3::kFieldLength / 2000.0) - getConstants()->robotLength()));
-        gk->set_y(0.0);
-    }
-    else {
-        gk->set_x(factor * ((Field_Default_3v3::kFieldLength / 2000.0) - getConstants()->robotLength()));
-        gk->set_y(-0.8);
+    // Remove id from avPlayers
+    QList<quint8> avPlayers = _vision->getAvailablePlayers(color);
+    for(int i = 0; i < avPlayers.size(); i++) {
+        if(avPlayers.at(i) == id) {
+            avPlayers.removeAt(i);
+            break;
+        }
     }
 
-    // Attacker
-    if(players.size() == 0) return frame;
-    VSSRef::Robot *striker = frame.add_robots();
-    striker->set_robot_id(players.takeFirst());
-    striker->set_orientation(0.0);
-    if(placeAttacker) {
-        striker->set_x((-factor) * (markX - (2.0 * getConstants()->robotLength())));
-        striker->set_y(0.0);
-    }
-    else {
-        striker->set_x((-factor) * (markX - (2.0 * getConstants()->robotLength())));
-        striker->set_y(-0.8);
-    }
+    // Removing from field players != id
+    if(avPlayers.size() == 0) return frame;
+    VSSRef::Robot *out1 = frame.add_robots();
+    out1->set_robot_id(avPlayers.takeFirst());
+    out1->set_orientation(0.0);
+    out1->set_x(factor * 0.1);
+    out1->set_y(-0.8);
 
-
-    // Support
-    if(players.size() == 0) return frame;
-    VSSRef::Robot *support = frame.add_robots();
-    support->set_robot_id(players.takeFirst());
-    support->set_orientation(0.0);
-    support->set_x(factor * (Field_Default_3v3::kCenterRadius/1000.0 * 2.0));
-    support->set_y(-0.8);
+    if(avPlayers.size() == 0) return frame;
+    VSSRef::Robot *out2 = frame.add_robots();
+    out2->set_robot_id(avPlayers.takeFirst());
+    out2->set_orientation(0.0);
+    out2->set_x(factor * 0.2);
+    out2->set_y(-0.8);
 
     return frame;
 }
@@ -751,7 +763,6 @@ void Replacer::placeFrame(VSSRef::Frame frame) {
     }
 }
 
-/// TODO: check how to call this function in stop -> game_on transition
 void Replacer::placeBall(Position ballPos, Velocity ballVelocity) {
     // Create aux vars
     fira_message::sim_to_ref::Packet packet;
@@ -825,6 +836,9 @@ void Replacer::placeTeams() {
 
             // Send frame to network
             placeFrame(defaultFrame);
+
+            // Save frame
+            _placement.insert(VSSRef::Color(i), defaultFrame);
         }
     }
 

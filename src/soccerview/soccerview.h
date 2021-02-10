@@ -63,7 +63,7 @@ public slots:
     void addGoal(VSSRef::Color color);
     void removeGoal(VSSRef::Color color);
     void processButton(QWidget *button);
-    void addSuggestion(QString suggestion, VSSRef::Color forColor = VSSRef::Color::NONE);
+    void addSuggestion(QString suggestion, VSSRef::Color forColor = VSSRef::Color::NONE, VSSRef::Quadrant atQuadrant = VSSRef::Quadrant::NO_QUADRANT);
 };
 
 #endif // SOCCERVIEW_H

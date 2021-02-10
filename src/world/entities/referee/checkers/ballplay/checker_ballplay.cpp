@@ -72,6 +72,9 @@ void Checker_BallPlay::run() {
                         if(getConstants()->useRefereeSuggestions()) {
                             // If occurred penalty or goal kick, send an goal suggestion
                             emit emitSuggestion("GOAL", _possibleGoalTeam);
+
+                            // Send also an suggestion of free ball
+                            emit emitSuggestion("FREE_BALL", VSSRef::Color::NONE, Utils::getBallQuadrant(getVision()->getBallPosition()));
                         }
                     }
                 }

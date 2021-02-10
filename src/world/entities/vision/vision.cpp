@@ -71,7 +71,6 @@ void Vision::loop() {
                 quint8 robotId = robot.robot_id();
 
                 // Get object
-                /// TODO: this confidence will be used at unified vss league vision software?
                 Object *robotObject = _objects.value(VSSRef::Color::BLUE)->value(robotId);
                 robotObject->updateObject(1.0f, Position(true, robot.x(), robot.y()), Angle(true, robot.orientation()));
 
@@ -88,7 +87,6 @@ void Vision::loop() {
                 quint8 robotId = robot.robot_id();
 
                 // Get object
-                /// TODO: this confidence will be used at unified vss league vision software?
                 Object *robotObject = _objects.value(VSSRef::Color::YELLOW)->value(robotId);
                 robotObject->updateObject(1.0f, Position(true, robot.x(), robot.y()), Angle(true, robot.orientation()));
 

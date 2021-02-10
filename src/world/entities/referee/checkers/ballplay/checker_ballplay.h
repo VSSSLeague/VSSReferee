@@ -37,7 +37,7 @@ private:
 
 signals:
     void emitGoal(VSSRef::Color forTeam);
-    void emitSuggestion(QString suggestion, VSSRef::Color forTeam = VSSRef::Color::NONE);
+    void emitSuggestion(QString suggestion, VSSRef::Color forTeam = VSSRef::Color::NONE, VSSRef::Quadrant atQuadrant = VSSRef::Quadrant::NO_QUADRANT);
 };
 
 #endif // CHECKER_BALLPLAY_H
