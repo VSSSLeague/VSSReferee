@@ -292,7 +292,7 @@ color: white;</string>
     <zorder>leftTeamName</zorder>
     <zorder>rightTeamName</zorder>
    </widget>
-   <widget class="QGroupBox" name="groupBox">
+   <widget class="QGroupBox" name="manualReferee">
     <property name="geometry">
      <rect>
       <x>630</x>
@@ -734,7 +734,7 @@ color: white;</string>
      </property>
     </widget>
    </widget>
-   <widget class="QGroupBox" name="groupBox_3">
+   <widget class="QGroupBox" name="refereeSuggestions">
     <property name="geometry">
      <rect>
       <x>630</x>
