@@ -99,7 +99,7 @@ void Referee::loop() {
 
     // Game halted just return
     if(_gameHalted) {
-        emit placeBall(_lastBallPosition, _lastBallVelocity);
+        emit placeBall(_lastBallPosition, Velocity(true, 0.0, 0.0));
         return ;
     }
 
