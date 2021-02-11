@@ -67,7 +67,7 @@ void SoccerView::setupTeams() {
     }
     else {
         std::cout << Text::blue("[SOCCERVIEW] ", true) + Text::red("Failed to setup left team logo, set default.", true) + '\n';
-        ui->leftTeamLogo->setPixmap(QPixmap(":/teams/default.png"));
+        ui->leftTeamLogo->setPixmap((getConstants()->blueIsLeftSide()) ? QPixmap(":/teams/defaultblue.png") : QPixmap(":/teams/defaultyellow.png"));
     }
 
     // Setup right logo
@@ -77,7 +77,7 @@ void SoccerView::setupTeams() {
     }
     else {
         std::cout << Text::blue("[SOCCERVIEW] ", true) + Text::red("Failed to setup right team logo, set default.", true) + '\n';
-        ui->rightTeamLogo->setPixmap(QPixmap(":/teams/default.png"));
+        ui->rightTeamLogo->setPixmap((getConstants()->blueIsLeftSide()) ? QPixmap(":/teams/defaultyellow.png") : QPixmap(":/teams/defaultblue.png"));
     }
 
     // Set initial goals and call setupGoals

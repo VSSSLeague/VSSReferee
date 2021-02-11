@@ -134,6 +134,8 @@ void Replacer::loop() {
 
         // Update last ball data
         _lastBallPosition = _vision->getBallPosition();
+        _lastBallVelocity = _vision->getBallVelocity();
+
         _placedLastPosition = false;
     }
 }
@@ -948,6 +950,8 @@ void Replacer::placeLastFrameAndBall() {
     _lastDataMutex.lock();
 
     // Place ball
+    std::cout << "_lastBallPosition x: " + std::to_string(_lastBallPosition.x()) + " y: " + std::to_string(_lastBallPosition.y()) + '\n';
+    std::cout << "_lastBallVelocity vx: " + std::to_string(_lastBallVelocity.vx()) + " vy: " + std::to_string(_lastBallVelocity.vy()) + '\n';
     placeBall(_lastBallPosition, _lastBallVelocity);
 
     // Create robot commands
