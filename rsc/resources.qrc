@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>teams/maracatronics.png</file>
-        <file>teams/default.png</file>
         <file>teams/robotbulls.png</file>
         <file>teams/rodetas.png</file>
         <file>teams/robotech.png</file>
@@ -17,5 +16,8 @@
         <file>teams/itandroids.png</file>
         <file>teams/warthog.png</file>
         <file>teams/nhao.png</file>
+        <file>teams/defaultyellow.png</file>
+        <file>teams/defaultblue.png</file>
+        <file>teams/neon.png</file>
     </qresource>
 </RCC>

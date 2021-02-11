@@ -1,7 +1,7 @@
 #ifndef TIMER_H
 #define TIMER_H
 
-#include <ctime>
+#include <chrono>
 
 class Timer
 {
@@ -19,8 +19,11 @@ public:
     double getNanoSeconds();
 
 private:
-    timespec _time1;
-    timespec _time2;
+    //timespec _time1;
+    //timespec _time2;
+
+    std::chrono::high_resolution_clock::time_point _time1;
+    std::chrono::high_resolution_clock::time_point _time2;
 };
 
 #endif // TIMER_H

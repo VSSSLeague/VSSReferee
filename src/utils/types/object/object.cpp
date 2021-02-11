@@ -61,10 +61,6 @@ void Object::updateObject(float confidence, Position pos, Angle orientation) {
                 _position = _kalmanFilter.getPosition();
                 _velocity = _kalmanFilter.getVelocity();
             }
-            else if((!isObjectLoss() && isObjectSafe()) && !_useKalman) {
-                // Reset vel timer
-                _velTimer.start();
-            }
         }
     }
     // If pos is valid (robot was saw in frame)
@@ -93,17 +89,12 @@ void Object::updateObject(float confidence, Position pos, Angle orientation) {
                     _orientation = orientation;
                 }
                 else {
-                    // Stop timer (get speed)
-                    _velTimer.stop();
-                    float vx = (pos.x() - _position.x()) / _velTimer.getSeconds();
-                    float vy = (pos.y() - _position.y()) / _velTimer.getSeconds();
+                    // Iterate in kalman filter (get velocity)
+                    _kalmanFilter.iterate(pos);
+                    _velocity = _kalmanFilter.getVelocity();
 
                     _position.setPosition(true, pos.x(), pos.y());
-                    _velocity.setVelocity(true, vx, vy);
                     _orientation = orientation;
-
-                    // Start timer again (reset to next it)
-                    _velTimer.start();
                 }
             }
             // If object is unsafe yet (noise is running)
@@ -122,6 +113,5 @@ void Object::setInvalid() {
     _position.setInvalid();
     _velocity.setInvalid();
     _orientation.setInvalid();
-    _velTimer.start();
     _confidence = 0.0;
 }

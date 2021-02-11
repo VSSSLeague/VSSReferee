@@ -39,7 +39,6 @@ private:
 
     // Use kalman control
     bool _useKalman;
-    Timer _velTimer;
 };
 
 #endif // OBJECT_H
