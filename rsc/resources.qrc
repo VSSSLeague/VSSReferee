@@ -19,5 +19,6 @@
         <file>teams/defaultyellow.png</file>
         <file>teams/defaultblue.png</file>
         <file>teams/neon.png</file>
+        <file>teams/uaisoccer.png</file>
     </qresource>
 </RCC>
