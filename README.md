@@ -6,19 +6,127 @@
 The VSS-Referee is the automatic referee module created to **IEEE Very Small Size Soccer League**, creating the possibility to teams catch the data coming from it and replace strategically their robots, decreasing the human necessity at the field.
 
 ## Requirements
- * g++
- * Qt
+ * g++ (used v9.3.0)
+ * Qt (used version v5.12.8)
  * Qt OpenGL
- * Google protocol buffers (protoc)
+ * Google protocol buffers (used protoc v3.6.1)
  
 ## Compilation
-First of all, check the `constants/constants.json` file and update for your parameters (addresses, ports, team names, team colors, etc.)
 Create an folder named `build`, open it and run the command `qmake ..`  
 So, after this, run the command `make` and if everything goes ok, the binary will be at the folder `bin` (at the main folder).  
 
+## Before usage
+Remember to change the **src/constants/constants.json** file!
+
+This file will contain some parameters and values ​​useful for the game, such as addresses and ports of the Vision, Referee and Replacer modules.
+
+### Entity
+In the Entity field it is possible to modify the frequency of the threads.
+
+### Vision
+In the Vision field, it is possible to modify the address and port from which the vision packets will be received, as well as to configure the time (in ms) of filters and enable the use of the Kalman filter.
+
+### Replacer
+In the Replacer field, it is possible to modify the address and port from which the positioning packets will be received, as well as configuring the address and port where the packets will be sent (FIRASim related).
+
+### Team
+In the Team field, it is possible to modify the name of the teams that will play **(THIS IS NECESSARY BEFORE EACH GAME!)**, in addition to changing the position of the blue team and the amount of players on the field.
+
+### Referee
+In the Referee field it is possible to modify the address and port where the Referee commands will be sent, as well as it is possible to change some game constants such as the type of game (Group_Phase, Quarterfinals, Semifinals, Final, etc.), radius of ball, halfs time, etc.
+
+At the field of fouls, it is possible to select whether or not to use the Referee's suggestions and also some constants used to check fouls, such as the time needed for a stucked ball and minimum speed to consider it stucked.
+
 ## Usage
 After compilation, simply run the binary at the `bin` folder using the `./VSS-Referee` command at the terminal. 
-**Remember to change the Json file to adjust the parameters for your need!**
 
 ## Modules explanation
+Currently, the VSS-Referee have 3 modules inside it:  
+
+### VSS-Vision Client
+The VSS-Vision Client is responsable to catch vision data (robots and ball positons, field geometry, etc.) from the network, possibilyting to use these data later to process some fouls occurred in the field.
+
+### Referee workflow
+
+![Referee Workflow](https://github.com/VSSSLeague/VSSReferee/VSSReferee/blob/CBR2021/rsc/readme/workflow.png)
+
+### Concept of PLAY
+Referee considers that a `PLAY` is in progress when the ball enters the goal area of ​​either team. There are two ways a `PLAY` can be terminated:
+
+- The ball remained for `ballInAreaMaxTime` seconds in the goal area.
+- The ball left the goal area. Note that in this case, both leaving the area back to the field and leaving the area entering the goal are considered.
+
+As soon as a PLAY ends, if the Referee has its suggestion mode active (given by the `useRefereeSuggestions` constants flag) it will interrupt the game with a `HALT` command and provide possible fouls for the human judge to make the decision.
+Otherwise, it will make the decision alone, choosing the first `FOUL` that happened (if any).
+
+### Supported fouls
+The VSS-Referee module is responsable to use the VSS-Vision Client data and check the fouls occured in the field. 
+It uses the `vssref_command.proto` protobuf file to send the commands. The following fouls are supported by this protobuf:
+- [x] `KICKOFF`: This command is sent when the game start, after valid goals and after half passed.
+- [x] `FREE_BALL`: This command is sent when the ball is stucked in any part of the field for `ballStuckTime` seconds. It passes the quadrant where the foul occured, that can be `QUADRANT_1`, `QUADRANT_2`, `QUADRANT_3` and `QUADRANT_4`. These quadrants begin from the TOP-RIGHT quadrant and the others follow an anti-hour orientation, so the `QUADRANT_2` is the TOP_LEFT and so on.
+- [ ] `FREE_KICK`: Currently this command isn't supported by the referee due to it's complexity to be analysed.
+- [x] `GOAL_KICK`: This command is sent when two attackers disputate the ball with the enemy goalkeeper.
+- [x] `PENALTY_KICK`: This command is sent when two defenders are inside of the goal area (at least 50%) with the ball in the area, or when the goalkeeper didn't takeout the ball from the goal area in at least `GKTakeoutTime` seconds.
+- [x] `HALT`: This command is sent when an `PLAY` has ended. In this case, all the players **NEEDS** to be halted. 
+- [x] `STOP`: This command occurs when the teams placed succesfuly. This allows the teams to make tiny modifications at their robot orientations to adapt for the other teams placement.
+- [x] `GAME_ON`: This command is sent when the stop ended, so all the players can play normally. 
+
+**Note that all players must stop at any `FOUL`, except at `GAME_ON`.**
+
+### Overtime
+`OVERTIME` must only be enabled in eliminatory games. Therefore, it will only be enabled when `gameType` constant is different from `Group_Phase`.
+
+It consists of two times of 180 seconds (3 minutes) each. In the case of a tie, the decision will be made through Penalty Shootouts.
+
+### Penalty shootouts
+As stated earlier, this stage will only be called if there is a tie during `OVERTIME`.
+
+At this stage, the Referee will allocate infinite time for the game and will be sending alternate `PENALTY_KICK` commands to both teams.
+
+In addition, in this mode none of the common fouls are checked, and the players (in addition of the kicker and goalkeeper) will be removed from the field automatically.
+
+**Note:** The Kicker will be considered as the player positioned closest to the ball and the Goalkeeper will be considered the player who is within the goal area.
+
+Note also that a `PENALTY_KICK` will be given as soon as the `PLAY` ends, that is, **the ball will have to enter the goal area and leave in some way (back to the field) or inside the goal**. That is, **in this case we will not have the time check counting towards the end of an ongoing `PLAY`**.
+
+### Team vs W.O.
+The command for this is the `WO Kickoff` and is present only in the Referee Manual and must be executed in the event of a game against a W.O.
+
+This command will remove all players from the opposing team from the field, preventing the human judge from having to remove them manually (as was done before).
+
+Note that the games against W.O. **should only last 3 minutes**, so the human judge must be aware of this time.
+
+### VSS-Replacer
+The VSS-Replacer module is responsable to catch the data sent by the teams containing their desired position of each robot in the field, posteriorly positioning the robots in the `FIRASim` simulator.  
+The teams need to use the `vssref_placement.proto` protobuf file to send these commands to the VSS-Replacer. This protobuf have an var type named `Frame` on it, that contains the team `Color` and a vector of `Robot` type. The definition of these vars can be seen in the `vssref_common.proto` protobuf file.  
+The current version, when your team don't place the robots, automatically place your team based at the **IEEE VSS Rules**, but it **only can recognize your goalkeeper**, cause it store the time that each robot spent at the goal area, so the other players will be literally placed following the rules. You can check that rules placement at [Rules](http://200.145.27.208/cbr/wp-content/uploads/2020/07/vssRegras_Portugues.pdf).
+The `example/main.cpp` file contains an example of how the teams can send placement data to VSS-Replacer.  
+
+#### Examples of placement
+Here you can see examples of how the referee place automatically the robots in the field (if the team don't send the placement packet).
+##### Penalty
+
+![Penalty Placement](https://github.com/VSSSLeague/VSSReferee/VSSReferee/blob/CBR2021/rsc/readme/Penalty.jpeg)
+##### Kickoff
+
+![Kickoff Placement](https://github.com/VSSSLeague/VSSReferee/VSSReferee/blob/CBR2021/rsc/readme/Kickoff.jpeg)
+##### Free Ball
+- Quadrant 1 (TOP_RIGHT)
+
+![FreeBall 1 Placement](https://github.com/VSSSLeague/VSSReferee/VSSReferee/blob/CBR2021/rsc/readme/FreeBall_TOPRIGHT.jpeg)
+- Quadrant 2 (TOP_LEFT)
+
+![FreeBall 2 Placement](https://github.com/VSSSLeague/VSSReferee/VSSReferee/blob/CBR2021/rsc/readme/FreeBall_TOPLEFT.jpeg)
+- Quadrant 3 (BOT_LEFT)
+
+![FreeBall 3 Placement](https://github.com/VSSSLeague/VSSReferee/VSSReferee/blob/CBR2021/rsc/readme/FreeBall_BOTLEFT.jpeg)
+- Quadrant 4 (BOT_RIGHT)
+
+![FreeBall 4 Placement](https://github.com/VSSSLeague/VSSReferee/VSSReferee/blob/CBR2021/rsc/readme/FreeBall_BOTRIGHT.jpeg)
+##### Goal Kick
+
+![GoalKick Placement](https://github.com/VSSSLeague/VSSReferee/VSSReferee/blob/CBR2021/rsc/readme/GoalKick.jpeg)
+
+## Example of usage
+TODO
 
