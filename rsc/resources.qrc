@@ -20,5 +20,7 @@
         <file>teams/defaultblue.png</file>
         <file>teams/neon.png</file>
         <file>teams/uaisoccer.png</file>
+        <file>teams/troia.png</file>
+        <file>teams/robocinia.png</file>
     </qresource>
 </RCC>
