@@ -48,7 +48,7 @@ The VSS-Vision Client is responsable to catch vision data (robots and ball posit
 
 ### Referee workflow
 
-![Referee Workflow](https://github.com/VSSSLeague/VSSReferee/VSSReferee/blob/CBR2021/rsc/readme/workflow.png)
+![Referee Workflow](https://github.com/VSSSLeague/VSSReferee/blob/CBR2021/rsc/readme/workflow.png)
 
 ### Concept of PLAY
 Referee considers that a `PLAY` is in progress when the ball enters the goal area of ​​either team. There are two ways a `PLAY` can be terminated:
@@ -106,26 +106,26 @@ The `example/main.cpp` file contains an example of how the teams can send placem
 Here you can see examples of how the referee place automatically the robots in the field (if the team don't send the placement packet).
 ##### Penalty
 
-![Penalty Placement](https://github.com/VSSSLeague/VSSReferee/VSSReferee/blob/CBR2021/rsc/readme/Penalty.jpeg)
+![Penalty Placement](https://github.com/VSSSLeague/VSSReferee/blob/CBR2021/rsc/readme/Penalty.jpeg)
 ##### Kickoff
 
-![Kickoff Placement](https://github.com/VSSSLeague/VSSReferee/VSSReferee/blob/CBR2021/rsc/readme/Kickoff.jpeg)
+![Kickoff Placement](https://github.com/VSSSLeague/VSSReferee/blob/CBR2021/rsc/readme/Kickoff.jpeg)
 ##### Free Ball
 - Quadrant 1 (TOP_RIGHT)
 
-![FreeBall 1 Placement](https://github.com/VSSSLeague/VSSReferee/VSSReferee/blob/CBR2021/rsc/readme/FreeBall_TOPRIGHT.jpeg)
+![FreeBall 1 Placement](https://github.com/VSSSLeague/VSSReferee/blob/CBR2021/rsc/readme/FreeBall_TOPRIGHT.jpeg)
 - Quadrant 2 (TOP_LEFT)
 
-![FreeBall 2 Placement](https://github.com/VSSSLeague/VSSReferee/VSSReferee/blob/CBR2021/rsc/readme/FreeBall_TOPLEFT.jpeg)
+![FreeBall 2 Placement](https://github.com/VSSSLeague/VSSReferee/blob/CBR2021/rsc/readme/FreeBall_TOPLEFT.jpeg)
 - Quadrant 3 (BOT_LEFT)
 
-![FreeBall 3 Placement](https://github.com/VSSSLeague/VSSReferee/VSSReferee/blob/CBR2021/rsc/readme/FreeBall_BOTLEFT.jpeg)
+![FreeBall 3 Placement](https://github.com/VSSSLeague/VSSReferee/blob/CBR2021/rsc/readme/FreeBall_BOTLEFT.jpeg)
 - Quadrant 4 (BOT_RIGHT)
 
-![FreeBall 4 Placement](https://github.com/VSSSLeague/VSSReferee/VSSReferee/blob/CBR2021/rsc/readme/FreeBall_BOTRIGHT.jpeg)
+![FreeBall 4 Placement](https://github.com/VSSSLeague/VSSReferee/blob/CBR2021/rsc/readme/FreeBall_BOTRIGHT.jpeg)
 ##### Goal Kick
 
-![GoalKick Placement](https://github.com/VSSSLeague/VSSReferee/VSSReferee/blob/CBR2021/rsc/readme/GoalKick.jpeg)
+![GoalKick Placement](https://github.com/VSSSLeague/VSSReferee/blob/CBR2021/rsc/readme/GoalKick.jpeg)
 
 ## Example of usage
 TODO
