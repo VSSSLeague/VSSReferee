@@ -11,6 +11,9 @@ FieldView::FieldView(QWidget *parent) : QGLWidget(QGLFormat(QGL::DoubleBuffer | 
     // Avoid auto fill background
     setAutoFillBackground(false);
 
+    // Set stucked ball time
+    _stuckedBallTime = 0.0f;
+
     // Connect postRedraw to redraw
     connect(this, SIGNAL(postRedraw()), this, SLOT(redraw()));
 }
@@ -21,6 +24,12 @@ void FieldView::setVisionModule(Vision *visionPointer) {
 
 void FieldView::setConstants(Constants *constantsPointer) {
     constants = constantsPointer;
+}
+
+void FieldView::setStuckedTime(float time) {
+    graphicsMutex.lock();
+    _stuckedBallTime = time;
+    graphicsMutex.unlock();
 }
 
 void FieldView::recomputeProjection() {
@@ -49,6 +58,7 @@ void FieldView::paintEvent(QPaintEvent* event) {
 
     drawFieldLines();
     drawFieldObjects();
+    drawStuckedTime();
 
     glPopMatrix();
     swapBuffers();
@@ -315,6 +325,11 @@ void FieldView::drawRobot(VSSRef::Color teamColor, quint8 robotId, QVector2D rob
     glPopMatrix();
 }
 
+void FieldView::drawText(QVector2D position, double angle, double size, QString text) {
+    glColor3d(1.0, 1.0, 1.0);
+    glText.drawString(position, angle, size, text.toStdString().c_str(), GLText::CenterAligned, GLText::MiddleAligned);
+}
+
 void FieldView::drawFieldObjects() {
     // Draw ball
     QVector2D ballPosition = QVector2D(getVision()->getBallPosition().x() * 1000.0, getVision()->getBallPosition().y() * 1000.0);
@@ -332,6 +347,19 @@ void FieldView::drawFieldObjects() {
             drawRobot(VSSRef::Color(i), avPlayers.at(j), QVector2D(robotPosition.x() * 1000.0, robotPosition.y() * 1000.0), (robotOrientation.value() * (180.0/M_PI)));
         }
     }
+}
+
+void FieldView::drawStuckedTime() {
+    // Check if time >= 0.1s (avoid noise)
+    if(_stuckedBallTime < 0.1) return ;
+
+    // Get stucked ball time and adjust y by a factor
+    float factor = (getVision()->getBallPosition().y() >= 0.0) ? -1.0 : 1.0;
+    char str[8];
+    sprintf(str, "%.1fs", _stuckedBallTime);
+
+    // Draw text on screen
+    drawText(QVector2D(getVision()->getBallPosition().x() * 1000.0 + getConstants()->ballRadius(), getVision()->getBallPosition().y() * 1000.0 + (factor * (40.0 - getConstants()->ballRadius()))), 0.0, 40.0, QString(str));
 }
 
 void FieldView::resetView() {

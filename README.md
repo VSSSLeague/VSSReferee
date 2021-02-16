@@ -90,7 +90,7 @@ In addition, in this mode none of the common fouls are checked, and the players 
 Note also that a `PENALTY_KICK` will be given as soon as the `PLAY` ends, that is, **the ball will have to enter the goal area and leave in some way (back to the field) or inside the goal**. That is, **in this case we will not have the time check counting towards the end of an ongoing `PLAY`**.
 
 ### Team vs W.O.
-The command for this is the `WO Kickoff` and is present only in the Referee Manual and must be executed in the event of a game against a W.O.
+The command for this is the `WO Kickoff` and is present only in the Manual Referee and must be executed in the event of a game against a W.O.
 
 This command will remove all players from the opposing team from the field, preventing the human judge from having to remove them manually (as was done before).
 

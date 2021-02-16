@@ -39,7 +39,8 @@ Referee::Referee(Vision *vision, Replacer *replacer, SoccerView *soccerView, Con
 void Referee::initialization() {
     // Adding checkers
     // Stucked ball
-    addChecker(new Checker_StuckedBall(_vision, getConstants()), 0);
+    addChecker(_stuckedBallChecker = new Checker_StuckedBall(_vision, getConstants()), 0);
+    connect(_stuckedBallChecker, SIGNAL(sendStuckedTime(float)), this, SLOT(takeStuckedTime(float)));
 
     // Two attackers
     addChecker(_twoAtkChecker = new Checker_TwoAttackers(_vision, getConstants()), 1);
@@ -490,6 +491,10 @@ void Referee::takeManualFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef:
         // Set to place outside if needed
         _isToPlaceOutside = isToPlaceOutside;
     }
+}
+
+void Referee::takeStuckedTime(float time) {
+    _soccerView->getFieldView()->setStuckedTime(time);
 }
 
 Constants* Referee::getConstants() {

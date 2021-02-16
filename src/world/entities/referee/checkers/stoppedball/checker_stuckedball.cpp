@@ -76,6 +76,8 @@ void Checker_StuckedBall::run() {
         // Reset timer
         _timer.start();
     }
+
+    emit sendStuckedTime(_timer.getSeconds());
 }
 
 bool Checker_StuckedBall::havePlayersNearlyBall(VSSRef::Color teamColor) {

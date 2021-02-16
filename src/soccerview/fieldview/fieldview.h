@@ -19,6 +19,7 @@ public:
     FieldView(QWidget *parent = 0);
     void setVisionModule(Vision *visionPointer);
     void setConstants(Constants *constantsPointer);
+    void setStuckedTime(float time);
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -58,15 +59,20 @@ private:
     Constants *constants;
     Constants* getConstants();
 
+    // Stucked ball timer text
+    float _stuckedBallTime;
+
     // Util functions
     void recomputeProjection();
     void drawFieldLines();
+    void drawStuckedTime();
     void drawFieldLine(const FieldLine &fieldLine);
     void drawQuad(QVector2D point1, QVector2D point2, double z);
     void drawQuad(QVector2D vert1, QVector2D vert2, QVector2D vert3, QVector2D vert4, double z);
     void drawArc(QVector2D loc, double r1, double r2, double theta1, double theta2, double z = 0.0, double dTheta = -1);
     void drawTriangle(QVector2D v1, QVector2D v2, QVector2D v3, double z);
     void drawRobot(VSSRef::Color teamColor, quint8 robotId, QVector2D robotPosition, double robotOrientation);
+    void drawText(QVector2D position, double angle, double size, QString text);
     void drawFieldObjects();
 
     // Graphics mutex

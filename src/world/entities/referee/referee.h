@@ -62,6 +62,9 @@ private:
     // Checkers
     QHash<int, QVector<Checker*>*> _checkers;
 
+    // Stucked ball checker
+    Checker_StuckedBall *_stuckedBallChecker;
+
     // Half and timestamp management
     Checker_HalfTime *_halfChecker;
     VSSRef::Half _gameHalf;
@@ -110,6 +113,7 @@ public slots:
     void halfPassed();
     void teamsPlaced();
     void takeManualFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant, bool isToPlaceOutside = false);
+    void takeStuckedTime(float time);
 };
 
 #endif // REFEREE_H
