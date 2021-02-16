@@ -5,6 +5,7 @@
 
 class Checker_StuckedBall : public Checker
 {
+    Q_OBJECT
 public:
     // Using Checker constructor
     using Checker::Checker;
@@ -23,6 +24,9 @@ private:
 
     // Utils
     bool havePlayersNearlyBall(VSSRef::Color teamColor);
+
+signals:
+    void sendStuckedTime(float time);
 };
 
 #endif // CHECKER_STUCKEDBALL_H
