@@ -38,14 +38,14 @@ void Checker_BallPlay::run() {
         _isPlayRunning = true;
         if(!_possiblePenalty) {
             _possiblePenalty = _checkerTwoDef->isTwoPlayersDefending();
-            if(_possiblePenalty && getConstants()->useRefereeSuggestions()) {
+            if(_possiblePenalty) {
                 emit emitSuggestion(VSSRef::Foul_Name(VSSRef::Foul::PENALTY_KICK).c_str(), (_checkerTwoDef->defendingTeam() == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE);
             }
         }
 
         if(!_possibleGoalKick) {
             _possibleGoalKick = _checkerTwoAtk->isTwoPlayersAttacking();
-            if(_possibleGoalKick && getConstants()->useRefereeSuggestions()) {
+            if(_possibleGoalKick) {
                 emit emitSuggestion(VSSRef::Foul_Name(VSSRef::Foul::GOAL_KICK).c_str(), _checkerTwoAtk->attackingTeam());
             }
         }

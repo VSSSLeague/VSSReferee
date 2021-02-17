@@ -26,6 +26,9 @@ SoccerView::SoccerView(Constants *constants, QWidget *parent) :
 
     // Set scoreboard gameType
     ui->scoreboard->setTitle(getConstants()->gameType());
+
+    // Set flag as not visible
+    ui->flag->setVisible(false);
 }
 
 SoccerView::~SoccerView()
@@ -315,6 +318,9 @@ void SoccerView::takeFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Qu
         else {
             ui->statusColor->setText(QString("%1 occurred at %2").arg(VSSRef::Foul_Name(foul).c_str()).arg(VSSRef::Quadrant_Name(foulQuadrant).c_str()));
         }
+
+        // Disable flag
+        animateFlag(false, 150);
     }
 
     // Animate statusboard
@@ -424,12 +430,15 @@ void SoccerView::processButton(QWidget *button) {
 }
 
 void SoccerView::addSuggestion(QString suggestion, VSSRef::Color forColor, VSSRef::Quadrant atQuadrant) {
+    // Animate flag
+    animateFlag(true, 150);
+
+    // Avoid to add if not using ref suggestions
+    if(!getConstants()->useRefereeSuggestions()) return;
+
     _suggestionsMutex.lock();
 
     int qtWidgets = _widgets.size() / 2;
-
-    // Animate flag
-    animateFlag(true, 150);
 
     // Creating label
     QString forSuggestionName = QString("%1 for <font color=\"%2\">%3</font>").arg(suggestion).arg((forColor == VSSRef::Color::BLUE) ? "#1E90FF" : "#FCEE44").arg(VSSRef::Color_Name(forColor).c_str());
