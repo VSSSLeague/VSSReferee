@@ -85,48 +85,48 @@ void Replacer::initialization() {
 }
 
 void Replacer::loop() {
-    if(!_foulProcessed) {
-        while(_replacerClient->hasPendingDatagrams()) {
-            QNetworkDatagram datagram;
-            VSSRef::team_to_ref::VSSRef_Placement frame;
+    while(_replacerClient->hasPendingDatagrams()) {
+        QNetworkDatagram datagram;
+        VSSRef::team_to_ref::VSSRef_Placement frame;
 
-            // Reading datagram and checking if it is valid
-            datagram = _replacerClient->receiveDatagram();
-            if(!datagram.isValid()) {
-                continue;
-            }
-
-            // Parsing datagram and checking if it worked properly
-            if(frame.ParseFromArray(datagram.data().data(), datagram.data().size()) == false) {
-                std::cout << Text::blue("[REPLACER] ", true) << Text::red("Frame packet parsing error.", true) + '\n';
-                continue;
-            }
-
-            // Check if world has world (frame data)
-            if(frame.has_world()) {
-                // Take frame
-                VSSRef::Frame frameData = frame.world();
-
-                // Set frame
-                _placement.insert(frameData.teamcolor(), frameData);
-
-                // Set that team placed
-                _placementStatus.insert(frameData.teamcolor(), true);
-            }
-
-            // Check if both placed
-            if(_placementStatus.value(VSSRef::Color::BLUE) == true && _placementStatus.value(VSSRef::Color::YELLOW) == true) {
-                // If both placed send signal
-                emit teamsPlaced();
-            }
+        // Reading datagram and checking if it is valid
+        datagram = _replacerClient->receiveDatagram();
+        if(!datagram.isValid()) {
+            continue;
         }
 
+        // Parsing datagram and checking if it worked properly
+        if(frame.ParseFromArray(datagram.data().data(), datagram.data().size()) == false) {
+            std::cout << Text::blue("[REPLACER] ", true) << Text::red("Frame packet parsing error.", true) + '\n';
+            continue;
+        }
+
+        // Check if world has world (frame data)
+        if(frame.has_world()) {
+            // Take frame
+            VSSRef::Frame frameData = frame.world();
+
+            // Set frame
+            _placement.insert(frameData.teamcolor(), frameData);
+
+            // Set that team placed
+            _placementStatus.insert(frameData.teamcolor(), true);
+        }
+
+        // Check if both placed
+        if(_placementStatus.value(VSSRef::Color::BLUE) == true && _placementStatus.value(VSSRef::Color::YELLOW) == true) {
+            // If both placed send signal
+            emit teamsPlaced();
+        }
+
+        // Check if placed ball
         if(!_placedLastPosition) {
             placeBall(_lastBallPosition);
             _placedLastPosition = true;
         }
     }
-    else {
+
+    if(_foulProcessed) {
         // Reset control vars
         for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
             _placementStatus.insert(VSSRef::Color(i), false);
