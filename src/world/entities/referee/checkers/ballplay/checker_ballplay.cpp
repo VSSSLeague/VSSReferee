@@ -101,18 +101,17 @@ void Checker_BallPlay::run() {
             }
 
             if(_possibleGoalKick || _possiblePenalty) {
-                // If any of them occurred, send HALT command
-                if(getConstants()->useRefereeSuggestions()) {
-                    setPenaltiesInfo(VSSRef::Foul::HALT);
-                    emit foulOccured();
-                }
-
                 // Add game on suggestion if not possible goal
                 if(!_possibleGoal && getConstants()->useRefereeSuggestions()) {
                     emit emitSuggestion("GAME_ON");
                 }
 
-                if(!getConstants()->useRefereeSuggestions()) {
+                // If any of them occurred, send HALT command
+                if(getConstants()->useRefereeSuggestions()) {
+                    setPenaltiesInfo(VSSRef::Foul::HALT);
+                    emit foulOccured();
+                }
+                else {
                     // Check priority
                     if(_possibleGoal) {
                         // Possible goal, possible goal kick and not possible penalty, priority: GOAL_KICK

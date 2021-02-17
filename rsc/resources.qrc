@@ -24,5 +24,6 @@
         <file>teams/robocinia.png</file>
         <file>teams/yapira.png</file>
         <file>teams/thunderatz.png</file>
+        <file>ui/yellowflag.png</file>
     </qresource>
 </RCC>

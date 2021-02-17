@@ -19,6 +19,11 @@ SoccerView::SoccerView(Constants *constants, QWidget *parent) :
     setupGoals();
     setupButtons();
 
+    // Disable suggestions if not enabled in constants
+    if(!getConstants()->useRefereeSuggestions()) {
+        ui->refereeSuggestions->setEnabled(false);
+    }
+
     // Set scoreboard gameType
     ui->scoreboard->setTitle(getConstants()->gameType());
 }
@@ -181,6 +186,62 @@ void SoccerView::setupButtons() {
     }
 }
 
+void SoccerView::animateWidget(QWidget *widget, QColor desiredColor, int animationTime) {
+    // Animate widget
+    QVariantAnimation *statusAnimation = new QVariantAnimation(this);
+    statusAnimation->setStartValue(widget->palette().background().color());
+    statusAnimation->setEndValue(desiredColor);
+    statusAnimation->setDuration(animationTime);
+
+    connect(statusAnimation, &QVariantAnimation::valueChanged, [widget](const QVariant &value){
+        QColor colorValue = QColor(value.value<QColor>());
+        QString r = QString(std::to_string(colorValue.red()).c_str());
+        QString g = QString(std::to_string(colorValue.green()).c_str());
+        QString b = QString(std::to_string(colorValue.blue()).c_str());
+        QString a = QString(std::to_string(colorValue.alpha()).c_str());
+        QString rgba = QString("rgb(%1, %2, %3, %4)").arg(r).arg(g).arg(b).arg(a);
+        widget->setStyleSheet("border-radius: 10px; background-color: " + rgba + "; color: white;");
+    });
+
+    statusAnimation->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void SoccerView::animateFlag(bool toShow, int animationTime) {
+    // Enable flag
+    if(toShow) {
+        ui->flag->setVisible(true);
+    }
+
+    // Animate flag
+    QVariantAnimation *statusAnimation = new QVariantAnimation(this);
+    statusAnimation->setStartValue(toShow ? 0 : 100);
+    statusAnimation->setEndValue(toShow ? 100 : 0);
+    statusAnimation->setDuration(animationTime);
+
+    // Take pixmap
+    QPixmap flag = QPixmap(":/ui/yellowflag.png");
+
+    connect(statusAnimation, &QVariantAnimation::valueChanged, [this, toShow, flag](const QVariant &value){
+        int alphaPercentage = int(value.value<int>());
+
+        QPixmap res(flag.size());
+        res.fill(Qt::transparent);
+        QPainter painter;
+        painter.begin(&res);
+        painter.setOpacity(alphaPercentage/100.0);
+        painter.drawPixmap(0, 0, flag);
+        painter.end();
+
+        ui->flag->setPixmap(res);
+
+        if(!toShow && alphaPercentage <= 0.01) {
+            ui->flag->setVisible(false);
+        }
+    });
+
+    statusAnimation->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
 void SoccerView::setDarkTheme() {
     this->setStyle(QStyleFactory::create("Fusion"));
 
@@ -238,6 +299,10 @@ void SoccerView::takeFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Qu
         ui->startGame->setEnabled(false);
         ui->stopGame->setEnabled(true);
         ui->haltGame->setEnabled(false);
+
+        // Show suggestions
+        animateFlag(false, 150);
+        showSuggestions();
     }
     else {
         desiredColor = QColor(238, 0, 34, 255);
@@ -252,27 +317,11 @@ void SoccerView::takeFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Qu
         }
     }
 
-    // Animate statusBoard
-    QVariantAnimation *statusAnimation = new QVariantAnimation(this);
-    statusAnimation->setStartValue(ui->statusColor->palette().background().color());
-    statusAnimation->setEndValue(desiredColor);
-    statusAnimation->setDuration(500);
-
-    connect(statusAnimation, &QVariantAnimation::valueChanged, [this](const QVariant &value){
-        QColor colorValue = QColor(value.value<QColor>());
-        QString r = QString(std::to_string(colorValue.red()).c_str());
-        QString g = QString(std::to_string(colorValue.green()).c_str());
-        QString b = QString(std::to_string(colorValue.blue()).c_str());
-        QString a = QString(std::to_string(colorValue.alpha()).c_str());
-        QString rgba = QString("rgb(%1, %2, %3, %4)").arg(r).arg(g).arg(b).arg(a);
-        ui->statusColor->setStyleSheet("border-radius: 10px; background-color: " + rgba + "; color: white;");
-    });
-
-    statusAnimation->start(QAbstractAnimation::DeleteWhenStopped);
+    // Animate statusboard
+    animateWidget(ui->statusColor, desiredColor, 500);
 
     // Animate timer
-
-    // Taking desired color
+    // Taking desired color for timer
     if(foul == VSSRef::Foul::GAME_ON){
         desiredColor = QColor(48, 74, 48, 255);
     }
@@ -280,22 +329,7 @@ void SoccerView::takeFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Qu
         desiredColor = QColor(238, 0, 34, 255);
     }
 
-    QVariantAnimation *timerAnimation = new QVariantAnimation(this);
-    timerAnimation->setStartValue(ui->gameTime->palette().background().color());
-    timerAnimation->setEndValue(desiredColor);
-
-    connect(timerAnimation, &QVariantAnimation::valueChanged, [this](const QVariant &value){
-        QColor colorValue = QColor(value.value<QColor>());
-        QString r = QString(std::to_string(colorValue.red()).c_str());
-        QString g = QString(std::to_string(colorValue.green()).c_str());
-        QString b = QString(std::to_string(colorValue.blue()).c_str());
-        QString a = QString(std::to_string(colorValue.alpha()).c_str());
-        QString rgba = QString("rgb(%1, %2, %3, %4)").arg(r).arg(g).arg(b).arg(a);
-        ui->gameTime->setStyleSheet("border-radius:5px; color: white; background-color: " + rgba + ";");
-    });
-
-    timerAnimation->start(QAbstractAnimation::DeleteWhenStopped);
-
+    animateWidget(ui->gameTime, desiredColor, 200);
 }
 
 void SoccerView::takeTimeStamp(float halftime, float timestamp, VSSRef::Half half, bool isEndGame) {
@@ -394,9 +428,14 @@ void SoccerView::addSuggestion(QString suggestion, VSSRef::Color forColor, VSSRe
 
     int qtWidgets = _widgets.size() / 2;
 
+    // Animate flag
+    animateFlag(true, 150);
+
+    // Creating label
     QString forSuggestionName = QString("%1 for <font color=\"%2\">%3</font>").arg(suggestion).arg((forColor == VSSRef::Color::BLUE) ? "#1E90FF" : "#FCEE44").arg(VSSRef::Color_Name(forColor).c_str());
     QLabel *label = new QLabel((forColor != VSSRef::Color::NONE) ? forSuggestionName : suggestion);
     label->setWhatsThis(suggestion);
+    label->setVisible(false);
 
     _widgets.push_back(label);
     ui->suggestionGrid->addWidget(label, qtWidgets, 0, Qt::AlignCenter);
@@ -418,8 +457,20 @@ void SoccerView::addSuggestion(QString suggestion, VSSRef::Color forColor, VSSRe
         deleteSuggestions();
     });
 
+    accept->setVisible(false);
     _widgets.push_back(accept);
     ui->suggestionGrid->addWidget(accept, qtWidgets, 1, Qt::AlignCenter);
+
+    _suggestionsMutex.unlock();
+}
+
+void SoccerView::showSuggestions() {
+    _suggestionsMutex.lock();
+
+    for(int i = 0; i < _widgets.size(); i++) {
+        QWidget *widget = _widgets.at(i);
+        widget->setVisible(true);
+    }
 
     _suggestionsMutex.unlock();
 }
@@ -433,7 +484,6 @@ void SoccerView::deleteSuggestions() {
 
         delete widget;
     }
-
     _widgets.clear();
 
     _suggestionsMutex.unlock();

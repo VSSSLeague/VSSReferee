@@ -36,6 +36,10 @@ private:
     void setupGoals();
     void setupButtons();
 
+    // Animations
+    void animateWidget(QWidget *widget, QColor desiredColor, int animationTime);
+    void animateFlag(bool toShow, int animationTime);
+
     // Mapping buttons
     QList<QPushButton*> _buttons;
     QSignalMapper *_buttonsMapper;
@@ -51,6 +55,7 @@ private:
     // Suggestions
     QList<QWidget*> _widgets;
     QMutex _suggestionsMutex;
+    void showSuggestions();
     void deleteSuggestions();
 
 signals:

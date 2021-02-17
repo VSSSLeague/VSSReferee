@@ -67,7 +67,7 @@
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="../../rsc/resources.qrc">:/teams/default.png</pixmap>
+      <pixmap>:/teams/default.png</pixmap>
      </property>
      <property name="scaledContents">
       <bool>true</bool>
@@ -89,7 +89,7 @@
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="../../rsc/resources.qrc">:/teams/default.png</pixmap>
+      <pixmap>:/teams/default.png</pixmap>
      </property>
      <property name="scaledContents">
       <bool>true</bool>
@@ -475,7 +475,7 @@ color: white;</string>
       <string notr="true">forButtons</string>
      </attribute>
     </widget>
-    <widget class="QLabel" name="label_4">
+    <widget class="QLabel" name="command">
      <property name="geometry">
       <rect>
        <x>179</x>
@@ -593,7 +593,7 @@ color: white;</string>
       <string>Rmv Goal</string>
      </property>
     </widget>
-    <widget class="QLabel" name="label_2">
+    <widget class="QLabel" name="atQuadrant">
      <property name="geometry">
       <rect>
        <x>15</x>
@@ -659,7 +659,7 @@ color: white;</string>
       <string notr="true">quadrantButtons</string>
      </attribute>
     </widget>
-    <widget class="QLabel" name="label_5">
+    <widget class="QLabel" name="gControl">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -675,7 +675,7 @@ color: white;</string>
       <set>Qt::AlignCenter</set>
      </property>
     </widget>
-    <widget class="QLabel" name="label">
+    <widget class="QLabel" name="forTeam">
      <property name="geometry">
       <rect>
        <x>15</x>
@@ -755,12 +755,24 @@ color: white;</string>
        <height>271</height>
       </rect>
      </property>
-     <layout class="QGridLayout" name="suggestionGrid">
-      <property name="spacing">
-       <number>6</number>
-      </property>
-     </layout>
+     <layout class="QGridLayout" name="suggestionGrid"/>
     </widget>
+   </widget>
+   <widget class="QLabel" name="flag">
+    <property name="geometry">
+     <rect>
+      <x>770</x>
+      <y>100</y>
+      <width>131</width>
+      <height>141</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
    </widget>
   </widget>
  </widget>
@@ -771,12 +783,10 @@ color: white;</string>
    <header location="global">src/soccerview/fieldview/fieldview.h</header>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="../../rsc/resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="forButtons"/>
   <buttongroup name="quadrantButtons"/>
+  <buttongroup name="forButtons"/>
  </buttongroups>
 </ui>
