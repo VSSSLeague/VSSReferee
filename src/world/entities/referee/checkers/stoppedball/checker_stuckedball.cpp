@@ -8,16 +8,29 @@ QString Checker_StuckedBall::name() {
 void Checker_StuckedBall::configure() {
     _timer.start();
     _isLastStuckAtGoalArea = false;
+    emit sendStuckedTime(0.0f);
+}
+
+void Checker_StuckedBall::setIsPenaltyShootout(bool isPenaltyShootout, VSSRef::Color firstPenaltyTeam) {
+    _isPenaltyShootout = isPenaltyShootout;
+    _penaltyTeam = firstPenaltyTeam;
+}
+
+void Checker_StuckedBall::setNextTeam() {
+    int nextTeam = ((_penaltyTeam + 1) % 2);
+    _penaltyTeam = VSSRef::Color(nextTeam);
 }
 
 void Checker_StuckedBall::run() {
+    // Ball in area control
+    bool isAtGoalAreas = false;
+
     // If ball valid and is stucked (low velocity)
     if(!getVision()->getBallPosition().isInvalid() && getVision()->getBallVelocity().abs() <= getConstants()->ballMinSpeedForStuck()) {
         // Take ball position
         Position ballPosition = getVision()->getBallPosition();
 
         // Check if ball is inside both goal areas
-        bool isAtGoalAreas = false;
         for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
             if(Utils::isInsideGoalArea(VSSRef::Color(i), ballPosition)) {
                 // Reset timer if is the first time that ball stuck in goal area
@@ -30,7 +43,7 @@ void Checker_StuckedBall::run() {
                 _timer.stop();
 
                 // Check if timer passed max stuck time
-                if(_timer.getSeconds() >= getConstants()->stuckedBallTime()) {
+                if(_timer.getSeconds() >= getConstants()->stuckedBallTime() && !_isPenaltyShootout) {
                     // Set penalties and emit that an foul occured
                     // If have ball disputation (nearly ball of both teams)
                     if(havePlayersNearlyBall(VSSRef::Color::BLUE) && havePlayersNearlyBall(VSSRef::Color::YELLOW)) {
@@ -63,9 +76,16 @@ void Checker_StuckedBall::run() {
 
             // Check if timer passed max stuck time
             if(_timer.getSeconds() >= getConstants()->stuckedBallTime()) {
-                // Set penalties and emit that an foul occured
-                setPenaltiesInfo(VSSRef::Foul::FREE_BALL, VSSRef::Color::NONE, Utils::getBallQuadrant(ballPosition));
-                emit foulOccured();
+                if(_isPenaltyShootout) {
+                    setNextTeam();
+                    setPenaltiesInfo(VSSRef::Foul::PENALTY_KICK, _penaltyTeam, VSSRef::Quadrant::NO_QUADRANT);
+                    emit foulOccured();
+                }
+                else {
+                    // Set penalties and emit that an foul occured
+                    setPenaltiesInfo(VSSRef::Foul::FREE_BALL, VSSRef::Color::NONE, Utils::getBallQuadrant(ballPosition));
+                    emit foulOccured();
+                }
 
                 // Reset timer
                 _timer.start();
@@ -77,7 +97,9 @@ void Checker_StuckedBall::run() {
         _timer.start();
     }
 
-    emit sendStuckedTime(_timer.getSeconds());
+    if((_isPenaltyShootout && !isAtGoalAreas) || !_isPenaltyShootout) {
+        emit sendStuckedTime(_timer.getSeconds());
+    }
 }
 
 bool Checker_StuckedBall::havePlayersNearlyBall(VSSRef::Color teamColor) {

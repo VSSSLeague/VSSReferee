@@ -41,6 +41,7 @@ void Referee::initialization() {
     // Stucked ball
     addChecker(_stuckedBallChecker = new Checker_StuckedBall(_vision, getConstants()), 0);
     connect(_stuckedBallChecker, SIGNAL(sendStuckedTime(float)), this, SLOT(takeStuckedTime(float)));
+    _stuckedBallChecker->setIsPenaltyShootout(false, VSSRef::Color::NONE);
 
     // Two attackers
     addChecker(_twoAtkChecker = new Checker_TwoAttackers(_vision, getConstants()), 1);
@@ -351,12 +352,14 @@ void Referee::processChecker(QObject *checker) {
     }
 
     // In penaltyShootout, only hear commands from checker ball play
-    if(_isPenaltyShootout && !(occurredChecker->name() == "Checker_BallPlay")) {
+    if(_isPenaltyShootout && !(occurredChecker->name() == "Checker_BallPlay" || occurredChecker->name() == "Checker_StuckedBall")) {
         return ;
     }
-    else if(_isPenaltyShootout && occurredChecker->name() == "Checker_BallPlay"){
+    else if(_isPenaltyShootout && (occurredChecker->name() == "Checker_BallPlay" || occurredChecker->name() == "Checker_StuckedBall")){
         // Send penalty foul to place outside
         takeManualFoul(occurredChecker->penalty(), occurredChecker->teamColor(), VSSRef::NO_QUADRANT, true);
+        _ballPlayChecker->setIsPenaltyShootout(true, occurredChecker->teamColor());
+        _stuckedBallChecker->setIsPenaltyShootout(true, occurredChecker->teamColor());
         return ;
     }
 
@@ -408,6 +411,7 @@ void Referee::halfPassed() {
     if(_gameHalf == VSSRef::Half::PENALTY_SHOOTOUTS) {
         takeManualFoul(VSSRef::Foul::PENALTY_KICK, _halfKickoff, VSSRef::Quadrant::NO_QUADRANT, true);
         _ballPlayChecker->setIsPenaltyShootout(true, _halfKickoff);
+        _stuckedBallChecker->setIsPenaltyShootout(true, _halfKickoff);
         return ;
     }
     // If not is penalty shootout, call kickoff normally

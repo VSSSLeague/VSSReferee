@@ -33,6 +33,25 @@ void Checker_BallPlay::run() {
     // Take ball pos
     Position ballPos = getVision()->getBallPosition();
 
+    // Check if ball passed midField
+    if(_isPenaltyShootout) {
+        bool passedMidField = false;
+        if(_penaltyTeam == VSSRef::Color::BLUE) {
+            passedMidField = (getConstants()->blueIsLeftSide()) ? (ballPos.x() < 0.0) : (ballPos.x() >= 0.0);
+        }
+        else {
+            passedMidField = (getConstants()->blueIsLeftSide()) ? (ballPos.x() >= 0.0) : (ballPos.x() < 0.0);
+        }
+
+        if(passedMidField) {
+            setNextTeam();
+            setPenaltiesInfo(VSSRef::Foul::PENALTY_KICK, _penaltyTeam, VSSRef::Quadrant::NO_QUADRANT);
+            emit foulOccured();
+
+            return;
+        }
+    }
+
     if(!_areaTimerControl && ((Utils::isInsideGoalArea(VSSRef::Color::BLUE, ballPos) && !Utils::isBallInsideGoal(VSSRef::Color::BLUE, ballPos)) || (Utils::isInsideGoalArea(VSSRef::Color::YELLOW, ballPos) && !Utils::isBallInsideGoal(VSSRef::Color::YELLOW, ballPos)))) {
         // Update control vars
         _isPlayRunning = true;
