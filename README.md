@@ -125,8 +125,11 @@ Here you can see examples of how the referee place automatically the robots in t
 ![FreeBall 4 Placement](https://github.com/VSSSLeague/VSSReferee/blob/CBR2021/rsc/readme/FreeBall_BOTRIGHT.jpeg)
 ##### Goal Kick
 
-![GoalKick Placement](https://github.com/VSSSLeague/VSSReferee/blob/CBR2021/rsc/readme/GoalKick.jpeg)
+Note that in goal kick the position of the ball is chosen according to the goalkeeper's y-axis. If the y-axis is positive, the ball will be placed above as shown in the image, and if not, it will be placed below.
+
+![GoalKick Placement TOP](https://github.com/VSSSLeague/VSSReferee/blob/CBR2021/rsc/readme/GoalKick1.jpeg)
+
+![GoalKick Placement BOTTOM](https://github.com/VSSSLeague/VSSReferee/blob/CBR2021/rsc/readme/GoalKick2.jpeg)
 
 ## Example of usage
-TODO
-
+An example of how it is possible to receive Referee packages and send positioning frames to Replacer can be found in this [repository](https://github.com/VSSSLeague/FIRAClient).

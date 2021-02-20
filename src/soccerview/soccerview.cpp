@@ -425,6 +425,11 @@ void SoccerView::processButton(QWidget *button) {
     VSSRef::Quadrant calledQuadrant = VSSRef::Quadrant();
     VSSRef::Quadrant_Parse(ui->quadrantButtons->checkedButton()->whatsThis().toUpper().toStdString(), &calledQuadrant);
 
+    // Updating game state buttons
+    ui->startGame->setEnabled(false);
+    ui->stopGame->setEnabled(true);
+    ui->haltGame->setEnabled(true);
+
     // Emit manual foul
     emit sendManualFoul(calledFoul, (calledFoul == VSSRef::Foul::FREE_BALL) ? VSSRef::Color::NONE : calledColor, (calledFoul != VSSRef::Foul::FREE_BALL) ? VSSRef::Quadrant::NO_QUADRANT : calledQuadrant);
 }
