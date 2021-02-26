@@ -63,6 +63,7 @@ bool Checker_TwoAttackers::isTwoPlayersAttacking() {
 float Checker_TwoAttackers::getTimer() {
     for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
         if(_twoAttacking.value(VSSRef::Color(i))) {
+            _timers.value(VSSRef::Color((i == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE))->stop();
            return _timers.value(VSSRef::Color((i == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE))->getSeconds();
         }
     }

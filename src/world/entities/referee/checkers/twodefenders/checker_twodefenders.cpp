@@ -63,6 +63,7 @@ bool Checker_TwoDefenders::isTwoPlayersDefending() {
 float Checker_TwoDefenders::getTimer() {
     for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
         if(_twoDefending.value(VSSRef::Color(i))) {
+            _timers.value(VSSRef::Color(i))->stop();
             return _timers.value(VSSRef::Color(i))->getSeconds();
         }
     }
