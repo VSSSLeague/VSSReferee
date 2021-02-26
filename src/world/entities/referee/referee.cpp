@@ -363,6 +363,7 @@ void Referee::processChecker(QObject *checker) {
         return ;
     }
 
+    emit saveFrame();
     updatePenaltiesInfo(occurredChecker->penalty(), occurredChecker->teamColor(), occurredChecker->quadrant());
     sendPenaltiesToNetwork();
 }
