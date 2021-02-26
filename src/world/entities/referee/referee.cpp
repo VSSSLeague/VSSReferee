@@ -314,10 +314,17 @@ void Referee::updatePenaltiesInfo(VSSRef::Foul foul, VSSRef::Color foulTeam, VSS
 void Referee::sendPenaltiesToNetwork() {
     VSSRef::ref_to_team::VSSRef_Command command;
 
+    // Taking last commands
+    _foulMutex.lock();
+    VSSRef::Foul foul = _lastFoul;
+    VSSRef::Quadrant quadrant = _lastFoulQuadrant;
+    VSSRef::Color team = _lastFoulTeam;
+    _foulMutex.unlock();
+
     // Parsing last penalties info to command
-    command.set_foul(_lastFoul);
-    command.set_foulquadrant(_lastFoulQuadrant);
-    command.set_teamcolor(_lastFoulTeam);
+    command.set_foul(foul);
+    command.set_foulquadrant(quadrant);
+    command.set_teamcolor(team);
 
     // Setting timestamp and gamehalf
     command.set_timestamp(_halfChecker->getTimeStamp());
@@ -336,7 +343,7 @@ void Referee::sendPenaltiesToNetwork() {
     std::cout << Text::blue("[REFEREE] ", true) + Text::yellow("[" + VSSRef::Half_Name(_gameHalf) + ":" + std::to_string(_halfChecker->getTimeStamp()) + "] ", true) + Text::bold("Sent command '" + VSSRef::Foul_Name(_lastFoul) + "' for team '" + VSSRef::Color_Name(_lastFoulTeam) + "' at quadrant '" + VSSRef::Quadrant_Name(_lastFoulQuadrant)) + "'\n";
 
     // Send foul
-    emit sendFoul(_lastFoul, _lastFoulTeam, _lastFoulQuadrant);
+    emit sendFoul(foul, team, quadrant);
 
     // Reset checkers
     resetCheckers();

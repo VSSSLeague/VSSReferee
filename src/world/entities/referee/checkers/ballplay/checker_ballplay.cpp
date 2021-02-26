@@ -103,9 +103,9 @@ void Checker_BallPlay::run() {
                         }
                         else {
                             setPenaltiesInfo(VSSRef::Foul::KICKOFF, VSSRef::Color(i), VSSRef::Quadrant::NO_QUADRANT);
+                            emit foulOccured();
+                            return ;
                         }
-
-                        emit foulOccured();
                     }
                     else{
                         if(getConstants()->useRefereeSuggestions()) {
@@ -129,6 +129,7 @@ void Checker_BallPlay::run() {
                 if(getConstants()->useRefereeSuggestions()) {
                     setPenaltiesInfo(VSSRef::Foul::HALT);
                     emit foulOccured();
+                    return ;
                 }
                 else {
                     // Check priority
@@ -137,6 +138,7 @@ void Checker_BallPlay::run() {
                         if(_possibleGoalKick && !_possiblePenalty) {
                             setPenaltiesInfo(VSSRef::Foul::GOAL_KICK, _checkerTwoAtk->attackingTeam());
                             emit foulOccured();
+                            return ;
                         }
                         // Possible goal, possible penalty and not possible goal kick, priority: GOAL
                         else if(!_possibleGoalKick && _possiblePenalty) {
@@ -144,6 +146,7 @@ void Checker_BallPlay::run() {
 
                             setPenaltiesInfo(VSSRef::Foul::KICKOFF, (_possibleGoalTeam == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE, VSSRef::Quadrant::NO_QUADRANT);
                             emit foulOccured();
+                            return ;
                         }
                         // Possible goal, possible penalty and possible goal kick... priority: the later
                         else if(_possibleGoalKick && _possiblePenalty) {
@@ -161,6 +164,7 @@ void Checker_BallPlay::run() {
                             }
 
                             emit foulOccured();
+                            return ;
                         }
                     }
                     // If no possible goal occurred
@@ -168,17 +172,18 @@ void Checker_BallPlay::run() {
                         // Take the most later foul
                         float bestTime = 0.0f;
 
-                        if(_checkerTwoAtk->getTimer() > bestTime) {
+                        if(_checkerTwoAtk->getTimer() >= bestTime) {
                             bestTime = _checkerTwoAtk->getTimer();
                             setPenaltiesInfo(VSSRef::Foul::GOAL_KICK, _checkerTwoAtk->attackingTeam());
                         }
 
-                        if(_checkerTwoDef->getTimer() > bestTime) {
+                        if(_checkerTwoDef->getTimer() >= bestTime) {
                             bestTime = _checkerTwoDef->getTimer();
                             setPenaltiesInfo(VSSRef::Foul::PENALTY_KICK, (_checkerTwoDef->defendingTeam() == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE);
                         }
 
                         emit foulOccured();
+                        return ;
                     }
                 }
 
@@ -190,6 +195,7 @@ void Checker_BallPlay::run() {
                     setNextTeam();
                     setPenaltiesInfo(VSSRef::Foul::PENALTY_KICK, _penaltyTeam, VSSRef::Quadrant::NO_QUADRANT);
                     emit foulOccured();
+                    return ;
                 }
             }
 
