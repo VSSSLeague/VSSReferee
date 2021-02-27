@@ -26,6 +26,8 @@ void Checker_BallPlay::configure() {
     _possibleGoalKick = false;
     _possibleGoal = false;
     _areaTimerControl = false;
+    _possiblePenaltyTeam = VSSRef::Color::NONE;
+    _possibleGoalKickTeam = VSSRef::Color::NONE;
     _areaTimer.start();
 }
 
@@ -58,14 +60,16 @@ void Checker_BallPlay::run() {
         if(!_possiblePenalty) {
             _possiblePenalty = _checkerTwoDef->isAnyTeamDefendingWithTwo();
             if(_possiblePenalty) {
-                emit emitSuggestion(VSSRef::Foul_Name(VSSRef::Foul::PENALTY_KICK).c_str(), (_checkerTwoDef->defendingTeam() == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE);
+                _possiblePenaltyTeam = (_checkerTwoDef->defendingTeam() == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE;
+                emit emitSuggestion(VSSRef::Foul_Name(VSSRef::Foul::PENALTY_KICK).c_str(), _possiblePenaltyTeam);
             }
         }
 
         if(!_possibleGoalKick) {
             _possibleGoalKick = _checkerTwoAtk->isAnyTeamAttackingWithTwo();
             if(_possibleGoalKick) {
-                emit emitSuggestion(VSSRef::Foul_Name(VSSRef::Foul::GOAL_KICK).c_str(), (_checkerTwoAtk->attackingTeam() == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE);
+                _possibleGoalKickTeam = (_checkerTwoAtk->attackingTeam() == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE;
+                emit emitSuggestion(VSSRef::Foul_Name(VSSRef::Foul::GOAL_KICK).c_str(), _possibleGoalKickTeam);
             }
         }
 
@@ -136,7 +140,7 @@ void Checker_BallPlay::run() {
                     if(_possibleGoal) {
                         // Possible goal, possible goal kick and not possible penalty, priority: GOAL_KICK
                         if(_possibleGoalKick && !_possiblePenalty) {
-                            setPenaltiesInfo(VSSRef::Foul::GOAL_KICK, (_checkerTwoAtk->attackingTeam() == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE);
+                            setPenaltiesInfo(VSSRef::Foul::GOAL_KICK, _possibleGoalKickTeam);
                             std::cout << Text::purple("[DEBUG] ", true) + Text::bold(VSSRef::Color_Name(_checkerTwoAtk->attackingTeam()) + " two attacking time: " + std::to_string(_checkerTwoAtk->getTimer())) + '\n';
                             emit foulOccured();
                             return ;
@@ -156,12 +160,12 @@ void Checker_BallPlay::run() {
 
                             if(_checkerTwoAtk->getTimer() >= bestTime) {
                                 bestTime = _checkerTwoAtk->getTimer();
-                                setPenaltiesInfo(VSSRef::Foul::GOAL_KICK, (_checkerTwoAtk->attackingTeam() == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE);
+                                setPenaltiesInfo(VSSRef::Foul::GOAL_KICK, _possibleGoalKickTeam);
                             }
 
                             if(_checkerTwoDef->getTimer() >= bestTime) {
                                 bestTime = _checkerTwoDef->getTimer();
-                                setPenaltiesInfo(VSSRef::Foul::PENALTY_KICK, (_checkerTwoDef->defendingTeam() == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE);
+                                setPenaltiesInfo(VSSRef::Foul::PENALTY_KICK, _possiblePenaltyTeam);
                             }
 
                             std::cout << Text::purple("[DEBUG] ", true) + Text::bold(VSSRef::Color_Name(_checkerTwoAtk->attackingTeam()) + " two attacking time: " + std::to_string(_checkerTwoAtk->getTimer())) + '\n';
@@ -178,12 +182,12 @@ void Checker_BallPlay::run() {
 
                         if(_checkerTwoAtk->getTimer() >= bestTime) {
                             bestTime = _checkerTwoAtk->getTimer();
-                            setPenaltiesInfo(VSSRef::Foul::GOAL_KICK, (_checkerTwoAtk->attackingTeam() == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE);
+                            setPenaltiesInfo(VSSRef::Foul::GOAL_KICK, _possibleGoalKickTeam);
                         }
 
                         if(_checkerTwoDef->getTimer() >= bestTime) {
                             bestTime = _checkerTwoDef->getTimer();
-                            setPenaltiesInfo(VSSRef::Foul::PENALTY_KICK, (_checkerTwoDef->defendingTeam() == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE);
+                            setPenaltiesInfo(VSSRef::Foul::PENALTY_KICK, _possiblePenaltyTeam);
                         }
 
                         std::cout << Text::purple("[DEBUG] ", true) + Text::bold(VSSRef::Color_Name(_checkerTwoAtk->attackingTeam()) + " two attacking time: " + std::to_string(_checkerTwoAtk->getTimer())) + '\n';
