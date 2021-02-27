@@ -44,6 +44,7 @@ bool Checker_TwoAttackers::isAnyTeamAttackingWithTwo() {
 }
 
 bool Checker_TwoAttackers::isTwoPlayersAttacking(VSSRef::Color teamColor) {
+    Position ballPosition = getVision()->getBallPosition();
     QList<quint8> avPlayers = getVision()->getAvailablePlayers(teamColor);
     VSSRef::Color oppositeColor = (teamColor == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE;
 
@@ -51,7 +52,7 @@ bool Checker_TwoAttackers::isTwoPlayersAttacking(VSSRef::Color teamColor) {
     int countAtOppositeGoal = 0;
     for(int i = 0; i < avPlayers.size(); i++) {
         Position playerPosition = getVision()->getPlayerPosition(VSSRef::Color(teamColor), avPlayers.at(i));
-        if(Utils::isInsideGoalArea(oppositeColor, playerPosition)) {
+        if(Utils::isInsideGoalArea(oppositeColor, playerPosition) && Utils::isInsideGoalArea(oppositeColor, ballPosition)) {
             countAtOppositeGoal = countAtOppositeGoal + 1;
         }
     }
