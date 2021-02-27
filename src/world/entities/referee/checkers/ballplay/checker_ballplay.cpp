@@ -65,7 +65,7 @@ void Checker_BallPlay::run() {
         if(!_possibleGoalKick) {
             _possibleGoalKick = _checkerTwoAtk->isAnyTeamAttackingWithTwo();
             if(_possibleGoalKick) {
-                emit emitSuggestion(VSSRef::Foul_Name(VSSRef::Foul::GOAL_KICK).c_str(), _checkerTwoAtk->attackingTeam());
+                emit emitSuggestion(VSSRef::Foul_Name(VSSRef::Foul::GOAL_KICK).c_str(), (_checkerTwoAtk->attackingTeam() == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE);
             }
         }
 
@@ -136,7 +136,8 @@ void Checker_BallPlay::run() {
                     if(_possibleGoal) {
                         // Possible goal, possible goal kick and not possible penalty, priority: GOAL_KICK
                         if(_possibleGoalKick && !_possiblePenalty) {
-                            setPenaltiesInfo(VSSRef::Foul::GOAL_KICK, _checkerTwoAtk->attackingTeam());
+                            setPenaltiesInfo(VSSRef::Foul::GOAL_KICK, (_checkerTwoAtk->attackingTeam() == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE);
+                            std::cout << Text::purple("[DEBUG] ", true) + Text::bold(VSSRef::Color_Name(_checkerTwoAtk->attackingTeam()) + " two attacking time: " + std::to_string(_checkerTwoAtk->getTimer())) + '\n';
                             emit foulOccured();
                             return ;
                         }
