@@ -24,7 +24,9 @@ private:
     // Flag control
     bool _isPlayRunning;
     bool _possiblePenalty;
+    VSSRef::Color _possiblePenaltyTeam;
     bool _possibleGoalKick;
+    VSSRef::Color _possibleGoalKickTeam;
     bool _possibleGoal;
     VSSRef::Color _possibleGoalTeam;
 
