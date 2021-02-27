@@ -45,13 +45,14 @@ bool Checker_TwoDefenders::isAnyTeamDefendingWithTwo() {
 
 bool Checker_TwoDefenders::isTwoPlayersDefending(VSSRef::Color teamColor) {
     // Getting avPlayers
+    Position ballPosition = getVision()->getBallPosition();
     QList<quint8> avPlayers = getVision()->getAvailablePlayers(teamColor);
 
     // Count qt players at allie goal
     int countAtAllieGoal = 0;
     for(int j = 0; j < avPlayers.size(); j++) {
         Position playerPosition = getVision()->getPlayerPosition(teamColor, avPlayers.at(j));
-        if(Utils::isInsideGoalArea(teamColor, playerPosition)) {
+        if(Utils::isInsideGoalArea(teamColor, playerPosition) && Utils::isInsideGoalArea(teamColor, ballPosition)) {
             countAtAllieGoal = countAtAllieGoal + 1;
         }
     }
