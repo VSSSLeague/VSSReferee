@@ -10,32 +10,16 @@ void Checker_TwoDefenders::configure() {
         _timers.insert(VSSRef::Color(i), new Timer());
         _timers.value(VSSRef::Color(i))->start();
     }
-
-    // Set default flag value
-    for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
-        _twoDefending.insert(VSSRef::Color(i), false);
-    }
 }
 
 void Checker_TwoDefenders::run() {
     for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
         // Taking players at allie goal
-        QList<quint8> avPlayers = getVision()->getAvailablePlayers(VSSRef::Color(i));
         VSSRef::Color oppositeColor = (i == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE;
         Position ballPosition = getVision()->getBallPosition();
 
-        // Count qt players at allie goal
-        int countAtAllieGoal = 0;
-        for(int j = 0; j < avPlayers.size(); j++) {
-            Position playerPosition = getVision()->getPlayerPosition(VSSRef::Color(i), avPlayers.at(j));
-            if(Utils::isInsideGoalArea(VSSRef::Color(i), playerPosition)) {
-                countAtAllieGoal = countAtAllieGoal + 1;
-            }
-        }
-
         // Check if >= 2 and enable flag
-        if(countAtAllieGoal >= 2 && Utils::isInsideGoalArea(VSSRef::Color(i), ballPosition)) {
-            _twoDefending.insert(VSSRef::Color(i), true);
+        if(isTwoPlayersDefending(VSSRef::Color(i)) && Utils::isInsideGoalArea(VSSRef::Color(i), ballPosition)) {
             _timers.value(VSSRef::Color(i))->stop();
 
             if(_timers.value(VSSRef::Color(i))->getSeconds() >= getConstants()->ballInAreaMaxTime() && !getConstants()->useRefereeSuggestions()) {
@@ -44,15 +28,14 @@ void Checker_TwoDefenders::run() {
             }
         }
         else {
-            _twoDefending.insert(VSSRef::Color(i), false);
             _timers.value(VSSRef::Color(i))->start();
         }
     }
 }
 
-bool Checker_TwoDefenders::isTwoPlayersDefending() {
+bool Checker_TwoDefenders::isAnyTeamDefendingWithTwo() {
     for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
-        if(_twoDefending.value(VSSRef::Color(i))) {
+        if(isTwoPlayersDefending(VSSRef::Color(i))) {
             return true;
         }
     }
@@ -60,9 +43,32 @@ bool Checker_TwoDefenders::isTwoPlayersDefending() {
     return false;
 }
 
+bool Checker_TwoDefenders::isTwoPlayersDefending(VSSRef::Color teamColor) {
+    // Getting avPlayers
+    QList<quint8> avPlayers = getVision()->getAvailablePlayers(teamColor);
+
+    // Count qt players at allie goal
+    int countAtAllieGoal = 0;
+    for(int j = 0; j < avPlayers.size(); j++) {
+        Position playerPosition = getVision()->getPlayerPosition(teamColor, avPlayers.at(j));
+        if(Utils::isInsideGoalArea(teamColor, playerPosition)) {
+            countAtAllieGoal = countAtAllieGoal + 1;
+        }
+    }
+
+    // If 2 or more players are defending, return true
+    if(countAtAllieGoal >= 2) {
+        return true;
+    }
+    // Otherwise, return false
+    else {
+        return false;
+    }
+}
+
 float Checker_TwoDefenders::getTimer() {
     for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
-        if(_twoDefending.value(VSSRef::Color(i))) {
+        if(isTwoPlayersDefending(VSSRef::Color(i))) {
             _timers.value(VSSRef::Color(i))->stop();
             return _timers.value(VSSRef::Color(i))->getSeconds();
         }
@@ -73,7 +79,7 @@ float Checker_TwoDefenders::getTimer() {
 
 VSSRef::Color Checker_TwoDefenders::defendingTeam() {
     for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
-        if(_twoDefending.value(VSSRef::Color(i))) {
+        if(isTwoPlayersDefending(VSSRef::Color(i))) {
             return VSSRef::Color(i);
         }
     }

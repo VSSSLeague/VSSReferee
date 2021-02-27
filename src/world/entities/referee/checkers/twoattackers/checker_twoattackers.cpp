@@ -10,32 +10,16 @@ void Checker_TwoAttackers::configure() {
         _timers.insert(VSSRef::Color(i), new Timer());
         _timers.value(VSSRef::Color(i))->start();
     }
-
-    // Set default flag value
-    for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
-        _twoAttacking.insert(VSSRef::Color(i), false);
-    }
 }
 
 void Checker_TwoAttackers::run() {
     for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
-        // Taking players at opposite goal
-        QList<quint8> avPlayers = getVision()->getAvailablePlayers(VSSRef::Color(i));
+        // Taking opposite color and ball position
         VSSRef::Color oppositeColor = (i == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE;
         Position ballPosition = getVision()->getBallPosition();
 
-        // Count qt players at opposite goal
-        int countAtOppositeGoal = 0;
-        for(int j = 0; j < avPlayers.size(); j++) {
-            Position playerPosition = getVision()->getPlayerPosition(VSSRef::Color(i), avPlayers.at(j));
-            if(Utils::isInsideGoalArea(oppositeColor, playerPosition)) {
-                countAtOppositeGoal = countAtOppositeGoal + 1;
-            }
-        }
-
         // Check if >= 2 and enable flag
-        if(countAtOppositeGoal >= 2 && Utils::isInsideGoalArea(oppositeColor, ballPosition)) {
-            _twoAttacking.insert(VSSRef::Color(oppositeColor), true);
+        if(isTwoPlayersAttacking(VSSRef::Color(i)) && Utils::isInsideGoalArea(oppositeColor, ballPosition)) {
             _timers.value(VSSRef::Color(i))->stop();
 
             if(_timers.value(VSSRef::Color(i))->getSeconds() >= getConstants()->ballInAreaMaxTime() && !getConstants()->useRefereeSuggestions()) {
@@ -44,15 +28,14 @@ void Checker_TwoAttackers::run() {
             }
         }
         else {
-            _twoAttacking.insert(VSSRef::Color(oppositeColor), false);
             _timers.value(VSSRef::Color(i))->start();
         }
     }
 }
 
-bool Checker_TwoAttackers::isTwoPlayersAttacking() {
+bool Checker_TwoAttackers::isAnyTeamAttackingWithTwo() {
     for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
-        if(_twoAttacking.value(VSSRef::Color(i))) {
+        if(isTwoPlayersAttacking(VSSRef::Color(i))) {
             return true;
         }
     }
@@ -60,11 +43,34 @@ bool Checker_TwoAttackers::isTwoPlayersAttacking() {
     return false;
 }
 
+bool Checker_TwoAttackers::isTwoPlayersAttacking(VSSRef::Color teamColor) {
+    QList<quint8> avPlayers = getVision()->getAvailablePlayers(teamColor);
+    VSSRef::Color oppositeColor = (teamColor == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE;
+
+    // Count opposite players at goal
+    int countAtOppositeGoal = 0;
+    for(int i = 0; i < avPlayers.size(); i++) {
+        Position playerPosition = getVision()->getPlayerPosition(VSSRef::Color(teamColor), avPlayers.at(i));
+        if(Utils::isInsideGoalArea(oppositeColor, playerPosition)) {
+            countAtOppositeGoal = countAtOppositeGoal + 1;
+        }
+    }
+
+    // If 2 or more players are attacking, return true
+    if(countAtOppositeGoal >= 2) {
+        return true;
+    }
+    // Otherwise, return false
+    else {
+        return false;
+    }
+}
+
 float Checker_TwoAttackers::getTimer() {
     for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
-        if(_twoAttacking.value(VSSRef::Color(i))) {
-            _timers.value(VSSRef::Color((i == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE))->stop();
-           return _timers.value(VSSRef::Color((i == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE))->getSeconds();
+        if(isTwoPlayersAttacking(VSSRef::Color(i))) {
+            _timers.value(VSSRef::Color(i))->stop();
+           return _timers.value(VSSRef::Color(i))->getSeconds();
         }
     }
 
@@ -73,7 +79,7 @@ float Checker_TwoAttackers::getTimer() {
 
 VSSRef::Color Checker_TwoAttackers::attackingTeam() {
     for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
-        if(_twoAttacking.value(VSSRef::Color(i))) {
+        if(isTwoPlayersAttacking(VSSRef::Color(i))) {
            return VSSRef::Color(i);
         }
     }
