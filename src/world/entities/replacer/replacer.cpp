@@ -129,6 +129,7 @@ void Replacer::loop() {
     if(_foulProcessed) {
         // Reset control vars
         for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
+            _placement.insert(VSSRef::Color(i), VSSRef::Frame());
             _placementStatus.insert(VSSRef::Color(i), false);
         }
 
@@ -657,6 +658,8 @@ VSSRef::Frame Replacer::getPenaltyShootoutPlacement(VSSRef::Color color, bool pl
     // Taking available players
     VSSRef::Frame lastFrame = _placement.value(color);
 
+    std::cout << "esse frame tem: " + std::to_string(lastFrame.robots_size()) + '\n';
+
     // The chosen id (keeper or atk)
     quint8 id = 255;
 
@@ -675,6 +678,8 @@ VSSRef::Frame Replacer::getPenaltyShootoutPlacement(VSSRef::Color color, bool pl
                 id = robot.robot_id();
             }
         }
+
+        std::cout << "best attacker: " + std::to_string(id) + '\n';
     }
     // Taking goalie
     else {
@@ -800,13 +805,10 @@ void Replacer::placeTeams() {
         // if team placed
         if(_placementStatus.value(VSSRef::Color(i))) {
             // Take received frame
-            VSSRef::Frame teamFrame = _placement.take(VSSRef::Color(i));
+            VSSRef::Frame teamFrame = _placement.value(VSSRef::Color(i));
 
             // Send frame to network
             placeFrame(teamFrame);
-
-            // Add new empty frame
-            _placement.insert(VSSRef::Color(i), VSSRef::Frame());
         }
         // if team not placed, take default positions
         else {
