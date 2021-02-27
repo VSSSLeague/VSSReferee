@@ -168,8 +168,8 @@ void Checker_BallPlay::run() {
                                 setPenaltiesInfo(VSSRef::Foul::PENALTY_KICK, _possiblePenaltyTeam);
                             }
 
-                            std::cout << Text::purple("[DEBUG] ", true) + Text::bold(VSSRef::Color_Name(_checkerTwoAtk->attackingTeam()) + " two attacking time: " + std::to_string(_checkerTwoAtk->getTimer())) + '\n';
-                            std::cout << Text::purple("[DEBUG] ", true) + Text::bold(VSSRef::Color_Name(_checkerTwoDef->defendingTeam()) + " two defending time: " + std::to_string(_checkerTwoDef->getTimer())) + '\n';
+                            std::cout << Text::purple("[DEBUG] ", true) + Text::bold(VSSRef::Color_Name(_possibleGoalKickTeam) + " two attacking time: " + std::to_string(_checkerTwoAtk->getTimer())) + '\n';
+                            std::cout << Text::purple("[DEBUG] ", true) + Text::bold(VSSRef::Color_Name(_possiblePenaltyTeam) + " two defending time: " + std::to_string(_checkerTwoDef->getTimer())) + '\n';
 
                             emit foulOccured();
                             return ;
@@ -201,8 +201,8 @@ void Checker_BallPlay::run() {
                                 setPenaltiesInfo(VSSRef::Foul::PENALTY_KICK, _possiblePenaltyTeam);
                             }
 
-                            std::cout << Text::purple("[DEBUG] ", true) + Text::bold(VSSRef::Color_Name(_checkerTwoAtk->attackingTeam()) + " two attacking time: " + std::to_string(_checkerTwoAtk->getTimer())) + '\n';
-                            std::cout << Text::purple("[DEBUG] ", true) + Text::bold(VSSRef::Color_Name(_checkerTwoDef->defendingTeam()) + " two defending time: " + std::to_string(_checkerTwoDef->getTimer())) + '\n';
+                            std::cout << Text::purple("[DEBUG] ", true) + Text::bold(VSSRef::Color_Name(_possibleGoalKickTeam) + " two attacking time: " + std::to_string(_checkerTwoAtk->getTimer())) + '\n';
+                            std::cout << Text::purple("[DEBUG] ", true) + Text::bold(VSSRef::Color_Name(_possiblePenaltyTeam) + " two defending time: " + std::to_string(_checkerTwoDef->getTimer())) + '\n';
 
                             emit foulOccured();
                             return ;
