@@ -658,8 +658,6 @@ VSSRef::Frame Replacer::getPenaltyShootoutPlacement(VSSRef::Color color, bool pl
     // Taking available players
     VSSRef::Frame lastFrame = _placement.value(color);
 
-    std::cout << "esse frame tem: " + std::to_string(lastFrame.robots_size()) + '\n';
-
     // The chosen id (keeper or atk)
     quint8 id = 255;
 
@@ -678,8 +676,6 @@ VSSRef::Frame Replacer::getPenaltyShootoutPlacement(VSSRef::Color color, bool pl
                 id = robot.robot_id();
             }
         }
-
-        std::cout << "best attacker: " + std::to_string(id) + '\n';
     }
     // Taking goalie
     else {
