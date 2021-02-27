@@ -15,16 +15,14 @@ public:
     void run();
 
     // Flag getter
-    bool isTwoPlayersDefending();
+    bool isAnyTeamDefendingWithTwo();
+    bool isTwoPlayersDefending(VSSRef::Color teamColor);
     float getTimer();
     VSSRef::Color defendingTeam();
 
 private:
     // Timers
     QHash<VSSRef::Color, Timer*> _timers;
-
-    // Flag control
-    QHash<VSSRef::Color, bool> _twoDefending;
 };
 
 #endif // CHECKER_TWODEFENDERS_H

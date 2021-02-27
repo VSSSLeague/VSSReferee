@@ -39,7 +39,7 @@
     		"overtimeHalfTime": 180.0
     	},
     	"fouls":{
-    		"useRefereeSuggestions": true,
+    		"useRefereeSuggestions": false,
     		"maintainSpeedAtSuggestions": true,
     		"ballMinSpeedForStuck": 0.1,
     		"stuckedBallTime": 10.0,
