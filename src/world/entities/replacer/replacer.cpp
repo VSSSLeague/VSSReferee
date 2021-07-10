@@ -6,7 +6,7 @@
 #include <src/utils/types/field/field_default_3v3.h>
 #include <src/utils/utils.h>
 
-void movePlayerToPosition(VSSRef::Robot *bot, quint8 botId, double xCoord, double yCoord, double orientation=0.0) {
+void movePlayerToPosition(VSSRef::Robot *bot, quint8 botId, double xCoord=0.0, double yCoord=0.0, double orientation=0.0) {
     bot->set_orientation(0.0);
     bot->set_robot_id(botId);
     bot->set_orientation(orientation);
