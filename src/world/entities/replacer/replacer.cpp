@@ -6,6 +6,15 @@
 #include <src/utils/types/field/field_default_3v3.h>
 #include <src/utils/utils.h>
 
+void movePlayerToPosition(VSSRef::Robot *bot, quint8 botId, double xCoord, double yCoord, double orientation=0.0) {
+    bot->set_orientation(0.0);
+    bot->set_robot_id(botId);
+    bot->set_orientation(orientation);
+    bot->set_x(xCoord);
+    bot->set_y(yCoord);
+    return;
+}
+
 Replacer::Replacer(Vision *vision, Constants *constants) : Entity(ENT_REPLACER){
     // Take pointers
     _vision = vision;
