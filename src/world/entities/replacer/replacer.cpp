@@ -363,59 +363,49 @@ VSSRef::Frame Replacer::getGoalKickPlacement(VSSRef::Color color){
 
         // Insert GK
         if(players.size() == 0) return frame;
-        VSSRef::Robot *gk = frame.add_robots();
-        gk->set_robot_id(getGoalie(color));
+        double gkOri, gkXPos, gkYPos;
         if(_isGoaliePlacedAtTop){
-            gk->set_orientation(factor * -45.0);
-            gk->set_x(factor * 0.675);
-            gk->set_y(0.270);
+            gkOri = (factor * -45.0);
+            gkXPos = (factor * 0.675);
+            gkYPos = 0.270;
         }
         else{
-            gk->set_orientation(factor * 45.0);
-            gk->set_x(factor * 0.675);
-            gk->set_y(-0.270);
+            gkOri = factor * 45.0;
+            gkXPos = factor * 0.675;
+            gkYPos = -0.270;
         }
+        movePlayerToPosition(frame.add_robots(), getGoalie(color), gkXPos, gkYPos, gkOri);
+
 
         // Attacker
         if(players.size() == 0) return frame;
-        VSSRef::Robot *striker = frame.add_robots();
-        striker->set_robot_id(players.takeFirst());
-        striker->set_orientation(0.0);
-        striker->set_x((factor) * (markX + getConstants()->robotLength()));
-        striker->set_y(markY - getConstants()->robotLength());
+        const double strikerXPos = ((factor) * (markX + getConstants()->robotLength()));
+        const double strikerYPos = (markY - getConstants()->robotLength());
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), strikerXPos, strikerYPos);
 
         // Support / Second Attacker
         if(players.size() == 0) return frame;
-        VSSRef::Robot *support = frame.add_robots();
-        support->set_robot_id(players.takeFirst());
-        support->set_orientation(0.0);
-        support->set_x((factor) * (markX - getConstants()->robotLength()));
-        support->set_y(-markY - getConstants()->robotLength());
+        const double supXPos = ((factor) * (markX - getConstants()->robotLength()));
+        const double supYPos = (-markY - getConstants()->robotLength());
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), supXPos, supYPos);
     }
     else{
         // Insert GK
         if(players.size() == 0) return frame;
-        VSSRef::Robot *gk = frame.add_robots();
-        gk->set_robot_id(getGoalie(color));
-        gk->set_orientation(0.0);
-        gk->set_x(factor * ((Field_Default_3v3::kFieldLength/2000.0) - (getConstants()->robotLength())));
-        gk->set_y(0.0);
+        const double gkXPos = (factor * ((Field_Default_3v3::kFieldLength/2000.0) - (getConstants()->robotLength())));
+        movePlayerToPosition(frame.add_robots(), getGoalie(color), gkXPos);
 
         // Attacker
         if(players.size() == 0) return frame;
-        VSSRef::Robot *striker = frame.add_robots();
-        striker->set_robot_id(players.takeFirst());
-        striker->set_orientation(0.0);
-        striker->set_x((-factor) * (markX - (2.0 * getConstants()->robotLength())));
-        striker->set_y(markY - (4.0 * getConstants()->robotLength()));
+        const double strikerXPos = ((-factor) * (markX - (2.0 * getConstants()->robotLength())));
+        const double strikerYPos = (markY - (4.0 * getConstants()->robotLength()));
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), strikerXPos, strikerYPos);
 
         // Support / Second Attacker
         if(players.size() == 0) return frame;
-        VSSRef::Robot *support = frame.add_robots();
-        support->set_robot_id(players.takeFirst());
-        support->set_orientation(0.0);
-        support->set_x((-factor) * (markX - (3.0 * getConstants()->robotLength())));
-        support->set_y(-markY + getConstants()->robotLength());
+        const double supXPos = ((-factor) * (markX - (3.0 * getConstants()->robotLength())));
+        const double supYPos = (-markY + getConstants()->robotLength());
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), supXPos, supYPos);
     }
 
     return frame;
