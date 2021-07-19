@@ -412,19 +412,19 @@ VSSRef::Frame Replacer::getGoalKickPlacement(VSSRef::Color color){
 
         // #1
         if(players.size() == 0) return frame;
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), xPosB, yPosB);
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), (-factor) * xPosB, yPosB);
 
         // #2
         if(players.size() == 0) return frame;
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), xPosB, -yPosB);
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), (-factor) * xPosB, -yPosB);
 
         // #3
         if(players.size() == 0) return frame;
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), -xPosB - width / 8, yPosB);
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), (-factor) * (-xPosB - width / 8), yPosB);
 
         // #4
         if(players.size() == 0) return frame;
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), -xPosB - width / 8, -yPosB);
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), (-factor) * (-xPosB - width / 8), -yPosB);
     }
 
     return frame;
