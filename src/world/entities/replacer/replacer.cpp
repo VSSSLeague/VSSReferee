@@ -15,6 +15,10 @@ void movePlayerToPosition(VSSRef::Robot *bot, quint8 botId, double xCoord=0.0, d
     return;
 }
 
+void debugReplacePosition(double x, double y, int num = 0, std::string side = "") {
+    std::cout << Text::blue("[REPLACER] ", true) + Text::bold("Moving player " + std::to_string(num) + " from team \"" + side + "\" " + " to position ("+ std::to_string(x) + ", " + std::to_string(y) + ")") + '\n';
+}
+
 Replacer::Replacer(Vision *vision, Constants *constants) : Entity(ENT_REPLACER){
     // Take pointers
     _vision = vision;
@@ -343,10 +347,6 @@ VSSRef::Frame Replacer::getGoalKickPlacement(VSSRef::Color color){
     if(teamIsAtLeft)
         factor = -1.0;
 
-    // FB mark
-    float markX = (Field_Default_3v3::kFieldLength / 1000.0)/2.0 - 0.375;
-    float markY = (Field_Default_3v3::kFieldWidth / 1000.0)/2.0 - 0.25;
-
     QList<quint8> players = _vision->getAvailablePlayers(color);
     for(int i = 0; i < players.size(); i++) {
         if(players.at(i) == getGoalie(color)) {
@@ -354,6 +354,18 @@ VSSRef::Frame Replacer::getGoalKickPlacement(VSSRef::Color color){
         }
     }
 
+    const static double length = Field_Default_3v3::kFieldLength/1000; 
+    const static double width = Field_Default_3v3::kFieldWidth/1000;
+
+    const double xStep = length/8;
+    const double yStep = width/8;
+
+    const double xPosA = 2 * xStep;
+    const double yPosA = 2 * yStep;
+
+    const double xPosB = xStep;
+    const double yPosB = yStep/2 + yStep;
+    
     // _color is the team that will make the kick
     if(color == getFoulColor()){
         // Random to choose GK position
@@ -376,36 +388,43 @@ VSSRef::Frame Replacer::getGoalKickPlacement(VSSRef::Color color){
         }
         movePlayerToPosition(frame.add_robots(), getGoalie(color), gkXPos, gkYPos, gkOri);
 
-
-        // Attacker
+        // #1
         if(players.size() == 0) return frame;
-        const double strikerXPos = ((factor) * (markX + getConstants()->robotLength()));
-        const double strikerYPos = (markY - getConstants()->robotLength());
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), strikerXPos, strikerYPos);
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), factor * xPosA, yPosA);
 
-        // Support / Second Attacker
+        // #2
         if(players.size() == 0) return frame;
-        const double supXPos = ((factor) * (markX - getConstants()->robotLength()));
-        const double supYPos = (-markY - getConstants()->robotLength());
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), supXPos, supYPos);
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), factor * xPosA, -yPosA);
+
+        // #3
+        if(players.size() == 0) return frame;
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), factor * (-xPosA + width / 8), yPosA);
+
+        // #4
+        if(players.size() == 0) return frame;
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), factor * (-xPosA + width / 8), -yPosA);
     }
-    else{
-        // Insert GK
+    else {
+        // #0
         if(players.size() == 0) return frame;
         const double gkXPos = (factor * ((Field_Default_3v3::kFieldLength/2000.0) - (getConstants()->robotLength())));
         movePlayerToPosition(frame.add_robots(), getGoalie(color), gkXPos);
 
-        // Attacker
+        // #1
         if(players.size() == 0) return frame;
-        const double strikerXPos = ((-factor) * (markX - (2.0 * getConstants()->robotLength())));
-        const double strikerYPos = (markY - (4.0 * getConstants()->robotLength()));
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), strikerXPos, strikerYPos);
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), xPosB, yPosB);
 
-        // Support / Second Attacker
+        // #2
         if(players.size() == 0) return frame;
-        const double supXPos = ((-factor) * (markX - (3.0 * getConstants()->robotLength())));
-        const double supYPos = (-markY + getConstants()->robotLength());
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), supXPos, supYPos);
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), xPosB, -yPosB);
+
+        // #3
+        if(players.size() == 0) return frame;
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), -xPosB - width / 8, yPosB);
+
+        // #4
+        if(players.size() == 0) return frame;
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), -xPosB - width / 8, -yPosB);
     }
 
     return frame;
