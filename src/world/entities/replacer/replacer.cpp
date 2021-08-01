@@ -585,28 +585,17 @@ VSSRef::Frame Replacer::getKickoffPlacement(VSSRef::Color color){
 
     // Goalkeeper
     if(players.size() == 0) return frame;
-    VSSRef::Robot *gk = frame.add_robots();
-    gk->set_robot_id(getGoalie(color));
-    gk->set_orientation(0.0);
-    gk->set_x(factor * ((Field_Default_3v3::kFieldLength / 2000.0) - getConstants()->robotLength()));
-    gk->set_y(0.0);
+    movePlayerToPosition(frame.add_robots(), getGoalie(color), factor * ((Field_Default_3v3::kFieldLength / 2000.0) - getConstants()->robotLength()));
+
 
     // Attacker
     if(players.size() == 0) return frame;
-    VSSRef::Robot *striker = frame.add_robots();
-    striker->set_robot_id(players.takeFirst());
-    striker->set_orientation(0.0);
-    striker->set_x(factor * Field_Default_3v3::kCenterRadius/1000.0);
-    striker->set_y(0.0);
+    movePlayerToPosition(frame.add_robots(), players.takeFirst(), factor * Field_Default_3v3::kCenterRadius/1000.0);
+
 
     // Support
     if(players.size() == 0) return frame;
-    VSSRef::Robot *support = frame.add_robots();
-    support->set_robot_id(players.takeFirst());
-    support->set_orientation(0.0);
-    support->set_x(factor * (Field_Default_3v3::kCenterRadius/1000.0 * 2.0));
-    support->set_y(0.0);
-
+    movePlayerToPosition(frame.add_robots(), players.takeFirst(), factor * (Field_Default_3v3::kCenterRadius/1000.0 * 2.0));
     return frame;
 }
 
