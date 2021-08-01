@@ -470,95 +470,96 @@ VSSRef::Frame Replacer::getFreeBallPlacement(VSSRef::Color color){
     // First discover if FB will occur at our side
     if(teamIsAtLeft){
         if(players.size() == 0) return frame;
-        VSSRef::Robot *gk = frame.add_robots();
-        gk->set_robot_id(getGoalie(color));
-        gk->set_orientation(0.0);
-        gk->set_x(factor * ((Field_Default_3v3::kFieldLength / 2000.0) - getConstants()->robotLength()));
-        gk->set_y(0.0);
+        const static double gk_x = factor * ((Field_Default_3v3::kFieldLength / 2000.0) - getConstants()->robotLength());
+        double gk_y = 0;
 
         // If quadrant 2 or 3, gk will need to pos in an better way
         if(foulQuadrant == VSSRef::Quadrant::QUADRANT_2)
-            gk->set_y(getConstants()->robotLength());
+            gk_y = getConstants()->robotLength();
         else if(foulQuadrant == VSSRef::Quadrant::QUADRANT_3)
-            gk->set_y(-getConstants()->robotLength());
+            gk_y = -getConstants()->robotLength();
+        movePlayerToPosition(frame.add_robots(), getGoalie(color), gk_x, gk_y);
+
 
         // Attacker
         if(players.size() == 0) return frame;
-        VSSRef::Robot *striker = frame.add_robots();
-        striker->set_robot_id(players.takeFirst());
-        striker->set_orientation(0.0);
-        striker->set_x(markX - 0.2);
-        striker->set_y(markY);
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), markX - getConstants()->robotLength(), markY);
+
+        if(players.size() == 0) return frame;
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), markX - getConstants()->robotLength() + (factor) * 0.2, markY);
+
 
         // Support
         if(players.size() == 0) return frame;
-        VSSRef::Robot *support = frame.add_robots();
-        support->set_robot_id(players.takeFirst());
-        support->set_orientation(0.0);
-
+        double sup_x = 0;
+        double sup_y = 0;
         // Support pos in different ways
-        if(foulQuadrant == VSSRef::Quadrant::QUADRANT_1){
-            support->set_x(0.1);
-            support->set_y(-0.2);
+        switch(foulQuadrant) {
+            case VSSRef::Quadrant::QUADRANT_1:
+                sup_x = 0.1;
+                sup_y = -0.2;
+                break;
+            case VSSRef::Quadrant::QUADRANT_2:
+                sup_x = -0.3;
+                sup_y = -0.1;
+                break;
+            case VSSRef::Quadrant::QUADRANT_3:
+                sup_x = -0.3;
+                sup_y = 0.1;
+                break;
+            case VSSRef::Quadrant::QUADRANT_4:
+                sup_x = 0.1;
+                sup_y = 0.2;
+                break;
+            default:
+            break;
         }
-        if(foulQuadrant == VSSRef::Quadrant::QUADRANT_2){
-            support->set_x(-0.3);
-            support->set_y(-0.1);
-        }
-        else if(foulQuadrant == VSSRef::Quadrant::QUADRANT_3){
-            support->set_x(-0.3);
-            support->set_y(0.1);
-        }
-        else if(foulQuadrant == VSSRef::Quadrant::QUADRANT_4){
-            support->set_x(0.1);
-            support->set_y(0.2);
-        }
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), sup_x, sup_y);
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), -1000, -1000);
     }
     else{
         if(players.size() == 0) return frame;
-        VSSRef::Robot *gk = frame.add_robots();
-        gk->set_robot_id(getGoalie(color));
-        gk->set_orientation(0.0);
-        gk->set_x(factor * ((Field_Default_3v3::kFieldLength / 2000.0) - getConstants()->robotLength()));
-        gk->set_y(0.0);
+        const static double gk_x = factor * ((Field_Default_3v3::kFieldLength / 2000.0) - getConstants()->robotLength());
+        double gk_y = 0;
 
         // If quadrant 2 or 3, gk will need to pos in an better way
         if(foulQuadrant == VSSRef::Quadrant::QUADRANT_1)
-            gk->set_y(getConstants()->robotLength());
+            gk_y = getConstants()->robotLength();
         else if(foulQuadrant == VSSRef::Quadrant::QUADRANT_4)
-            gk->set_y(-getConstants()->robotLength());
+            gk_y = -getConstants()->robotLength();
+        movePlayerToPosition(frame.add_robots(), getGoalie(color), gk_x, gk_y);
+        
 
         // Attacker
         if(players.size() == 0) return frame;
-        VSSRef::Robot *striker = frame.add_robots();
-        striker->set_robot_id(players.takeFirst());
-        striker->set_orientation(0.0);
-        striker->set_x(markX + 0.2);
-        striker->set_y(markY);
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), markX + 0.2, markY);
+
 
         // Support
         if(players.size() == 0) return frame;
-        VSSRef::Robot *support = frame.add_robots();
-        support->set_robot_id(players.takeFirst());
-        support->set_orientation(0.0);
+        double sup_x = 0;
+        double sup_y = 0;
 
         // Support pos in different ways
         if(foulQuadrant == VSSRef::Quadrant::QUADRANT_1){
-            support->set_x(0.3);
-            support->set_y(-0.1);
+            sup_x = 0.3;
+            sup_y = -0.1;
         }
         if(foulQuadrant == VSSRef::Quadrant::QUADRANT_2){
-            support->set_x(-0.1);
-            support->set_y(-0.2);
+            sup_x = -0.1;
+            sup_y = -0.2;
         }
         else if(foulQuadrant == VSSRef::Quadrant::QUADRANT_3){
-            support->set_x(-0.1);
-            support->set_y(0.2);
+            sup_x = -0.1;
+            sup_y = 0.2;
         }
         else if(foulQuadrant == VSSRef::Quadrant::QUADRANT_4){
-            support->set_x(0.3);
-            support->set_y(0.1);
+            sup_x = 0.3;
+            sup_y = 0.1;
         }
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), sup_x, sup_y);
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), 1000, 1000);
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), 1000, 1000);
     }
 
     return frame;
