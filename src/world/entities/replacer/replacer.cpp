@@ -360,8 +360,8 @@ VSSRef::Frame Replacer::getGoalKickPlacement(VSSRef::Color color){
     const double xStep = length/8;
     const double yStep = width/8;
 
-    const double xPosA = 2 * xStep;
-    const double yPosA = 2 * yStep;
+    const double xPosA = xStep;
+    const double yPosA = yStep;
 
     const double xPosB = xStep;
     const double yPosB = yStep/2 + yStep;
@@ -390,19 +390,21 @@ VSSRef::Frame Replacer::getGoalKickPlacement(VSSRef::Color color){
 
         // #1
         if(players.size() == 0) return frame;
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), factor * xPosA, yPosA);
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), (factor) * (-1) * xStep, -3 * yStep);
 
         // #2
         if(players.size() == 0) return frame;
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), factor * xPosA, -yPosA);
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), (factor) * (1) * xStep, (-3) * yStep);
+
 
         // #3
         if(players.size() == 0) return frame;
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), factor * (-xPosA + width / 8), yPosA);
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), (factor) * (-3) * xStep, 3 * yStep);
 
         // #4
         if(players.size() == 0) return frame;
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), factor * (-xPosA + width / 8), -yPosA);
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), (factor) * (-2) * xStep, 1 * yStep);
+
     }
     else {
         // #0
@@ -412,19 +414,24 @@ VSSRef::Frame Replacer::getGoalKickPlacement(VSSRef::Color color){
 
         // #1
         if(players.size() == 0) return frame;
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), (-factor) * xPosB, yPosB);
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), -factor * (-1*xStep), 3*yStep);
+
 
         // #2
         if(players.size() == 0) return frame;
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), (-factor) * xPosB, -yPosB);
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), -factor * (-xStep), 0);
 
         // #3
         if(players.size() == 0) return frame;
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), (-factor) * (-xPosB - width / 8), yPosB);
+        // movePlayerToPosition(frame.add_robots(), players.takeFirst(), (-factor) * (-2) * xStep, 3 * yStep);
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), -factor * (-3*xStep), (-2*yStep));
 
         // #4
         if(players.size() == 0) return frame;
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), (-factor) * (-xPosB - width / 8), -yPosB);
+        // movePlayerToPosition(frame.add_robots(), players.takeFirst(), (-factor) * (-2) * xStep, 1 * yStep);
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), -factor * (-3*xStep), -4*yStep);
+
+        
     }
 
     return frame;
