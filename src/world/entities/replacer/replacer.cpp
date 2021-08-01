@@ -681,18 +681,10 @@ VSSRef::Frame Replacer::getPenaltyShootoutPlacement(VSSRef::Color color, bool pl
 
     // Removing from field players != id
     if(avPlayers.size() == 0) return frame;
-    VSSRef::Robot *out1 = frame.add_robots();
-    out1->set_robot_id(avPlayers.takeFirst());
-    out1->set_orientation(0.0);
-    out1->set_x(factor * 0.1);
-    out1->set_y(-0.8);
+    movePlayerToPosition(frame.add_robots(), avPlayers.takeFirst(), factor * 0.1, -0.8);
 
     if(avPlayers.size() == 0) return frame;
-    VSSRef::Robot *out2 = frame.add_robots();
-    out2->set_robot_id(avPlayers.takeFirst());
-    out2->set_orientation(0.0);
-    out2->set_x(factor * 0.2);
-    out2->set_y(-0.8);
+    movePlayerToPosition(frame.add_robots(), avPlayers.takeFirst(), factor * 0.2, -0.8);
 
     return frame;
 }
