@@ -359,12 +359,6 @@ VSSRef::Frame Replacer::getGoalKickPlacement(VSSRef::Color color){
 
     const double xStep = length/8;
     const double yStep = width/8;
-
-    const double xPosA = xStep;
-    const double yPosA = yStep;
-
-    const double xPosB = xStep;
-    const double yPosB = yStep/2 + yStep;
     
     // _color is the team that will make the kick
     if(color == getFoulColor()){
@@ -433,7 +427,6 @@ VSSRef::Frame Replacer::getGoalKickPlacement(VSSRef::Color color){
 
         
     }
-
     return frame;
 }
 
