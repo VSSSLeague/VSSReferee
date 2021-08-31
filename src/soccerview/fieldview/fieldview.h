@@ -5,9 +5,9 @@
 #include <QMutex>
 #include <QMouseEvent>
 
+#include <src/utils/types/field/field.h>
 #include <src/soccerview/fieldview/gltext/gltext.h>
 #include <src/world/entities/vision/vision.h>
-#include <src/utils/types/field/field_default_3v3.h>
 #include <src/utils/timer/timer.h>
 #include <include/vssref_common.pb.h>
 #include <include/packet.pb.h>
@@ -17,6 +17,7 @@ class FieldView : public QGLWidget
     Q_OBJECT
 public:
     FieldView(QWidget *parent = 0);
+    void setField(Field *fieldPointer);
     void setVisionModule(Vision *visionPointer);
     void setConstants(Constants *constantsPointer);
     void setStuckedTime(float time);
@@ -54,6 +55,10 @@ private:
     // Vision
     Vision *vision;
     Vision* getVision();
+
+    // Field
+    Field *field;
+    Field* getField();
 
     // Constants
     Constants *constants;

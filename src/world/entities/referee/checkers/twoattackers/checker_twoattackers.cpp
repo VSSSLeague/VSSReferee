@@ -18,8 +18,9 @@ void Checker_TwoAttackers::run() {
         VSSRef::Color oppositeColor = (i == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE;
         Position ballPosition = getVision()->getBallPosition();
 
-        // Check if >= 2 and enable flag
-        if(isTwoPlayersAttacking(VSSRef::Color(i)) && Utils::isInsideGoalArea(oppositeColor, ballPosition)) {
+        // Check if >= 2 at goal area or >= 4 at big area and enable flag
+        if((isTwoPlayersAttackingAtGoalArea(VSSRef::Color(i)) && Utils::isInsideGoalArea(oppositeColor, ballPosition))
+          || (isFourPlayersAttackingAtBigArea(VSSRef::Color(i)) && Utils::isInsideBigArea(oppositeColor, ballPosition)) ) {
             _timers.value(VSSRef::Color(i))->stop();
 
             if(_timers.value(VSSRef::Color(i))->getSeconds() >= getConstants()->ballInAreaMaxTime() && !getConstants()->useRefereeSuggestions()) {
@@ -33,9 +34,9 @@ void Checker_TwoAttackers::run() {
     }
 }
 
-bool Checker_TwoAttackers::isAnyTeamAttackingWithTwo() {
+bool Checker_TwoAttackers::isAnyTeamAttackingWithMoreThanPossible() {
     for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
-        if(isTwoPlayersAttacking(VSSRef::Color(i))) {
+        if(isTwoPlayersAttackingAtGoalArea(VSSRef::Color(i)) || isFourPlayersAttackingAtBigArea(VSSRef::Color(i))) {
             return true;
         }
     }
@@ -43,7 +44,7 @@ bool Checker_TwoAttackers::isAnyTeamAttackingWithTwo() {
     return false;
 }
 
-bool Checker_TwoAttackers::isTwoPlayersAttacking(VSSRef::Color teamColor) {
+bool Checker_TwoAttackers::isTwoPlayersAttackingAtGoalArea(VSSRef::Color teamColor) {
     Position ballPosition = getVision()->getBallPosition();
     QList<quint8> avPlayers = getVision()->getAvailablePlayers(teamColor);
     VSSRef::Color oppositeColor = (teamColor == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE;
@@ -67,9 +68,33 @@ bool Checker_TwoAttackers::isTwoPlayersAttacking(VSSRef::Color teamColor) {
     }
 }
 
+bool Checker_TwoAttackers::isFourPlayersAttackingAtBigArea(VSSRef::Color teamColor) {
+    Position ballPosition = getVision()->getBallPosition();
+    QList<quint8> avPlayers = getVision()->getAvailablePlayers(teamColor);
+    VSSRef::Color oppositeColor = (teamColor == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE;
+
+    // Count opposite players at goal
+    int countAtOppositeGoal = 0;
+    for(int i = 0; i < avPlayers.size(); i++) {
+        Position playerPosition = getVision()->getPlayerPosition(VSSRef::Color(teamColor), avPlayers.at(i));
+        if(Utils::isInsideBigArea(oppositeColor, playerPosition) && Utils::isInsideBigArea(oppositeColor, ballPosition)) {
+            countAtOppositeGoal = countAtOppositeGoal + 1;
+        }
+    }
+
+    // If 4 or more players are attacking, return true
+    if(countAtOppositeGoal >= 4) {
+        return true;
+    }
+    // Otherwise, return false
+    else {
+        return false;
+    }
+}
+
 float Checker_TwoAttackers::getTimer() {
     for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
-        if(isTwoPlayersAttacking(VSSRef::Color(i))) {
+        if(isTwoPlayersAttackingAtGoalArea(VSSRef::Color(i)) || isFourPlayersAttackingAtBigArea(VSSRef::Color(i))) {
             _timers.value(VSSRef::Color(i))->stop();
            return _timers.value(VSSRef::Color(i))->getSeconds();
         }
@@ -80,7 +105,7 @@ float Checker_TwoAttackers::getTimer() {
 
 VSSRef::Color Checker_TwoAttackers::attackingTeam() {
     for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
-        if(isTwoPlayersAttacking(VSSRef::Color(i))) {
+        if(isTwoPlayersAttackingAtGoalArea(VSSRef::Color(i)) || isFourPlayersAttackingAtBigArea(VSSRef::Color(i))) {
            return VSSRef::Color(i);
         }
     }

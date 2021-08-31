@@ -4,7 +4,7 @@
 #include <include/vssref_common.pb.h>
 #include <src/constants/constants.h>
 #include <src/utils/types/position/position.h>
-#include <src/utils/types/field/field_default_3v3.h>
+#include <src/utils/types/field/field.h>
 
 class Utils
 {
@@ -18,14 +18,19 @@ public:
     static float distanceToLine(const Position &s1, const Position &s2, const Position &point);
     static float distanceToSegment(const Position &s1, const Position &s2, const Position &point);
     static bool isInsideGoalArea(VSSRef::Color teamColor, Position pos);
+    static bool isInsideBigArea(VSSRef::Color teamColor, Position pos);
     static bool isBallInsideGoal(VSSRef::Color teamColor, Position pos);
     static Position rotatePoint(Position point, float angle);
     static VSSRef::Quadrant getBallQuadrant(Position ballPos);
     static void setConstants(Constants *constants);
+    static void setField(Field *field);
 
 private:
     static Constants *_constants;
     static Constants* getConstants();
+
+    static Field *_field;
+    static Field* getField();
 };
 
 #endif // UTILS_H

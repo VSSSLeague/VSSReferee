@@ -58,7 +58,7 @@ void Checker_BallPlay::run() {
         // Update control vars
         _isPlayRunning = true;
         if(!_possiblePenalty) {
-            _possiblePenalty = _checkerTwoDef->isAnyTeamDefendingWithTwo();
+            _possiblePenalty = _checkerTwoDef->isAnyTeamDefendingWithMoreThanPossible();
             if(_possiblePenalty) {
                 _possiblePenaltyTeam = (_checkerTwoDef->defendingTeam() == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE;
                 emit emitSuggestion(VSSRef::Foul_Name(VSSRef::Foul::PENALTY_KICK).c_str(), _possiblePenaltyTeam);
@@ -66,7 +66,7 @@ void Checker_BallPlay::run() {
         }
 
         if(!_possibleGoalKick) {
-            _possibleGoalKick = _checkerTwoAtk->isAnyTeamAttackingWithTwo();
+            _possibleGoalKick = _checkerTwoAtk->isAnyTeamAttackingWithMoreThanPossible();
             if(_possibleGoalKick) {
                 _possibleGoalKickTeam = (_checkerTwoAtk->attackingTeam() == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE;
                 emit emitSuggestion(VSSRef::Foul_Name(VSSRef::Foul::GOAL_KICK).c_str(), _possibleGoalKickTeam);

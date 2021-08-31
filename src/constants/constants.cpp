@@ -210,6 +210,14 @@ bool Constants::maintainSpeedAtSuggestions() {
     return _maintainSpeedAtSuggestions;
 }
 
+void Constants::setIs5v5(bool is5v5) {
+    _is5v5 = is5v5;
+}
+
+bool Constants::is5v5() {
+    return _is5v5;
+}
+
 QString Constants::visionAddress() {
     return _visionAddress;
 }

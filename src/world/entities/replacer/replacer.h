@@ -1,6 +1,7 @@
 ﻿#ifndef REPLACER_H
 #define REPLACER_H
 
+#include <src/utils/types/field/field.h>
 #include <src/world/entities/entity.h>
 #include <src/world/entities/vision/vision.h>
 #include <include/vssref_placement.pb.h>
@@ -10,7 +11,7 @@ class Replacer : public Entity
 {
     Q_OBJECT
 public:
-    Replacer(Vision *vision, Constants *constants);
+    Replacer(Vision *vision, Field *field, Constants *constants);
 
 private:
     // Entity inherited methods
@@ -34,6 +35,10 @@ private:
 
     // Vision
     Vision *_vision;
+
+    // Field
+    Field *_field;
+    Field* getField();
 
     // Constants
     Constants *_constants;

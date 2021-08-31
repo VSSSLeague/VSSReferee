@@ -3,7 +3,7 @@
 #include <random>
 #include <chrono>
 
-#include <src/utils/types/field/field_default_3v3.h>
+#include <src/utils/types/field/field.h>
 #include <src/utils/utils.h>
 
 void movePlayerToPosition(VSSRef::Robot *bot, quint8 botId, double xCoord=0.0, double yCoord=0.0, double orientation=0.0) {
@@ -19,9 +19,10 @@ void debugReplacePosition(double x, double y, int num = 0, std::string side = ""
     std::cout << Text::blue("[REPLACER] ", true) + Text::bold("Moving player " + std::to_string(num) + " from team \"" + side + "\" " + " to position ("+ std::to_string(x) + ", " + std::to_string(y) + ")") + '\n';
 }
 
-Replacer::Replacer(Vision *vision, Constants *constants) : Entity(ENT_REPLACER){
+Replacer::Replacer(Vision *vision, Field *field, Constants *constants) : Entity(ENT_REPLACER){
     // Take pointers
     _vision = vision;
+    _field = field;
     _constants = constants;
 
     // Taking network data
@@ -209,9 +210,9 @@ void Replacer::takeFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quad
 }
 
 Position Replacer::getBallPlaceByFoul(VSSRef::Foul foul, VSSRef::Color color, VSSRef::Quadrant quadrant){
-    float goalKickX = (Field_Default_3v3::kFieldLength / 1000.0)/2.0 - 0.15;
-    float markX = (Field_Default_3v3::kFieldLength / 1000.0)/2.0 - 0.375;
-    float markY = (Field_Default_3v3::kFieldWidth / 1000.0)/2.0 - 0.25;
+    float goalKickX = (getField()->fieldLength() / 1000.0)/2.0 - 0.15;
+    float markX = (getField()->fieldLength() / 1000.0)/2.0 - 0.375;
+    float markY = (getField()->fieldWidth() / 1000.0)/2.0 - 0.25;
 
     switch(foul){
         case VSSRef::Foul::KICKOFF:{
@@ -286,8 +287,8 @@ VSSRef::Frame Replacer::getPenaltyPlacement(VSSRef::Color color){
         factor = -1.0;
 
     // FB mark
-    float markX = (Field_Default_3v3::kFieldLength / 1000.0)/2.0 - 0.375;
-    float markY = (Field_Default_3v3::kFieldWidth / 1000.0)/2.0 - 0.25;
+    float markX = (getField()->fieldLength() / 1000.0)/2.0 - 0.375;
+    float markY = (getField()->fieldWidth() / 1000.0)/2.0 - 0.25;
 
     QList<quint8> players = _vision->getAvailablePlayers(color);
     for(int i = 0; i < players.size(); i++) {
@@ -300,7 +301,7 @@ VSSRef::Frame Replacer::getPenaltyPlacement(VSSRef::Color color){
     if(color == getFoulColor()){
         // Insert GK
         if(players.size() == 0) return frame;
-        const double gkXPosition = factor * ((Field_Default_3v3::kFieldLength / 2000.0) - getConstants()->robotLength());
+        const double gkXPosition = factor * ((getField()->fieldLength() / 2000.0) - getConstants()->robotLength());
         movePlayerToPosition(frame.add_robots(), getGoalie(color), gkXPosition);
 
         // Attacker
@@ -317,7 +318,7 @@ VSSRef::Frame Replacer::getPenaltyPlacement(VSSRef::Color color){
     else{
         // Insert GK
         if(players.size() == 0) return frame;
-        const double gkXPosition = (factor * ((Field_Default_3v3::kFieldLength/2000.0) - (getConstants()->robotLength()/2.0)));
+        const double gkXPosition = (factor * ((getField()->fieldLength()/2000.0) - (getConstants()->robotLength()/2.0)));
         movePlayerToPosition(frame.add_robots(), getGoalie(color), gkXPosition);
 
         // Attacker
@@ -354,8 +355,8 @@ VSSRef::Frame Replacer::getGoalKickPlacement(VSSRef::Color color){
         }
     }
 
-    const static double length = Field_Default_3v3::kFieldLength/1000; 
-    const static double width = Field_Default_3v3::kFieldWidth/1000;
+    const static double length = getField()->fieldLength()/1000;
+    const static double width = getField()->fieldWidth()/1000;
 
     const double xStep = length/8;
     const double yStep = width/8;
@@ -403,7 +404,7 @@ VSSRef::Frame Replacer::getGoalKickPlacement(VSSRef::Color color){
     else {
         // #0
         if(players.size() == 0) return frame;
-        const double gkXPos = (factor * ((Field_Default_3v3::kFieldLength/2000.0) - (getConstants()->robotLength())));
+        const double gkXPos = (factor * ((getField()->fieldLength()/2000.0) - (getConstants()->robotLength())));
         movePlayerToPosition(frame.add_robots(), getGoalie(color), gkXPos);
 
         // #1
@@ -444,8 +445,8 @@ VSSRef::Frame Replacer::getFreeBallPlacement(VSSRef::Color color){
     VSSRef::Quadrant foulQuadrant = getFoulQuadrant();
 
     // FB Mark
-    float markX = (Field_Default_3v3::kFieldLength / 1000.0)/2.0 - 0.375;
-    float markY = (Field_Default_3v3::kFieldWidth / 1000.0)/2.0 - 0.25;
+    float markX = (getField()->fieldLength() / 1000.0)/2.0 - 0.375;
+    float markY = (getField()->fieldWidth() / 1000.0)/2.0 - 0.25;
 
     if(foulQuadrant == VSSRef::Quadrant::QUADRANT_2 || foulQuadrant == VSSRef::Quadrant::QUADRANT_3)
         markX *= -1;
@@ -463,7 +464,7 @@ VSSRef::Frame Replacer::getFreeBallPlacement(VSSRef::Color color){
     // First discover if FB will occur at our side
     if(teamIsAtLeft){
         if(players.size() == 0) return frame;
-        const static double gk_x = factor * ((Field_Default_3v3::kFieldLength / 2000.0) - getConstants()->robotLength());
+        const static double gk_x = factor * ((getField()->fieldLength() / 2000.0) - getConstants()->robotLength());
         double gk_y = 0;
 
         // If quadrant 2 or 3, gk will need to pos in an better way
@@ -512,7 +513,7 @@ VSSRef::Frame Replacer::getFreeBallPlacement(VSSRef::Color color){
     }
     else{
         if(players.size() == 0) return frame;
-        const static double gk_x = factor * ((Field_Default_3v3::kFieldLength / 2000.0) - getConstants()->robotLength());
+        const static double gk_x = factor * ((getField()->fieldLength() / 2000.0) - getConstants()->robotLength());
         double gk_y = 0;
 
         // If quadrant 2 or 3, gk will need to pos in an better way
@@ -578,17 +579,17 @@ VSSRef::Frame Replacer::getKickoffPlacement(VSSRef::Color color){
 
     // Goalkeeper
     if(players.size() == 0) return frame;
-    movePlayerToPosition(frame.add_robots(), getGoalie(color), factor * ((Field_Default_3v3::kFieldLength / 2000.0) - getConstants()->robotLength()));
+    movePlayerToPosition(frame.add_robots(), getGoalie(color), factor * ((getField()->fieldLength() / 2000.0) - getConstants()->robotLength()));
 
 
     // Attacker
     if(players.size() == 0) return frame;
-    movePlayerToPosition(frame.add_robots(), players.takeFirst(), factor * Field_Default_3v3::kCenterRadius/1000.0);
+    movePlayerToPosition(frame.add_robots(), players.takeFirst(), factor * getField()->centerRadius()/1000.0);
 
 
     // Support
     if(players.size() == 0) return frame;
-    movePlayerToPosition(frame.add_robots(), players.takeFirst(), factor * (Field_Default_3v3::kCenterRadius/1000.0 * 2.0));
+    movePlayerToPosition(frame.add_robots(), players.takeFirst(), factor * (getField()->centerRadius()/1000.0 * 2.0));
     return frame;
 }
 
@@ -612,15 +613,15 @@ VSSRef::Frame Replacer::getOutsideFieldPlacement(VSSRef::Color color){
 
     // Goalkeeper
     if(players.size() == 0) return frame;
-    movePlayerToPosition(frame.add_robots(), getGoalie(color), factor * ((Field_Default_3v3::kFieldLength / 2000.0) - getConstants()->robotLength()), -0.8);
+    movePlayerToPosition(frame.add_robots(), getGoalie(color), factor * ((getField()->fieldLength() / 2000.0) - getConstants()->robotLength()), -0.8);
 
     // Attacker
     if(players.size() == 0) return frame;
-    movePlayerToPosition(frame.add_robots(), players.takeFirst(), factor * Field_Default_3v3::kCenterRadius/1000.0, -0.8);
+    movePlayerToPosition(frame.add_robots(), players.takeFirst(), factor * getField()->centerRadius()/1000.0, -0.8);
 
     // Support
     if(players.size() == 0) return frame;
-    movePlayerToPosition(frame.add_robots(), players.takeFirst(), factor * (Field_Default_3v3::kCenterRadius/1000.0 * 2.0), -0.8);
+    movePlayerToPosition(frame.add_robots(), players.takeFirst(), factor * (getField()->centerRadius()/1000.0 * 2.0), -0.8);
     return frame;
 }
 
@@ -967,6 +968,18 @@ void Replacer::placeLastFrameAndBall() {
 
     _lastDataMutex.unlock();
 }
+
+Field* Replacer::getField() {
+    if(_field == nullptr) {
+        std::cout << Text::red("[ERROR] ", true) << Text::bold("Field with nullptr value at Replacer") + '\n';
+    }
+    else {
+        return _field;
+    }
+
+    return nullptr;
+}
+
 
 Constants* Replacer::getConstants() {
     if(_constants == nullptr) {

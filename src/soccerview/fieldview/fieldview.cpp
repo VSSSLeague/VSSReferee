@@ -5,9 +5,6 @@
 #define FIELD_LINES_COLOR 1.0, 1.0, 1.0, 1.0
 
 FieldView::FieldView(QWidget *parent) : QGLWidget(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer | QGL::SampleBuffers), parent) {
-    // Reset view
-    resetView();
-
     // Avoid auto fill background
     setAutoFillBackground(false);
 
@@ -20,6 +17,13 @@ FieldView::FieldView(QWidget *parent) : QGLWidget(QGLFormat(QGL::DoubleBuffer | 
 
 void FieldView::setVisionModule(Vision *visionPointer) {
     vision = visionPointer;
+}
+
+void FieldView::setField(Field *fieldPointer) {
+    field = fieldPointer;
+
+    // Reset view
+    resetView();
 }
 
 void FieldView::setConstants(Constants *constantsPointer) {
@@ -146,8 +150,9 @@ void FieldView::drawFieldLines() {
     glColor4f(FIELD_LINES_COLOR);
 
     // Draw field lines
-    for(size_t i = 0; i < Field_Default_3v3::kNumFieldLines; i++) {
-        const FieldLine& line = Field_Default_3v3::kFieldLines[i];
+    QVector<FieldLine> fieldLines = getField()->fieldLines();
+    for(int i = 0; i < fieldLines.size(); i++) {
+        const FieldLine& line = fieldLines[i];
         drawFieldLine(line);
     }
 
@@ -158,8 +163,10 @@ void FieldView::drawFieldLines() {
     else {
         glColor3d(1.0, 0.9529, 0.2431);
     }
-    for(size_t i = 0; i < Field_Default_3v3::kNumLeftGoalLines; i++) {
-        const FieldLine& line = Field_Default_3v3::kLeftGoalLines[i];
+
+    QVector<FieldLine> leftGoalLines = getField()->leftGoalLines();
+    for(int i = 0; i < leftGoalLines.size(); i++) {
+        const FieldLine& line = leftGoalLines[i];
         drawFieldLine(line);
     }
 
@@ -169,16 +176,20 @@ void FieldView::drawFieldLines() {
     else {
         glColor3d(0.2549, 0.4941, 1.0);
     }
+
     // Draw right goal lines
-    for(size_t i = 0; i < Field_Default_3v3::kNumRightGoalLines; i++) {
-        const FieldLine& line = Field_Default_3v3::kRightGoalLines[i];
+    QVector<FieldLine> rightGoalLines = getField()->rightGoalLines();
+    for(int i = 0; i < rightGoalLines.size(); i++) {
+        const FieldLine& line = rightGoalLines[i];
         drawFieldLine(line);
     }
 
     // Draw field arcs
     glColor4f(FIELD_LINES_COLOR);
-    for(size_t i = 0; i < Field_Default_3v3::kNumFieldArcs; i++) {
-        const FieldCircularArc& arc = Field_Default_3v3::kFieldArcs[i];
+
+    QVector<FieldCircularArc> fieldCircularArcs = getField()->fieldArcs();
+    for(int i = 0; i < fieldCircularArcs.size(); i++) {
+        const FieldCircularArc& arc = fieldCircularArcs[i];
         const double half_thickness = 0.5 * arc.thickness;
         const double radius = arc.radius;
         const QVector2D center(arc.center_x, arc.center_y);
@@ -189,8 +200,9 @@ void FieldView::drawFieldLines() {
     }
 
     // Draw field triangles
-    for(size_t i = 0; i < Field_Default_3v3::kNumFieldTriangles; i++) {
-        const FieldTriangle& triangle = Field_Default_3v3::kFieldTriangles[i];
+    QVector<FieldTriangle> fieldTriangles = getField()->fieldTriangles();
+    for(int i = 0; i < fieldTriangles.size(); i++) {
+        const FieldTriangle& triangle = fieldTriangles[i];
         const QVector2D v1(triangle.p1_x, triangle.p1_y);
         const QVector2D v2(triangle.p2_x, triangle.p2_y);
         const QVector2D v3(triangle.p3_x, triangle.p3_y);
@@ -363,8 +375,8 @@ void FieldView::drawStuckedTime() {
 }
 
 void FieldView::resetView() {
-    viewScale = (Field_Default_3v3::kFieldLength + Field_Default_3v3::kBoundaryWidth) / sizeHint().width();
-    viewScale = std::max(viewScale, (Field_Default_3v3::kFieldWidth + Field_Default_3v3::kBoundaryWidth) / sizeHint().height());
+    viewScale = (getField()->fieldLength() + getField()->boundaryWidth()) / sizeHint().width();
+    viewScale = std::max(viewScale, (getField()->fieldWidth()+ getField()->boundaryWidth()) / sizeHint().height());
 
     viewXOffset = viewYOffset = 0.0;
     recomputeProjection();
@@ -399,6 +411,17 @@ Vision* FieldView::getVision() {
     }
     else {
         return vision;
+    }
+
+    return nullptr;
+}
+
+Field* FieldView::getField() {
+    if(field == nullptr) {
+        std::cout << Text::red("[ERROR] ", true) << Text::bold("Field with nullptr value at FieldView") + '\n';
+    }
+    else {
+        return field;
     }
 
     return nullptr;
