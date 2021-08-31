@@ -26,6 +26,10 @@ namespace Field_Default_3v3 {
     const double kMarkCircleDistance = 2*kFieldLength/15;
     const double kMarkCircleRadius = kMarkLength/10;
 
+    const double kFieldFBMarkX = 375.0;
+    const double kFieldFBMarkY = 250.0;
+    
+
     const std::size_t kNumFieldLines = 23;
 
     const std::size_t kNumLeftGoalLines = 3;

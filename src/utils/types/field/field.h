@@ -64,6 +64,8 @@ class Field {
         double bigDefenseRadius() { return _bigDefenseRadius; }
         double bigDefenseStretch() { return _bigDefenseStretch; }
         double boundaryWidth() { return _boundaryWidth; }
+        double fieldFBMarkX() { return _kFieldFBMarkX; }
+        double fieldFBMarkY() { return _kFieldFBMarkY; }
         QVector<FieldLine> leftGoalLines() { return _leftGoalLines; }
         QVector<FieldLine> rightGoalLines() { return _rightGoalLines; }
         QVector<FieldLine> fieldLines() { return _fieldLines; }
@@ -82,6 +84,8 @@ class Field {
         double _bigDefenseRadius;
         double _bigDefenseStretch;
         double _boundaryWidth;
+        double _kFieldFBMarkX;
+        double _kFieldFBMarkY;
 
         // Field lines / arcs / triangles
         QVector<FieldLine> _leftGoalLines;

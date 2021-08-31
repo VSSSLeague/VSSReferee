@@ -14,6 +14,8 @@ Field::Field(bool is5v5) {
         _bigDefenseRadius = -1;
         _bigDefenseStretch = -1;
         _boundaryWidth = Field_Default_3v3::kBoundaryWidth;
+        _kFieldFBMarkX = Field_Default_3v3::kFieldFBMarkX;
+        _kFieldFBMarkY = Field_Default_3v3::kFieldFBMarkY;
 
         for(size_t i = 0; i < Field_Default_3v3::kNumLeftGoalLines; i++) {
             _leftGoalLines.push_back(Field_Default_3v3::kLeftGoalLines[i]);
@@ -46,6 +48,8 @@ Field::Field(bool is5v5) {
         _bigDefenseRadius = Field_Default_5v5::kBigDefenseRadius;
         _bigDefenseStretch = Field_Default_5v5::kBigDefenseStretch;
         _boundaryWidth = Field_Default_5v5::kBoundaryWidth;
+        _kFieldFBMarkX = Field_Default_5v5::kFieldFBMarkX;
+        _kFieldFBMarkY = Field_Default_5v5::kFieldFBMarkY;
 
         for(size_t i = 0; i < Field_Default_5v5::kNumLeftGoalLines; i++) {
             _leftGoalLines.push_back(Field_Default_5v5::kLeftGoalLines[i]);
