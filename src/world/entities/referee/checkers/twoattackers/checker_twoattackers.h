@@ -15,8 +15,9 @@ public:
     void run();
 
     // Flag getter
-    bool isAnyTeamAttackingWithTwo();
-    bool isTwoPlayersAttacking(VSSRef::Color teamColor);
+    bool isAnyTeamAttackingWithMoreThanPossible();
+    bool isTwoPlayersAttackingAtGoalArea(VSSRef::Color teamColor);
+    bool isFourPlayersAttackingAtBigArea(VSSRef::Color teamColor);
     VSSRef::Color attackingTeam();
     float getTimer();
 

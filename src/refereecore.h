@@ -27,6 +27,7 @@ private:
 
     // GUI
     SoccerView *_soccerView;
+    Field *_field;
 
     // Constants
     Constants *_constants;

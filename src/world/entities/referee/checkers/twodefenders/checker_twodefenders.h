@@ -15,8 +15,9 @@ public:
     void run();
 
     // Flag getter
-    bool isAnyTeamDefendingWithTwo();
-    bool isTwoPlayersDefending(VSSRef::Color teamColor);
+    bool isAnyTeamDefendingWithMoreThanPossible();
+    bool isTwoPlayersDefendingAtGoalArea(VSSRef::Color teamColor);
+    bool isFivePlayersDefendingAtBigArea(VSSRef::Color teamColor);
     float getTimer();
     VSSRef::Color defendingTeam();
 

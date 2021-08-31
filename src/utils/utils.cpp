@@ -2,6 +2,7 @@
 #include <math.h>
 
 Constants* Utils::_constants = nullptr;
+Field* Utils::_field = nullptr;
 
 float Utils::distance(const Position &a, const Position &b) {
     return sqrt(pow(a.x() - b.x() ,2) + pow(a.y() - b.y(), 2));
@@ -83,8 +84,38 @@ float Utils::distanceToSegment(const Position &s1, const Position &s2, const Pos
 }
 
 bool Utils::isInsideGoalArea(VSSRef::Color teamColor, Position pos){
-    float goal_x = (Field_Default_3v3::kFieldLength/2.0 - Field_Default_3v3::kDefenseRadius) / 1000.0;
-    float goal_y = (Field_Default_3v3::kDefenseStretch / 2.0) / 1000.0;
+    float goal_x = (getField()->fieldLength()/2.0 - getField()->defenseRadius()) / 1000.0;
+    float goal_y = (getField()->defenseStretch() / 2.0) / 1000.0;
+
+    if(teamColor == VSSRef::Color::BLUE){
+        if(getConstants()->blueIsLeftSide()){
+            if(pos.x() < -goal_x && abs(pos.y()) < goal_y)
+                return true;
+        }
+        else{
+            if(pos.x() > goal_x && abs(pos.y()) < goal_y)
+                return true;
+        }
+    }
+    else if(teamColor == VSSRef::Color::YELLOW){
+        if(getConstants()->blueIsLeftSide()){
+            if(pos.x() > goal_x && abs(pos.y()) < goal_y)
+                return true;
+        }
+        else{
+            if(pos.x() < -goal_x && abs(pos.y()) < goal_y)
+                return true;
+        }
+    }
+
+    return false;
+}
+
+bool Utils::isInsideBigArea(VSSRef::Color teamColor, Position pos) {
+    if(!getConstants()->is5v5()) return false;
+
+    float goal_x = (getField()->fieldLength()/2.0 - getField()->bigDefenseRadius()) / 1000.0;
+    float goal_y = (getField()->bigDefenseStretch() / 2.0) / 1000.0;
 
     if(teamColor == VSSRef::Color::BLUE){
         if(getConstants()->blueIsLeftSide()){
@@ -111,8 +142,8 @@ bool Utils::isInsideGoalArea(VSSRef::Color teamColor, Position pos){
 }
 
 bool Utils::isBallInsideGoal(VSSRef::Color teamColor, Position pos) {
-    float goal_x = (Field_Default_3v3::kFieldLength/2.0) / 1000.0 + getConstants()->ballRadius();
-    float goal_y = (Field_Default_3v3::kDefenseStretch / 2.0) / 1000.0;
+    float goal_x = (getField()->fieldLength()/2.0) / 1000.0 + getConstants()->ballRadius();
+    float goal_y = (getField()->defenseStretch() / 2.0) / 1000.0;
 
     if(teamColor == VSSRef::Color::BLUE){
         if(getConstants()->blueIsLeftSide()){
@@ -168,6 +199,10 @@ void Utils::setConstants(Constants *constants){
     _constants = constants;
 }
 
+void Utils::setField(Field *field) {
+    _field = field;
+}
+
 Constants* Utils::getConstants() {
     if(_constants == nullptr) {
         std::cout << Text::red("[ERROR] ", true) << Text::bold("Constants with nullptr value at Utils") + '\n';
@@ -179,3 +214,13 @@ Constants* Utils::getConstants() {
     return nullptr;
 }
 
+Field* Utils::getField() {
+    if(_field == nullptr) {
+        std::cout << Text::red("[ERROR] ", true) << Text::bold("Field with nullptr value at Utils") + '\n';
+    }
+    else {
+        return _field;
+    }
+
+    return nullptr;
+}

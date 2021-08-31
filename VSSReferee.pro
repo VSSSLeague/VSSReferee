@@ -96,6 +96,7 @@ HEADERS += \
     src/utils/types/angle/angle.h \
     src/utils/types/field/field.h \
     src/utils/types/field/field_default_3v3.h \
+    src/utils/types/field/field_default_5v5.h \
     src/utils/types/object/object.h \
     src/utils/types/position/position.h \
     src/utils/types/velocity/velocity.h \

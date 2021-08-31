@@ -22,11 +22,18 @@ RefereeCore::~RefereeCore() {
 
     // Deleting GUI
     delete _soccerView;
+
+    // Delete field
+    delete _field;
 }
 
 void RefereeCore::start() {
+    // Create field
+    _field = new Field(getConstants()->is5v5());
+
     // Setup utils
     Utils::setConstants(getConstants());
+    Utils::setField(_field);
 
     // Creating vision pointer and adding it to world with priority 2
     _vision = new Vision(getConstants());
@@ -37,10 +44,11 @@ void RefereeCore::start() {
 
     // Setting Vision and Constants to FieldView
     _soccerView->getFieldView()->setVisionModule(_vision);
+    _soccerView->getFieldView()->setField(_field);
     _soccerView->getFieldView()->setConstants(_constants);
 
     // Creating replacer pointer
-    _replacer = new Replacer(_vision, getConstants());
+    _replacer = new Replacer(_vision, _field, getConstants());
 
     // Creating referee pointer and adding it to world with priority 1
     _referee = new Referee(_vision, _replacer, _soccerView, getConstants());

@@ -31,6 +31,8 @@ public:
     float ballInAreaMaxTime();
     bool useRefereeSuggestions();
     bool maintainSpeedAtSuggestions();
+    void setIs5v5(bool is5v5);
+    bool is5v5();
 
     // Vision constants getters
     QString visionAddress();
@@ -83,6 +85,7 @@ private:
     float _ballInAreaMaxTime;
     bool _useRefereeSuggestions;
     bool _maintainSpeedAtSuggestions;
+    bool _is5v5;
     void readRefereeConstants();
 
     // Vision constants
