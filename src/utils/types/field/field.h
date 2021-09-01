@@ -66,6 +66,7 @@ class Field {
         double boundaryWidth() { return _boundaryWidth; }
         double fieldFBMarkX() { return _kFieldFBMarkX; }
         double fieldFBMarkY() { return _kFieldFBMarkY; }
+        double robotFBDistance() { return _kRobotFBDistance; }
         QVector<FieldLine> leftGoalLines() { return _leftGoalLines; }
         QVector<FieldLine> rightGoalLines() { return _rightGoalLines; }
         QVector<FieldLine> fieldLines() { return _fieldLines; }
@@ -86,6 +87,7 @@ class Field {
         double _boundaryWidth;
         double _kFieldFBMarkX;
         double _kFieldFBMarkY;
+        double _kRobotFBDistance;
 
         // Field lines / arcs / triangles
         QVector<FieldLine> _leftGoalLines;

@@ -211,8 +211,8 @@ void Replacer::takeFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quad
 
 Position Replacer::getBallPlaceByFoul(VSSRef::Foul foul, VSSRef::Color color, VSSRef::Quadrant quadrant){
     float goalKickX = (getField()->fieldLength() / 1000.0)/2.0 - 0.15;
-    float markX = (getField()->fieldLength() / 1000.0)/2.0 - 0.375;
-    float markY = (getField()->fieldWidth() / 1000.0)/2.0 - 0.25;
+    float markX = (getField()->fieldLength() / 1000.0)/2.0 - getField()->fieldFBMarkX()/1000.0;
+    float markY = (getField()->fieldWidth() / 1000.0)/2.0 - getField()->fieldFBMarkY()/1000.0;
 
     switch(foul){
         case VSSRef::Foul::KICKOFF:{
@@ -287,8 +287,8 @@ VSSRef::Frame Replacer::getPenaltyPlacement(VSSRef::Color color){
         factor = -1.0;
 
     // FB mark
-    float markX = (getField()->fieldLength() / 1000.0)/2.0 - 0.375;
-    float markY = (getField()->fieldWidth() / 1000.0)/2.0 - 0.25;
+    float markX = (getField()->fieldLength() / 1000.0)/2.0 - getField()->fieldFBMarkX()/1000.0;
+    float markY = (getField()->fieldWidth() / 1000.0)/2.0 - getField()->fieldFBMarkY()/1000.0;
 
     QList<quint8> players = _vision->getAvailablePlayers(color);
     for(int i = 0; i < players.size(); i++) {
@@ -445,8 +445,8 @@ VSSRef::Frame Replacer::getFreeBallPlacement(VSSRef::Color color){
     VSSRef::Quadrant foulQuadrant = getFoulQuadrant();
 
     // FB Mark
-    float markX = (getField()->fieldLength() / 1000.0)/2.0 - 0.375;
-    float markY = (getField()->fieldWidth() / 1000.0)/2.0 - 0.25;
+    float markX = (getField()->fieldLength() / 1000.0)/2.0 - getField()->fieldFBMarkX()/1000.0;
+    float markY = (getField()->fieldWidth() / 1000.0)/2.0 - getField()->fieldFBMarkY()/1000.0;
 
     if(foulQuadrant == VSSRef::Quadrant::QUADRANT_2 || foulQuadrant == VSSRef::Quadrant::QUADRANT_3)
         markX *= -1;
@@ -472,16 +472,19 @@ VSSRef::Frame Replacer::getFreeBallPlacement(VSSRef::Color color){
             gk_y = getConstants()->robotLength();
         else if(foulQuadrant == VSSRef::Quadrant::QUADRANT_3)
             gk_y = -getConstants()->robotLength();
+        if(players.size() == 0) return frame;
         movePlayerToPosition(frame.add_robots(), getGoalie(color), gk_x, gk_y);
 
 
         // Attacker
         if(players.size() == 0) return frame;
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), markX - getConstants()->robotLength(), markY);
-
-        if(players.size() == 0) return frame;
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), markX - getConstants()->robotLength() + (factor) * 0.2, markY);
-
+        //movePlayerToPosition(frame.add_robots(), players.takeFirst(), markX - getConstants()->robotLength(), markY);
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), markX - getField()->robotFBDistance(), markY);
+        
+        if(getConstants()->is5v5()){
+            if(players.size() == 0) return frame;
+            movePlayerToPosition(frame.add_robots(), players.takeFirst(), markX - getConstants()->robotLength() + (factor) * 0.9, markY);
+        }
 
         // Support
         if(players.size() == 0) return frame;
@@ -508,7 +511,9 @@ VSSRef::Frame Replacer::getFreeBallPlacement(VSSRef::Color color){
             default:
             break;
         }
+        if(players.size() == 0) return frame;
         movePlayerToPosition(frame.add_robots(), players.takeFirst(), sup_x, sup_y);
+        if(players.size() == 0) return frame;
         movePlayerToPosition(frame.add_robots(), players.takeFirst(), -1000, -1000);
     }
     else{
@@ -521,12 +526,13 @@ VSSRef::Frame Replacer::getFreeBallPlacement(VSSRef::Color color){
             gk_y = getConstants()->robotLength();
         else if(foulQuadrant == VSSRef::Quadrant::QUADRANT_4)
             gk_y = -getConstants()->robotLength();
+        if(players.size() == 0) return frame;
         movePlayerToPosition(frame.add_robots(), getGoalie(color), gk_x, gk_y);
         
 
         // Attacker
         if(players.size() == 0) return frame;
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), markX + 0.2, markY);
+        movePlayerToPosition(frame.add_robots(), players.takeFirst(), markX + getField()->robotFBDistance(), markY);
 
 
         // Support
@@ -551,8 +557,11 @@ VSSRef::Frame Replacer::getFreeBallPlacement(VSSRef::Color color){
             sup_x = 0.3;
             sup_y = 0.1;
         }
+        if(players.size() == 0) return frame;
         movePlayerToPosition(frame.add_robots(), players.takeFirst(), sup_x, sup_y);
+        if(players.size() == 0) return frame;
         movePlayerToPosition(frame.add_robots(), players.takeFirst(), 1000, 1000);
+        if(players.size() == 0) return frame;
         movePlayerToPosition(frame.add_robots(), players.takeFirst(), 1000, 1000);
     }
 

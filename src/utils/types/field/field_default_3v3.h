@@ -28,6 +28,7 @@ namespace Field_Default_3v3 {
 
     const double kFieldFBMarkX = 375.0;
     const double kFieldFBMarkY = 250.0;
+    const double kRobotFBDistance = 0.2;
     
 
     const std::size_t kNumFieldLines = 23;
