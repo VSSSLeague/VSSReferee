@@ -414,16 +414,35 @@ Position Replacer::getBallPlaceByFoul(VSSRef::Foul foul, VSSRef::Color color, VS
 }
 
 
-VSSRef::Frame Replacer::getOutsideFieldPlacement(VSSRef::Color color){
+VSSRef::Frame Replacer::getOutsideFieldPlacement(VSSRef::Color teamColor){
     VSSRef::Frame frame;
-    frame.set_teamcolor(color);
+    frame.set_teamcolor(teamColor);
 
+    // Set players at frame
+    // Get available players for teamColor
+    QList<quint8> players = _vision->getAvailablePlayers(teamColor);
+
+    // Check if teamColor is playing at left side (so, negative all x-axis position)
+    bool teamIsAtLeft = (teamColor == VSSRef::Color::BLUE && getConstants()->blueIsLeftSide()) || (teamColor == VSSRef::Color::YELLOW && !getConstants()->blueIsLeftSide());
+
+    // Get field data
+    float sideLength = (getField()->fieldLength()/1000.0)/2.0 - (players.size() * 2 * getConstants()->robotLength());
+    float fieldWidth = (getField()->fieldWidth()/1000.0)/2.0;
+
+    // Place each robot outside field
+    for(int i = 0; i < players.size(); i++) {
+        PlaceData toPlace(Position(true, ((i+1) * 2*getConstants()->robotLength()) + (i * sideLength/players.size()), 1.1*fieldWidth), Angle(true, 90.0f));
+        if(teamIsAtLeft) toPlace.reflect();
+        movePlayerToPosition(frame.add_robots(), players.at(i), toPlace.getPosition(), toPlace.getOrientation());
+    }
+
+    // Return frame
     return frame;
 }
 
-VSSRef::Frame Replacer::getPenaltyShootoutPlacement(VSSRef::Color color, bool placeAttacker){
+VSSRef::Frame Replacer::getPenaltyShootoutPlacement(VSSRef::Color teamColor, bool placeAttacker){
     VSSRef::Frame frame;
-    frame.set_teamcolor(color);
+    frame.set_teamcolor(teamColor);
 
     return frame;
 }

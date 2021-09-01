@@ -148,14 +148,14 @@ void FieldView::mouseReleaseEvent(QMouseEvent* event) {
 
 void FieldView::drawFieldLines() {
     glColor4f(FIELD_LINES_COLOR);
-/*
+
     // Draw field lines
     QVector<FieldLine> fieldLines = getField()->fieldLines();
     for(int i = 0; i < fieldLines.size(); i++) {
         const FieldLine& line = fieldLines[i];
         drawFieldLine(line);
     }
-*/
+
     // Draw left goal lines
     if(getConstants()->blueIsLeftSide()) {
         glColor3d(0.2549, 0.4941, 1.0);
