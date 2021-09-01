@@ -6,12 +6,12 @@
 #include <src/utils/types/field/field.h>
 #include <src/utils/utils.h>
 
-void movePlayerToPosition(VSSRef::Robot *bot, quint8 botId, double xCoord=0.0, double yCoord=0.0, double orientation=0.0) {
+void movePlayerToPosition(VSSRef::Robot *bot, quint8 botId, Position position, Angle orientation) {
     bot->set_orientation(0.0);
     bot->set_robot_id(botId);
-    bot->set_orientation(orientation);
-    bot->set_x(xCoord);
-    bot->set_y(yCoord);
+    bot->set_orientation(Angle::toDegrees(orientation.value()));
+    bot->set_x(position.x());
+    bot->set_y(position.y());
     return;
 }
 
@@ -19,11 +19,25 @@ void debugReplacePosition(double x, double y, int num = 0, std::string side = ""
     std::cout << Text::blue("[REPLACER] ", true) + Text::bold("Moving player " + std::to_string(num) + " from team \"" + side + "\" " + " to position ("+ std::to_string(x) + ", " + std::to_string(y) + ")") + '\n';
 }
 
-Replacer::Replacer(Vision *vision, Field *field, Constants *constants) : Entity(ENT_REPLACER){
+Replacer::Replacer(QString replaceFileName, Vision *vision, Field *field, Constants *constants) : Entity(ENT_REPLACER){
     // Take pointers
     _vision = vision;
     _field = field;
     _constants = constants;
+    _replaceFileName = replaceFileName;
+
+    // Opening and reading file content in buffer
+    _file.setFileName(_replaceFileName);
+    _file.open(QIODevice::ReadOnly | QIODevice::Text);
+    _fileBuffer = _file.readAll();
+    _file.close();
+
+    // Parsing buffer to json objects
+    _document = QJsonDocument::fromJson(_fileBuffer.toUtf8());
+    _documentMap = _document.object().toVariantMap();
+
+    // Parse placements
+    parsePlacements();
 
     // Taking network data
     _replacerAddress = getConstants()->replacerAddress();
@@ -160,6 +174,130 @@ void Replacer::finalization() {
     std::cout << Text::blue("[REPLACER] ", true) + Text::bold("Module finished.") + '\n';
 }
 
+void Replacer::parsePlacements() {
+    // Take fouls listed in JSON
+    QList<QString> fouls = documentMap().keys();
+
+    // For each foul
+    for(int i = 0; i < fouls.size(); i++) {
+        // Take categories listed in each foul
+        QMap<QString, QVariant> foulsMap = documentMap()[fouls.at(i)].toMap();
+        QList<QString> categories = foulsMap.keys();
+
+        // Register foul at placement map
+        if(!placements.contains(fouls.at(i))) {
+            placements.insert(fouls.at(i), new QMap<QString, QMap<QString, QVector<PlaceData>>*>());
+        }
+        QMap<QString, QMap<QString, QVector<PlaceData>>*>* foulPlacementMap = placements.value(fouls.at(i));
+
+        // For each category
+        for(int j = 0; j < categories.size(); j++) {
+            // Take roles
+            QMap<QString, QVariant> categoriesMap = foulsMap[categories.at(j)].toMap();
+            QList<QString> roles = categoriesMap.keys();
+
+            // Register category at placement map
+            if(!foulPlacementMap->contains(categories.at(j))) {
+                foulPlacementMap->insert(categories.at(j), new QMap<QString, QVector<PlaceData>>());
+            }
+            QMap<QString, QVector<PlaceData>>* categoriesPlacementMap = foulPlacementMap->value(categories.at(j));
+
+            // For each role
+            for(int k = 0; k < roles.size(); k++) {
+                // Take placement types data
+                QMap<QString, QVariant> rolesMap = categoriesMap[roles.at(k)].toMap();
+                QList<QString> placementTypes = rolesMap.keys();
+                QVector<PlaceData> placementsData;
+
+                // For each placement type
+                for(int l = 0; l < placementTypes.size(); l++) {
+                    // Take placement data
+                    QMap<QString, QVariant> placementInfo = rolesMap[placementTypes.at(l)].toMap();
+
+                    // Get PlaceData
+                    PlaceData placeData(Position(true, placementInfo["x"].toFloat(), placementInfo["y"].toFloat()), Angle(true, placementInfo["ori"].toFloat()));
+
+                    // Insert into vector
+                    placementsData.push_back(placeData);
+                }
+
+                // Insert placement vector in map
+                categoriesPlacementMap->insert(roles.at(k), placementsData);
+            }
+        }
+    }
+}
+
+QMap<QString, QVector<PlaceData>> Replacer::getPlacementsByFoul(QString foul) {
+    // Check if placement map contains the foul
+    if(!placements.contains(foul)) {
+        std::cout << Text::red("[ERROR] ", true) + Text::bold("The foul '" + foul.toStdString() + "' cannot be found in placement list. Please check the JSON file to avoid mistakes.") + '\n';
+        return QMap<QString, QVector<PlaceData>>();
+    }
+
+    // Take the map of placements by category
+    QMap<QString, QMap<QString, QVector<PlaceData>>*>* placementsByCategory = placements.value(foul);
+
+    // Check if the desired category is contained by the map
+    QString category = (getConstants()->is5v5()) ? "5v5" : "3v3";
+    if(!placementsByCategory->contains(category)) {
+        std::cout << Text::red("[ERROR] ", true) + Text::bold("The category '" + category.toStdString() + "' cannot be found in foul '" + foul.toStdString() + "'placement categories list. Please check the JSON file to avoid mistakes.") + '\n';
+        return QMap<QString, QVector<PlaceData>>();
+    }
+
+    // Take the map of placedata by roles
+    QMap<QString, QVector<PlaceData>>* placementsByRole = placementsByCategory->value(category);
+
+    // Return it
+    return (*placementsByRole);
+}
+
+VSSRef::Frame Replacer::getPlacementFrameByFoul(QString foul, VSSRef::Color teamColor) {
+    // Take placementData
+    QMap<QString, QVector<PlaceData>> placementData = getPlacementsByFoul(foul);
+    QList<QString> placementRoles = placementData.keys();
+
+    // If empty, probably not found the foul, so return an empty frame
+    if(placementRoles.empty()) {
+        return VSSRef::Frame();
+    }
+
+    // Create frame and set color
+    VSSRef::Frame frame;
+    frame.set_teamcolor(teamColor);
+
+    // Check if teamColor is playing at left side (so, negative all x-axis position)
+    bool teamIsAtLeft = (teamColor == VSSRef::Color::BLUE && getConstants()->blueIsLeftSide()) || (teamColor == VSSRef::Color::YELLOW && !getConstants()->blueIsLeftSide());
+
+    // Check if team will make the kick
+    bool teamWillMakeTheKick = (teamColor == getFoulColor());
+
+    // Set players at frame
+    // Get available players for teamColor
+    QList<quint8> players = _vision->getAvailablePlayers(teamColor);
+
+    // Get goalie and remove it from list
+    quint8 goalieId = getGoalie(teamColor);
+    players.removeOne(goalieId);
+    placementRoles.removeOne("goalkeeper");
+
+    // Get goalie PlaceData and move it to position
+    PlaceData goalKeeperPlaceData = placementData["goalkeeper"][!teamWillMakeTheKick];
+    if(teamIsAtLeft) goalKeeperPlaceData.reflect();
+    movePlayerToPosition(frame.add_robots(), goalieId, goalKeeperPlaceData.getPosition(), goalKeeperPlaceData.getOrientation());
+
+    // For each other player, set their position
+    /// TODO: check how to set properly the player roles... but now it will set randomly
+    for(int i = 0; i < players.size(); i++) {
+        PlaceData playerPlacementData = placementData[placementRoles.at(i)][!teamWillMakeTheKick];
+        if(teamIsAtLeft) playerPlacementData.reflect();
+        movePlayerToPosition(frame.add_robots(), players.at(i), playerPlacementData.getPosition(), playerPlacementData.getOrientation());
+    }
+
+    // Return frame
+    return frame;
+}
+
 quint8 Replacer::getGoalie(VSSRef::Color color) {
     _goalieMutex.lock();
     quint8 goalieId = _goalies.value(color);
@@ -275,426 +413,17 @@ Position Replacer::getBallPlaceByFoul(VSSRef::Foul foul, VSSRef::Color color, VS
     return Position(true, 0.0, 0.0);
 }
 
-VSSRef::Frame Replacer::getPenaltyPlacement(VSSRef::Color color){
-    VSSRef::Frame frame;
-    frame.set_teamcolor(color);
-
-    // swap side check
-    bool teamIsAtLeft = (color == VSSRef::Color::BLUE && getConstants()->blueIsLeftSide()) || (color == VSSRef::Color::YELLOW && !getConstants()->blueIsLeftSide());
-
-    float factor = 1.0;
-    if(teamIsAtLeft)
-        factor = -1.0;
-
-    // FB mark
-    float markX = (getField()->fieldLength() / 1000.0)/2.0 - getField()->fieldFBMarkX()/1000.0;
-    float markY = (getField()->fieldWidth() / 1000.0)/2.0 - getField()->fieldFBMarkY()/1000.0;
-
-    QList<quint8> players = _vision->getAvailablePlayers(color);
-    for(int i = 0; i < players.size(); i++) {
-        if(players.at(i) == getGoalie(color)) {
-            players.removeAt(i);
-        }
-    }
-
-    // _color is the team that will make the kick
-    if(color == getFoulColor()){
-        // Insert GK
-        if(players.size() == 0) return frame;
-        const double gkXPosition = factor * ((getField()->fieldLength() / 2000.0) - getConstants()->robotLength());
-        movePlayerToPosition(frame.add_robots(), getGoalie(color), gkXPosition);
-
-        // Attacker
-        if(players.size() == 0) return frame;
-        const double strikerXPosition = ((-factor) * (markX - (2.0 * getConstants()->robotLength())));
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), strikerXPosition);
-
-        // Support / Second Attacker
-        if(players.size() == 0) return frame;
-        const double supportXPosition = factor * (1.5 * getConstants()->robotLength());
-        const double supportYPosition = markY;
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), supportXPosition, supportYPosition);
-    }
-    else{
-        // Insert GK
-        if(players.size() == 0) return frame;
-        const double gkXPosition = (factor * ((getField()->fieldLength()/2000.0) - (getConstants()->robotLength()/2.0)));
-        movePlayerToPosition(frame.add_robots(), getGoalie(color), gkXPosition);
-
-        // Attacker
-        if(players.size() == 0) return frame;
-        const double strikerXPosition = ((-factor) * (1.5 * getConstants()->robotLength()));
-        const double strikerYPosition = -markY;
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), strikerXPosition, strikerYPosition);
-
-        // Support / Second Attacker
-        if(players.size() == 0) return frame;
-        const double supportXPosition = ((-factor) * (1.5 * getConstants()->robotLength()));
-        const double supportYPosition = (markY - (2.0 * getConstants()->robotLength()));
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), supportXPosition, supportYPosition);
-    }
-
-    return frame;
-}
-
-VSSRef::Frame Replacer::getGoalKickPlacement(VSSRef::Color color){
-    VSSRef::Frame frame;
-    frame.set_teamcolor(color);
-
-    // swap side check
-    bool teamIsAtLeft = (color == VSSRef::Color::BLUE && getConstants()->blueIsLeftSide()) || (color == VSSRef::Color::YELLOW && !getConstants()->blueIsLeftSide());
-
-    float factor = 1.0;
-    if(teamIsAtLeft)
-        factor = -1.0;
-
-    QList<quint8> players = _vision->getAvailablePlayers(color);
-    for(int i = 0; i < players.size(); i++) {
-        if(players.at(i) == getGoalie(color)) {
-            players.removeAt(i);
-        }
-    }
-
-    const static double length = getField()->fieldLength()/1000;
-    const static double width = getField()->fieldWidth()/1000;
-
-    const double xStep = length/8;
-    const double yStep = width/8;
-    
-    // _color is the team that will make the kick
-    if(color == getFoulColor()){
-        // Random to choose GK position
-        auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-        std::mt19937 mt_rand(seed);
-        _isGoaliePlacedAtTop = mt_rand() % 2;
-
-        // Insert GK
-        if(players.size() == 0) return frame;
-        double gkOri, gkXPos, gkYPos;
-        if(_isGoaliePlacedAtTop){
-            gkOri = (factor * -45.0);
-            gkXPos = (factor * 0.675);
-            gkYPos = 0.270;
-        }
-        else{
-            gkOri = factor * 45.0;
-            gkXPos = factor * 0.675;
-            gkYPos = -0.270;
-        }
-        movePlayerToPosition(frame.add_robots(), getGoalie(color), gkXPos, gkYPos, gkOri);
-
-        // #1
-        if(players.size() == 0) return frame;
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), (factor) * (-1) * xStep, -3 * yStep);
-
-        // #2
-        if(players.size() == 0) return frame;
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), (factor) * (1) * xStep, (-3) * yStep);
-
-
-        // #3
-        if(players.size() == 0) return frame;
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), (factor) * (-3) * xStep, 3 * yStep);
-
-        // #4
-        if(players.size() == 0) return frame;
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), (factor) * (-2) * xStep, 1 * yStep);
-
-    }
-    else {
-        // #0
-        if(players.size() == 0) return frame;
-        const double gkXPos = (factor * ((getField()->fieldLength()/2000.0) - (getConstants()->robotLength())));
-        movePlayerToPosition(frame.add_robots(), getGoalie(color), gkXPos);
-
-        // #1
-        if(players.size() == 0) return frame;
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), -factor * (-1*xStep), 3*yStep);
-
-
-        // #2
-        if(players.size() == 0) return frame;
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), -factor * (-xStep), 0);
-
-        // #3
-        if(players.size() == 0) return frame;
-        // movePlayerToPosition(frame.add_robots(), players.takeFirst(), (-factor) * (-2) * xStep, 3 * yStep);
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), -factor * (-3*xStep), (-2*yStep));
-
-        // #4
-        if(players.size() == 0) return frame;
-        // movePlayerToPosition(frame.add_robots(), players.takeFirst(), (-factor) * (-2) * xStep, 1 * yStep);
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), -factor * (-3*xStep), -4*yStep);
-
-        
-    }
-    return frame;
-}
-
-VSSRef::Frame Replacer::getFreeBallPlacement(VSSRef::Color color){
-    VSSRef::Frame frame;
-    frame.set_teamcolor(color);
-
-    // swap side check
-    bool teamIsAtLeft = (color == VSSRef::Color::BLUE && getConstants()->blueIsLeftSide()) || (color == VSSRef::Color::YELLOW && !getConstants()->blueIsLeftSide());
-
-    float factor = 1.0;
-    if(teamIsAtLeft)
-        factor = -1.0;
-
-    VSSRef::Quadrant foulQuadrant = getFoulQuadrant();
-
-    // FB Mark
-    float markX = (getField()->fieldLength() / 1000.0)/2.0 - getField()->fieldFBMarkX()/1000.0;
-    float markY = (getField()->fieldWidth() / 1000.0)/2.0 - getField()->fieldFBMarkY()/1000.0;
-
-    if(foulQuadrant == VSSRef::Quadrant::QUADRANT_2 || foulQuadrant == VSSRef::Quadrant::QUADRANT_3)
-        markX *= -1;
-
-    if(foulQuadrant == VSSRef::Quadrant::QUADRANT_3 || foulQuadrant == VSSRef::Quadrant::QUADRANT_4)
-        markY *= -1;
-
-    QList<quint8> players = _vision->getAvailablePlayers(color);
-    for(int i = 0; i < players.size(); i++) {
-        if(players.at(i) == getGoalie(color)) {
-            players.removeAt(i);
-        }
-    }
-
-    // First discover if FB will occur at our side
-    if(teamIsAtLeft){
-        if(players.size() == 0) return frame;
-        const static double gk_x = factor * ((getField()->fieldLength() / 2000.0) - getConstants()->robotLength());
-        double gk_y = 0;
-
-        // If quadrant 2 or 3, gk will need to pos in an better way
-        if(foulQuadrant == VSSRef::Quadrant::QUADRANT_2)
-            gk_y = getConstants()->robotLength();
-        else if(foulQuadrant == VSSRef::Quadrant::QUADRANT_3)
-            gk_y = -getConstants()->robotLength();
-        if(players.size() == 0) return frame;
-        movePlayerToPosition(frame.add_robots(), getGoalie(color), gk_x, gk_y);
-
-
-        // Attacker
-        if(players.size() == 0) return frame;
-        //movePlayerToPosition(frame.add_robots(), players.takeFirst(), markX - getConstants()->robotLength(), markY);
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), markX - getField()->robotFBDistance(), markY);
-        
-        if(getConstants()->is5v5()){
-            if(players.size() == 0) return frame;
-            movePlayerToPosition(frame.add_robots(), players.takeFirst(), markX - getConstants()->robotLength() + (factor) * 0.9, markY);
-        }
-
-        // Support
-        if(players.size() == 0) return frame;
-        double sup_x = 0;
-        double sup_y = 0;
-        // Support pos in different ways
-        switch(foulQuadrant) {
-            case VSSRef::Quadrant::QUADRANT_1:
-                sup_x = 0.1;
-                sup_y = -0.2;
-                break;
-            case VSSRef::Quadrant::QUADRANT_2:
-                sup_x = -0.3;
-                sup_y = -0.1;
-                break;
-            case VSSRef::Quadrant::QUADRANT_3:
-                sup_x = -0.3;
-                sup_y = 0.1;
-                break;
-            case VSSRef::Quadrant::QUADRANT_4:
-                sup_x = 0.1;
-                sup_y = 0.2;
-                break;
-            default:
-            break;
-        }
-        if(players.size() == 0) return frame;
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), sup_x, sup_y);
-        if(players.size() == 0) return frame;
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), -1000, -1000);
-    }
-    else{
-        if(players.size() == 0) return frame;
-        const static double gk_x = factor * ((getField()->fieldLength() / 2000.0) - getConstants()->robotLength());
-        double gk_y = 0;
-
-        // If quadrant 2 or 3, gk will need to pos in an better way
-        if(foulQuadrant == VSSRef::Quadrant::QUADRANT_1)
-            gk_y = getConstants()->robotLength();
-        else if(foulQuadrant == VSSRef::Quadrant::QUADRANT_4)
-            gk_y = -getConstants()->robotLength();
-        if(players.size() == 0) return frame;
-        movePlayerToPosition(frame.add_robots(), getGoalie(color), gk_x, gk_y);
-        
-
-        // Attacker
-        if(players.size() == 0) return frame;
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), markX + getField()->robotFBDistance(), markY);
-
-
-        // Support
-        if(players.size() == 0) return frame;
-        double sup_x = 0;
-        double sup_y = 0;
-
-        // Support pos in different ways
-        if(foulQuadrant == VSSRef::Quadrant::QUADRANT_1){
-            sup_x = 0.3;
-            sup_y = -0.1;
-        }
-        if(foulQuadrant == VSSRef::Quadrant::QUADRANT_2){
-            sup_x = -0.1;
-            sup_y = -0.2;
-        }
-        else if(foulQuadrant == VSSRef::Quadrant::QUADRANT_3){
-            sup_x = -0.1;
-            sup_y = 0.2;
-        }
-        else if(foulQuadrant == VSSRef::Quadrant::QUADRANT_4){
-            sup_x = 0.3;
-            sup_y = 0.1;
-        }
-        if(players.size() == 0) return frame;
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), sup_x, sup_y);
-        if(players.size() == 0) return frame;
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), 1000, 1000);
-        if(players.size() == 0) return frame;
-        movePlayerToPosition(frame.add_robots(), players.takeFirst(), 1000, 1000);
-    }
-
-    return frame;
-}
-
-VSSRef::Frame Replacer::getKickoffPlacement(VSSRef::Color color){
-    VSSRef::Frame frame;
-    frame.set_teamcolor(color);
-
-    // swap side check
-    bool teamIsAtLeft = (color == VSSRef::Color::BLUE && getConstants()->blueIsLeftSide()) || (color == VSSRef::Color::YELLOW && !getConstants()->blueIsLeftSide());
-
-    float factor = 1.0;
-    if(teamIsAtLeft)
-        factor = -1.0;
-
-    QList<quint8> players = _vision->getAvailablePlayers(color);
-    for(int i = 0; i < players.size(); i++) {
-        if(players.at(i) == getGoalie(color)) {
-            players.removeAt(i);
-        }
-    }
-
-    // Goalkeeper
-    if(players.size() == 0) return frame;
-    movePlayerToPosition(frame.add_robots(), getGoalie(color), factor * ((getField()->fieldLength() / 2000.0) - getConstants()->robotLength()));
-
-
-    // Attacker
-    if(players.size() == 0) return frame;
-    movePlayerToPosition(frame.add_robots(), players.takeFirst(), factor * getField()->centerRadius()/1000.0);
-
-
-    // Support
-    if(players.size() == 0) return frame;
-    movePlayerToPosition(frame.add_robots(), players.takeFirst(), factor * (getField()->centerRadius()/1000.0 * 2.0));
-    return frame;
-}
 
 VSSRef::Frame Replacer::getOutsideFieldPlacement(VSSRef::Color color){
     VSSRef::Frame frame;
     frame.set_teamcolor(color);
 
-    // swap side check
-    bool teamIsAtLeft = (color == VSSRef::Color::BLUE && getConstants()->blueIsLeftSide()) || (color == VSSRef::Color::YELLOW && !getConstants()->blueIsLeftSide());
-
-    float factor = 1.0;
-    if(teamIsAtLeft)
-        factor = -1.0;
-
-    QList<quint8> players = _vision->getAvailablePlayers(color);
-    for(int i = 0; i < players.size(); i++) {
-        if(players.at(i) == getGoalie(color)) {
-            players.removeAt(i);
-        }
-    }
-
-    // Goalkeeper
-    if(players.size() == 0) return frame;
-    movePlayerToPosition(frame.add_robots(), getGoalie(color), factor * ((getField()->fieldLength() / 2000.0) - getConstants()->robotLength()), -0.8);
-
-    // Attacker
-    if(players.size() == 0) return frame;
-    movePlayerToPosition(frame.add_robots(), players.takeFirst(), factor * getField()->centerRadius()/1000.0, -0.8);
-
-    // Support
-    if(players.size() == 0) return frame;
-    movePlayerToPosition(frame.add_robots(), players.takeFirst(), factor * (getField()->centerRadius()/1000.0 * 2.0), -0.8);
     return frame;
 }
 
 VSSRef::Frame Replacer::getPenaltyShootoutPlacement(VSSRef::Color color, bool placeAttacker){
     VSSRef::Frame frame;
     frame.set_teamcolor(color);
-
-    // swap side check
-    bool teamIsAtLeft = (color == VSSRef::Color::BLUE && getConstants()->blueIsLeftSide()) || (color == VSSRef::Color::YELLOW && !getConstants()->blueIsLeftSide());
-
-    float factor = 1.0;
-    if(teamIsAtLeft)
-        factor = -1.0;
-
-    // Taking available players
-    VSSRef::Frame lastFrame = _placement.value(color);
-
-    // The chosen id (keeper or atk)
-    quint8 id = 255;
-
-    // Taking attacker
-    if(placeAttacker) {
-        // Get the closest player to ball
-        float bestDistance = 999.0f;
-        for(int i = 0; i < lastFrame.robots_size(); i++) {
-            VSSRef::Robot robot = lastFrame.robots(i);
-            Position playerPosition = Position(true, robot.x(), robot.y());
-            Position futureBallPosition = getBallPlaceByFoul(VSSRef::Foul::PENALTY_KICK, color, VSSRef::Quadrant::NO_QUADRANT);
-
-            float distBall = Utils::distance(playerPosition, futureBallPosition);
-            if(distBall < bestDistance) {
-                bestDistance = distBall;
-                id = robot.robot_id();
-            }
-        }
-    }
-    // Taking goalie
-    else {
-        // Get the player inside goal area
-        for(int i = 0; i < lastFrame.robots_size(); i++) {
-            VSSRef::Robot robot = lastFrame.robots(i);
-            Position playerPosition = Position(true, robot.x(), robot.y());
-            if(Utils::isInsideGoalArea(color, playerPosition)) {
-                id = robot.robot_id();
-                break;
-            }
-        }
-    }
-
-    // Remove id from avPlayers
-    QList<quint8> avPlayers = _vision->getAvailablePlayers(color);
-    for(int i = 0; i < avPlayers.size(); i++) {
-        if(avPlayers.at(i) == id) {
-            avPlayers.removeAt(i);
-            break;
-        }
-    }
-
-    // Removing from field players != id
-    if(avPlayers.size() == 0) return frame;
-    movePlayerToPosition(frame.add_robots(), avPlayers.takeFirst(), factor * 0.1, -0.8);
-
-    if(avPlayers.size() == 0) return frame;
-    movePlayerToPosition(frame.add_robots(), avPlayers.takeFirst(), factor * 0.2, -0.8);
 
     return frame;
 }
@@ -791,30 +520,7 @@ void Replacer::placeTeams() {
         // if team not placed, take default positions
         else {
             // Take default frame
-            VSSRef::Frame defaultFrame;
-
-            switch(lastFoul) {
-                case VSSRef::Foul::FREE_BALL:{
-                    defaultFrame = getFreeBallPlacement(VSSRef::Color(i));
-                }
-                break;
-                case VSSRef::Foul::GOAL_KICK:{
-                    defaultFrame = getGoalKickPlacement(VSSRef::Color(i));
-                }
-                break;
-                case VSSRef::Foul::PENALTY_KICK:{
-                    defaultFrame = getPenaltyPlacement(VSSRef::Color(i));
-                }
-                break;
-                case VSSRef::Foul::KICKOFF:{
-                    defaultFrame = getKickoffPlacement(VSSRef::Color(i));
-                }
-                break;
-                default:{
-                    defaultFrame = VSSRef::Frame();
-                }
-                break;
-            }
+            VSSRef::Frame defaultFrame = getPlacementFrameByFoul(VSSRef::Foul_Name(lastFoul).c_str(), VSSRef::Color(i));
 
             // Send frame to network
             placeFrame(defaultFrame);

@@ -51,6 +51,7 @@ SOURCES += \
         src/utils/types/angle/angle.cpp \
         src/utils/types/field/field.cpp \
         src/utils/types/object/object.cpp \
+        src/utils/types/placedata/placedata.cpp \
         src/utils/types/position/position.cpp \
         src/utils/types/velocity/velocity.cpp \
         src/utils/utils.cpp \
@@ -98,6 +99,7 @@ HEADERS += \
     src/utils/types/field/field_default_3v3.h \
     src/utils/types/field/field_default_5v5.h \
     src/utils/types/object/object.h \
+    src/utils/types/placedata/placedata.h \
     src/utils/types/position/position.h \
     src/utils/types/velocity/velocity.h \
     src/utils/utils.h \

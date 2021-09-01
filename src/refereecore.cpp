@@ -48,7 +48,7 @@ void RefereeCore::start() {
     _soccerView->getFieldView()->setConstants(_constants);
 
     // Creating replacer pointer
-    _replacer = new Replacer(_vision, _field, getConstants());
+    _replacer = new Replacer(QString(PROJECT_PATH) + "/src/world/entities/replacer/replacements.json", _vision, _field, getConstants());
 
     // Creating referee pointer and adding it to world with priority 1
     _referee = new Referee(_vision, _replacer, _soccerView, getConstants());
