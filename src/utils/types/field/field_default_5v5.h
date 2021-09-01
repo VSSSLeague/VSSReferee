@@ -32,6 +32,7 @@ namespace Field_Default_5v5 {
 
     const double kFieldFBMarkX = 550.0;
     const double kFieldFBMarkY = 300.0;
+    const double kRobotFBDistance = 0.3;
 
     const std::size_t kNumFieldLines = 29;
 
