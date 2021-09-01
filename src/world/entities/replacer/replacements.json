@@ -1,0 +1,192 @@
+{
+	"FREE_KICK": {
+		"3v3": {
+			"goalkeeper": {
+			    "foul_kicker"  : {"x": 1.0, "y": 0.5, "ori": 0.0},
+			    "foul_receiver": {"x": 1.0, "y": 0.5, "ori": 0.0}
+			},
+			"attacker": {
+			    "foul_kicker"  : {"x": 1.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 1.0, "y": 1.0, "ori": 0.0}
+			},
+			"supporter": {
+			    "foul_kicker"  : {"x": 1.0, "y": 1.5, "ori": 0.0},
+			    "foul_receiver": {"x": 1.0, "y": 1.5, "ori": 0.0}
+			}
+		},
+		"5v5": {
+			"goalkeeper": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			},
+			"attacker": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			},
+			"supporter": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			},
+			"midfielder": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			},
+			"defender": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			}
+		}
+	},
+	"PENALTY_KICK": {
+		"3v3": {
+			"goalkeeper": {
+			    "foul_kicker"  : {"x": 1.0, "y": 0.5, "ori": 0.0},
+			    "foul_receiver": {"x": 1.0, "y": 0.5, "ori": 0.0}
+			},
+			"attacker": {
+			    "foul_kicker"  : {"x": 1.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 1.0, "y": 1.0, "ori": 0.0}
+			},
+			"supporter": {
+			    "foul_kicker"  : {"x": 1.0, "y": 1.5, "ori": 0.0},
+			    "foul_receiver": {"x": 1.0, "y": 1.5, "ori": 0.0}
+			}
+		},
+		"5v5": {
+			"goalkeeper": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			},
+			"attacker": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			},
+			"supporter": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			},
+			"midfielder": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			},
+			"defender": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			}
+		}
+	},
+	"GOAL_KICK": {
+		"3v3": {
+			"goalkeeper": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			},
+			"attacker": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			},
+			"supporter": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			}
+		},
+		"5v5": {
+			"goalkeeper": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			},
+			"attacker": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			},
+			"supporter": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			},
+			"midfielder": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			},
+			"defender": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			}
+		}
+	},
+	"FREE_BALL": {
+		"3v3": {
+			"goalkeeper": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			},
+			"attacker": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			},
+			"supporter": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			}
+		},
+		"5v5": {
+			"goalkeeper": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			},
+			"attacker": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			},
+			"supporter": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			},
+			"midfielder": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			},
+			"defender": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			}
+		}
+	},
+	"KICKOFF": {
+		"3v3": {
+			"goalkeeper": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			},
+			"attacker": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			},
+			"supporter": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			}
+		},
+		"5v5": {
+			"goalkeeper": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			},
+			"attacker": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			},
+			"supporter": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			},
+			"midfielder": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			},
+			"defender": {
+			    "foul_kicker"  : {"x": 0.0, "y": 1.0, "ori": 0.0},
+			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			}
+		}
+	}
+}

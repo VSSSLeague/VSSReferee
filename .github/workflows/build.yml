@@ -11,6 +11,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: "Install dependencies"
-        run: sudo apt-get install build-essential cmake qt5-default libqt5opengl5-dev libprotobuf-dev protobuf-compiler
+        run: sudo apt-get update && sudo apt-get install build-essential cmake qt5-default libqt5opengl5-dev libprotobuf-dev protobuf-compiler
       - name: "Build"
         run: mkdir build && cd build && qmake .. && make -j8

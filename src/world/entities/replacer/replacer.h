@@ -6,12 +6,16 @@
 #include <src/world/entities/vision/vision.h>
 #include <include/vssref_placement.pb.h>
 #include <include/packet.pb.h>
+#include <src/utils/types/placedata/placedata.h>
 
 class Replacer : public Entity
 {
     Q_OBJECT
 public:
-    Replacer(Vision *vision, Field *field, Constants *constants);
+    Replacer(QString replaceFileName, Vision *vision, Field *field, Constants *constants);
+
+protected:
+    QVariantMap documentMap() { return _documentMap; }
 
 private:
     // Entity inherited methods
@@ -44,6 +48,21 @@ private:
     Constants *_constants;
     Constants* getConstants();
 
+    // Placements <Foul, <Category, <Role, QVector<PlaceData>>>>
+    QMap<QString, QMap<QString, QMap<QString, QVector<PlaceData>>*>*> placements;
+    QMap<QString, QVector<PlaceData>> getPlacementsByFoul(QString foul);
+    VSSRef::Frame getPlacementFrameByFoul(QString foul, VSSRef::Color teamColor);
+
+    // Internal placements file management
+    QString _replaceFileName;
+    QString _fileBuffer;
+    QFile _file;
+
+    // Internal json parse vars
+    QJsonDocument _document;
+    QVariantMap _documentMap;
+    void parsePlacements();
+
     // Goalies management
     QHash<VSSRef::Color, quint8> _goalies;
     quint8 getGoalie(VSSRef::Color color);
@@ -75,10 +94,6 @@ private:
 
     // Default placement utils
     Position getBallPlaceByFoul(VSSRef::Foul foul, VSSRef::Color color, VSSRef::Quadrant quadrant);
-    VSSRef::Frame getPenaltyPlacement(VSSRef::Color color);
-    VSSRef::Frame getGoalKickPlacement(VSSRef::Color color);
-    VSSRef::Frame getFreeBallPlacement(VSSRef::Color color);
-    VSSRef::Frame getKickoffPlacement(VSSRef::Color color);
     VSSRef::Frame getOutsideFieldPlacement(VSSRef::Color color);
     VSSRef::Frame getPenaltyShootoutPlacement(VSSRef::Color color, bool placeAttacker);
 
