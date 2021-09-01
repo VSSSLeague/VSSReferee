@@ -94,8 +94,8 @@ private:
 
     // Default placement utils
     Position getBallPlaceByFoul(VSSRef::Foul foul, VSSRef::Color color, VSSRef::Quadrant quadrant);
-    VSSRef::Frame getOutsideFieldPlacement(VSSRef::Color color);
-    VSSRef::Frame getPenaltyShootoutPlacement(VSSRef::Color color, bool placeAttacker);
+    VSSRef::Frame getOutsideFieldPlacement(VSSRef::Color teamColor);
+    VSSRef::Frame getPenaltyShootoutPlacement(VSSRef::Color teamColor, bool placeAttacker);
 
 signals:
     void teamsPlaced();
