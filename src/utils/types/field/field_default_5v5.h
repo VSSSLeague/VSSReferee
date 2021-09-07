@@ -9,13 +9,13 @@ namespace Field_Default_5v5 {
     const double kFieldWidth = 1800.0;
     const double kGoalWidth = 400.0;
     const double kGoalDepth = 150.0;
-    const double kBoundaryWidth = 400.0; //?
+    const double kBoundaryWidth = 500.0; //?
 
     const double kCenterRadius = 250.0;
     const double kDefenseRadius = 150.0;
     const double kDefenseStretch = 500.0;
 
-    const double kBigDefenseRadius = 375.0;
+    const double kBigDefenseRadius = 350.0;
     const double kBigDefenseStretch = 800.0;
     const double kLineThickness = 3.0;
     
@@ -25,16 +25,16 @@ namespace Field_Default_5v5 {
     const double kYMin = -kYMax;
     const double kFieldCorner = kFieldLength*5/150;
     const double kMarkDistanceX = kFieldLength/4;
-    const double kMarkDistanceY = 4*kFieldLength/15;
+    const double kMarkDistanceY = kFieldWidth/3;
     const double kMarkLength = kFieldLength*5/150;
-    const double kMarkCircleDistance = 2*kFieldLength/15;
+    const double kMarkCircleDistance = 250.0;
     const double kMarkCircleRadius = kMarkLength/10;
 
     const double kFieldFBMarkX = 550.0;
     const double kFieldFBMarkY = 300.0;
     const double kRobotFBDistance = 0.3;
 
-    const std::size_t kNumFieldLines = 29;
+    const std::size_t kNumFieldLines = 25;
 
     const std::size_t kNumLeftGoalLines = 3;
     const FieldLine kLeftGoalLines[kNumLeftGoalLines] = {
@@ -76,13 +76,9 @@ namespace Field_Default_5v5 {
       FieldLine("FBRightTopV", -kMarkDistanceX, kMarkDistanceY-kMarkLength/2, -kMarkDistanceX, kMarkDistanceY+kMarkLength/2, kLineThickness),
       FieldLine("FBLeftBottomH", -kMarkDistanceX-kMarkLength/2, -kMarkDistanceY, -kMarkDistanceX+kMarkLength/2, -kMarkDistanceY, kLineThickness),
       FieldLine("FBLeftBottomV", -kMarkDistanceX, -kMarkDistanceY-kMarkLength/2, -kMarkDistanceX, -kMarkDistanceY+kMarkLength/2, kLineThickness),
-      FieldLine("PKRightH", kMarkDistanceX-kMarkLength/2, 0, kMarkDistanceX+kMarkLength/2, 0, kLineThickness),
-      FieldLine("PKRightV", kMarkDistanceX, -kMarkLength/2, kMarkDistanceX, kMarkLength/2, kLineThickness),
-      FieldLine("PKLeftH", -kMarkDistanceX-kMarkLength/2, 0, -kMarkDistanceX+kMarkLength/2, 0, kLineThickness),
-      FieldLine("PKLeftV", -kMarkDistanceX, -kMarkLength/2, -kMarkDistanceX, kMarkLength/2, kLineThickness),
-    };
+  };
 
-    const std::size_t kNumFieldArcs = 11;
+    const std::size_t kNumFieldArcs = 13;
 
     const FieldCircularArc kFieldArcs[kNumFieldArcs] = {
       FieldCircularArc("CenterCircle", 0, 0, kCenterRadius-kLineThickness/2, 0, 2*M_PI, kLineThickness),
@@ -94,8 +90,10 @@ namespace Field_Default_5v5 {
       FieldCircularArc("FBLeftTopRight", -kMarkDistanceX+kMarkCircleDistance, kMarkDistanceY, kMarkCircleRadius, 0, 2*M_PI, 2*kMarkCircleRadius),
       FieldCircularArc("FBLeftBottomLeft", -kMarkDistanceX-kMarkCircleDistance, -kMarkDistanceY, kMarkCircleRadius, 0, 2*M_PI, 2*kMarkCircleRadius),
       FieldCircularArc("FBLeftBottomRight", -kMarkDistanceX+kMarkCircleDistance, -kMarkDistanceY, kMarkCircleRadius, 0, 2*M_PI, 2*kMarkCircleRadius),
-      FieldCircularArc("GoalRightArc", kXMax-kBigDefenseRadius/2-120, 0, 110, M_PI-0.9272, M_PI+0.9272, kLineThickness),
-      FieldCircularArc("GoalLeftArc", kXMin+kBigDefenseRadius/2+120, 0, 110, -0.9272, +0.9272, kLineThickness),
+      FieldCircularArc("GoalRightArc", kXMax-kBigDefenseRadius/2-110, 0, 110, M_PI-0.9272, M_PI+0.9272, kLineThickness),
+      FieldCircularArc("GoalLeftArc", kXMin+kBigDefenseRadius/2+110, 0, 110, -0.9272, +0.9272, kLineThickness),
+      FieldCircularArc("PKLeft", kXMax-kBigDefenseRadius-25.0, 0, kMarkCircleRadius, 0, 2*M_PI, 2*kMarkCircleRadius),
+      FieldCircularArc("PKRight", kXMin+kBigDefenseRadius+25.0, 0, kMarkCircleRadius, 0, 2*M_PI, 2*kMarkCircleRadius),
     };
 
     const std::size_t kNumFieldTriangles = 4;

@@ -22,6 +22,7 @@ public:
     static bool isBallInsideGoal(VSSRef::Color teamColor, Position pos);
     static Position rotatePoint(Position point, float angle);
     static VSSRef::Quadrant getBallQuadrant(Position ballPos);
+    static float getAngle(const Position &a, const Position &b);
     static void setConstants(Constants *constants);
     static void setField(Field *field);
 

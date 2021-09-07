@@ -51,7 +51,7 @@ private:
     // Placements <Foul, <Category, <Role, QVector<PlaceData>>>>
     QMap<QString, QMap<QString, QMap<QString, QVector<PlaceData>>*>*> placements;
     QMap<QString, QVector<PlaceData>> getPlacementsByFoul(QString foul);
-    VSSRef::Frame getPlacementFrameByFoul(QString foul, VSSRef::Color teamColor);
+    VSSRef::Frame getPlacementFrameByFoul(QString foul, VSSRef::Quadrant foulQuadrant, VSSRef::Color teamColor);
 
     // Internal placements file management
     QString _replaceFileName;
