@@ -99,22 +99,6 @@ void Referee::loop() {
     // Send timestamp
     emit sendTimestamp((_halfChecker->isOvertime() ? getConstants()->overtimeHalfTime() : getConstants()->halfTime()), _halfChecker->getTimeStamp(), _gameHalf, _isEndGame);
 
-    std::cout << "--BLUE--\n";
-    QList<quint8> avBlue = _vision->getAvailablePlayers(VSSRef::Color::BLUE);
-    for(int i = 0; i < avBlue.size(); i++) {
-        Position position = _vision->getPlayerPosition(VSSRef::Color::BLUE, avBlue.at(i));
-        std::cout << "Player " + std::to_string(avBlue.at(i)) + " x: " + std::to_string(position.x()) + " y: " + std::to_string(position.y()) + '\n';
-    }
-    std::cout << "\n";
-
-    std::cout << "--YELLOW--\n";
-    QList<quint8> avYellow = _vision->getAvailablePlayers(VSSRef::Color::YELLOW);
-    for(int i = 0; i < avYellow.size(); i++) {
-        Position position = _vision->getPlayerPosition(VSSRef::Color::YELLOW, avYellow.at(i));
-        std::cout << "Player " + std::to_string(avYellow.at(i)) + " x: " + std::to_string(position.x()) + " y: " + std::to_string(position.y()) + '\n';
-    }
-    std::cout << "\n";
-
     // Game halted just return
     if(_gameHalted) {
         emit placeBall(_lastBallPosition, Velocity(true, 0.0, 0.0));

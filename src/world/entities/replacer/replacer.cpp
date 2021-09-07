@@ -339,9 +339,6 @@ VSSRef::Frame Replacer::getPlacementFrameByFoul(QString foul, VSSRef::Quadrant f
         }
 
         movePlayerToPosition(frame.add_robots(), players.at(i), placementPosition, playerPlacementData.getOrientation());
-
-        /// TODO: remove this later
-        std::cout << "Placed " + std::to_string(players.at(i)) + " at x: " + std::to_string(playerPlacementData.getPosition().x()) + " y: " + std::to_string(playerPlacementData.getPosition().y()) + '\n';
     }
 
     // Return frame
