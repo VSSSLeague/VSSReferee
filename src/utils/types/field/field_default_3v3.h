@@ -21,7 +21,7 @@ namespace Field_Default_3v3 {
     const double kYMin = -kYMax;
     const double kFieldCorner = kFieldLength*5/150;
     const double kMarkDistanceX = kFieldLength/4;
-    const double kMarkDistanceY = 4*kFieldLength/15;
+    const double kMarkDistanceY = kYMax - kFieldLength/6;
     const double kMarkLength = kFieldLength*5/150;
     const double kMarkCircleDistance = 2*kFieldLength/15;
     const double kMarkCircleRadius = kMarkLength/10;

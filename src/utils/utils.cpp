@@ -195,6 +195,10 @@ VSSRef::Quadrant Utils::getBallQuadrant(Position ballPos){
     return VSSRef::Quadrant::NO_QUADRANT;
 }
 
+float Utils::getAngle(const Position &a, const Position &b)	{
+    return atan2(b.y()-a.y(), b.x()-a.x());
+}
+
 void Utils::setConstants(Constants *constants){
     _constants = constants;
 }
