@@ -59,18 +59,18 @@
 			},
 			"attacker": {
 			    "foul_kicker"  : {"x": -0.6, "y": 0.0, "ori": 0.0},
-			    "foul_receiver": {"x": 0.0, "y": 1.0, "ori": 0.0}
+			    "foul_receiver": {"x": -0.3, "y": -0.7, "ori": 0.0}
 			},
 			"supporter": {
-			    "foul_kicker"  : {"x": 0.3, "y": -0.7, "ori": 0.0},
-			    "foul_receiver": {"x": -0.3, "y": -0.4, "ori": 0.0}
+			    "foul_kicker"  : {"x": 0.3, "y": -0.45, "ori": 0.0},
+			    "foul_receiver": {"x": -0.3, "y": -0.2, "ori": 0.0}
 			},
 			"midfielder": {
-			    "foul_kicker"  : {"x": 0.3, "y": -0.1, "ori": 0.0},
-			    "foul_receiver": {"x": -0.3, "y": 0.2, "ori": 0.0}
+			    "foul_kicker"  : {"x": 0.3, "y": 0.05, "ori": 0.0},
+			    "foul_receiver": {"x": -0.3, "y": 0.3, "ori": 0.0}
 			},
 			"defender": {
-			    "foul_kicker"  : {"x": 0.3, "y": 0.5, "ori": 0.0},
+			    "foul_kicker"  : {"x": 0.3, "y": 0.55, "ori": 0.0},
 			    "foul_receiver": {"x": -0.3, "y": 0.8, "ori": 0.0}
 			}
 		}
