@@ -25,12 +25,14 @@ Referee::Referee(Vision *vision, Replacer *replacer, SoccerView *soccerView, Con
 
     // Connecting referee to replacer
     connect(_replacer, SIGNAL(teamsPlaced()), this, SLOT(teamsPlaced()));
+    connect(_replacer, SIGNAL(teamsCollided(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), this, SLOT(processCollision(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)));
     connect(this, SIGNAL(sendFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), _replacer, SLOT(takeFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)));
-    connect(this, SIGNAL(callReplacer()), _replacer, SLOT(placeTeams()), Qt::DirectConnection);
+    connect(this, SIGNAL(callReplacer(bool)), _replacer, SLOT(placeTeams(bool)), Qt::DirectConnection);
     connect(this, SIGNAL(placeOutside(VSSRef::Foul, VSSRef::Color)), _replacer, SLOT(placeOutside(VSSRef::Foul, VSSRef::Color)), Qt::DirectConnection);
     connect(this, SIGNAL(saveFrame()), _replacer, SLOT(saveFrameAndBall()), Qt::DirectConnection);
     connect(this, SIGNAL(placeFrame()), _replacer, SLOT(placeLastFrameAndBall()), Qt::DirectConnection);
     connect(this, SIGNAL(placeBall(Position, Velocity)), _replacer, SLOT(placeBall(Position, Velocity)), Qt::DirectConnection);
+    connect(this, SIGNAL(emitSuggestion(QString, VSSRef::Color, VSSRef::Quadrant)), _soccerView, SLOT(addSuggestion(QString, VSSRef::Color, VSSRef::Quadrant)));
 
     // Init signal mapper
     _mapper = new QSignalMapper();
@@ -76,6 +78,7 @@ void Referee::initialization() {
     _isEndGame = false;
     _isPenaltyShootout = false;
     _placedLast = true;
+    _forceDefault = false;
 
     // Take first kickoff team
     auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
@@ -169,7 +172,8 @@ void Referee::loop() {
                 _resetedTimer = false;
 
                 // Call replacer (place teams)
-                emit callReplacer();
+                emit callReplacer(_forceDefault);
+                _forceDefault = false;
 
                 if(_isToPlaceOutside) {
                     emit placeOutside(_lastFoul, (_lastFoulTeam == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE);
@@ -507,6 +511,31 @@ void Referee::takeManualFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef:
 
 void Referee::takeStuckedTime(float time) {
     _soccerView->getFieldView()->setStuckedTime(time);
+}
+
+void Referee::processCollision(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant)  {
+    // Call halt
+    sendControlFoul(VSSRef::Foul::HALT);
+    _gameHalted = true;
+
+    // Take collision vars
+    _collisionFoul = foul;
+    _collisionColor = foulColor;
+    _collisionQuadrant = foulQuadrant;
+
+    // Send collision suggestion
+    emit emitSuggestion("Collision detected, needs to place by default");
+}
+
+void Referee::processCollisionDecision() {
+    // Update penalties info
+    updatePenaltiesInfo(_collisionFoul, _collisionColor, _collisionQuadrant, true);
+
+    // Send to network
+    sendPenaltiesToNetwork();
+
+    // Set as force default
+    _forceDefault = true;
 }
 
 Constants* Referee::getConstants() {

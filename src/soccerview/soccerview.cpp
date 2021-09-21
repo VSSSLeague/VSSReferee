@@ -20,9 +20,9 @@ SoccerView::SoccerView(Constants *constants, QWidget *parent) :
     setupButtons();
 
     // Disable suggestions if not enabled in constants
-    if(!getConstants()->useRefereeSuggestions()) {
-        ui->refereeSuggestions->setEnabled(false);
-    }
+//    if(!getConstants()->useRefereeSuggestions()) {
+//        ui->refereeSuggestions->setEnabled(false);
+//    }
 
     // Set scoreboard gameType
     ui->scoreboard->setTitle(getConstants()->gameType());
@@ -439,7 +439,7 @@ void SoccerView::addSuggestion(QString suggestion, VSSRef::Color forColor, VSSRe
     animateFlag(true, 150);
 
     // Avoid to add if not using ref suggestions
-    if(!getConstants()->useRefereeSuggestions()) return;
+    if(!getConstants()->useRefereeSuggestions() && !suggestion.contains("Collision")) return;
 
     _suggestionsMutex.lock();
 
@@ -456,7 +456,10 @@ void SoccerView::addSuggestion(QString suggestion, VSSRef::Color forColor, VSSRe
 
     QPushButton *accept = new QPushButton("Accept");
     connect(accept, &QPushButton::released, [this, forColor, atQuadrant, label](){
-        if(label->whatsThis() == "GOAL") {
+        if(label->whatsThis().contains("Collision")) {
+            emit sendCollisionDecision();
+        }
+        else if(label->whatsThis() == "GOAL") {
             addGoal(forColor);
 
             emit sendManualFoul(VSSRef::Foul::KICKOFF, (forColor == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE, VSSRef::Quadrant::NO_QUADRANT);
@@ -476,6 +479,10 @@ void SoccerView::addSuggestion(QString suggestion, VSSRef::Color forColor, VSSRe
     ui->suggestionGrid->addWidget(accept, qtWidgets, 1, Qt::AlignCenter);
 
     _suggestionsMutex.unlock();
+
+    if(suggestion.contains("Collision")) {
+        showSuggestions();
+    }
 }
 
 void SoccerView::showSuggestions() {

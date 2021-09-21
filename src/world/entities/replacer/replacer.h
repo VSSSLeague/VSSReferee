@@ -52,6 +52,7 @@ private:
     QMap<QString, QMap<QString, QMap<QString, QVector<PlaceData>>*>*> placements;
     QMap<QString, QVector<PlaceData>> getPlacementsByFoul(QString foul);
     VSSRef::Frame getPlacementFrameByFoul(QString foul, VSSRef::Quadrant foulQuadrant, VSSRef::Color teamColor);
+    bool checkIfCollides(VSSRef::Frame blueFrame, VSSRef::Frame yellowFrame);
 
     // Internal placements file management
     QString _replaceFileName;
@@ -82,6 +83,7 @@ private:
     QHash<VSSRef::Color, VSSRef::Frame> _placement;
     QHash<VSSRef::Color, bool> _placementStatus;
     bool _isGoaliePlacedAtTop;
+    bool _forceDefault;
     void placeFrame(VSSRef::Frame frame);
 
     // Last data (maintain ball stopped)
@@ -99,11 +101,12 @@ private:
 
 signals:
     void teamsPlaced();
+    void teamsCollided(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant);
 
 public slots:
     void takeGoalie(VSSRef::Color color, quint8 playerId);
     void takeFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant);
-    void placeTeams();
+    void placeTeams(bool forceDefault);
     void placeOutside(VSSRef::Foul foul, VSSRef::Color oppositeTeam);
     void saveFrameAndBall();
     void placeLastFrameAndBall();

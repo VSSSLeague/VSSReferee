@@ -59,6 +59,7 @@ private:
     void deleteSuggestions();
 
 signals:
+    void sendCollisionDecision();
     void sendManualFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant, bool isToPlaceOutside = false);
     void addTime(int seconds);
 

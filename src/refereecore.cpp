@@ -58,6 +58,7 @@ void RefereeCore::start() {
     _world->addEntity(_replacer, 0);
 
     // Make GUI connections with modules
+    QObject::connect(_soccerView, SIGNAL(sendCollisionDecision()), _referee, SLOT(processCollisionDecision()));
     QObject::connect(_referee, SIGNAL(sendFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), _soccerView, SLOT(takeFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)));
     QObject::connect(_referee, SIGNAL(sendTimestamp(float, float, VSSRef::Half, bool)), _soccerView, SLOT(takeTimeStamp(float, float, VSSRef::Half, bool)));
     QObject::connect(_soccerView, SIGNAL(sendManualFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant, bool)), _referee, SLOT(takeManualFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant, bool)));
