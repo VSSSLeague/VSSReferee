@@ -94,6 +94,12 @@ private:
     bool _gameHalted;
     bool _longStop;
 
+    // Placement collision control
+    bool _forceDefault;
+    VSSRef::Foul _collisionFoul;
+    VSSRef::Color _collisionColor;
+    VSSRef::Quadrant _collisionQuadrant;
+
     // Halt placement
     Position _lastBallPosition;
     Velocity _lastBallVelocity;
@@ -102,11 +108,12 @@ private:
 signals:
     void sendFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant);
     void sendTimestamp(float halftime, float timestamp, VSSRef::Half half, bool isEndGame);
-    void callReplacer();
+    void callReplacer(bool forceDefault);
     void placeOutside(VSSRef::Foul foul, VSSRef::Color teamColor);
     void saveFrame();
     void placeFrame();
     void placeBall(Position position, Velocity velocity);
+    void emitSuggestion(QString suggestion, VSSRef::Color forTeam = VSSRef::Color::NONE, VSSRef::Quadrant atQuadrant = VSSRef::Quadrant::NO_QUADRANT);
 
 public slots:
     void processChecker(QObject *checker);
@@ -114,6 +121,8 @@ public slots:
     void teamsPlaced();
     void takeManualFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant, bool isToPlaceOutside = false);
     void takeStuckedTime(float time);
+    void processCollision(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant);
+    void processCollisionDecision();
 };
 
 #endif // REFEREE_H

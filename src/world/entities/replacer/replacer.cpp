@@ -345,6 +345,21 @@ VSSRef::Frame Replacer::getPlacementFrameByFoul(QString foul, VSSRef::Quadrant f
     return frame;
 }
 
+bool Replacer::checkIfCollides(VSSRef::Frame blueFrame, VSSRef::Frame yellowFrame) {
+    for(int i = 0; i < blueFrame.robots_size(); i++) {
+        for(int j = 0; j < yellowFrame.robots_size(); j++) {
+            Position blueRobotPosition = Position(true, blueFrame.robots(i).x(), blueFrame.robots(i).y());
+            Position yellowRobotPosition = Position(true, yellowFrame.robots(j).x(), yellowFrame.robots(j).y());
+
+            if(Utils::distance(blueRobotPosition, yellowRobotPosition) <= 1.1 * getConstants()->robotLength()) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 quint8 Replacer::getGoalie(VSSRef::Color color) {
     _goalieMutex.lock();
     quint8 goalieId = _goalies.value(color);
@@ -609,38 +624,51 @@ void Replacer::placeBall(Position ballPos, Velocity ballVelocity) {
     }
 }
 
-void Replacer::placeTeams() {
+void Replacer::placeTeams(bool forceDefault) {
     VSSRef::Foul lastFoul = getFoul();
+
+    VSSRef::Frame blueFrame;
+    VSSRef::Frame yellowFrame;
+
+    QHash<VSSRef::Color, VSSRef::Frame> frames;
 
     for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
         // if team placed
-        if(_placementStatus.value(VSSRef::Color(i))) {
+        if(_placementStatus.value(VSSRef::Color(i)) && !forceDefault) {
             // Take received frame
-            VSSRef::Frame teamFrame = _placement.value(VSSRef::Color(i));
-
-            // Send frame to network
-            placeFrame(teamFrame);
+            frames.insert(VSSRef::Color(i), _placement.value(VSSRef::Color(i)));
         }
         // if team not placed, take default positions
         else {
             // Take default frame
             VSSRef::Frame defaultFrame = getPlacementFrameByFoul(VSSRef::Foul_Name(lastFoul).c_str(), getFoulQuadrant(), VSSRef::Color(i));
 
-            // Send frame to network
-            placeFrame(defaultFrame);
-
             // Save frame
             _placement.insert(VSSRef::Color(i), defaultFrame);
+
+            // Take frame
+            frames.insert(VSSRef::Color(i), _placement.value(VSSRef::Color(i)));
         }
     }
 
+    // Check if frames collides
+    if(checkIfCollides(frames.value(VSSRef::Color::BLUE), frames.value(VSSRef::Color::YELLOW))) {
+        emit teamsCollided(_foul, _foulColor, _foulQuadrant);
+    }
+    else {
+        // If frames not collides, just place it
+        placeFrame(frames.value(VSSRef::Color::BLUE));
+        placeFrame(frames.value(VSSRef::Color::YELLOW));
+
+        // Mark foul as processed
+        _foulMutex.lock();
+        _foulProcessed = true;
+        _foulMutex.unlock();
+    }
+
+    // Place ball
     Position foulBallPosition = getBallPlaceByFoul(_foul, _foulColor, _foulQuadrant);
     placeBall(foulBallPosition);
-
-    // Mark foul as processed
-    _foulMutex.lock();
-    _foulProcessed = true;
-    _foulMutex.unlock();
 }
 
 void Replacer::placeOutside(VSSRef::Foul foul, VSSRef::Color oppositeTeam) {
