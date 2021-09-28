@@ -42,7 +42,7 @@
     		"useRefereeSuggestions": false,
     		"maintainSpeedAtSuggestions": true,
     		"ballMinSpeedForStuck": 0.1,
-    		"stuckedBallTime": 10.0,
+    		"stuckedBallTime": 5.0,
     		"ballInAreaMaxTime": 3.0
     	}
     }
