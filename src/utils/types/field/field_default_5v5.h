@@ -17,7 +17,7 @@ namespace Field_Default_5v5 {
 
     const double kBigDefenseRadius = 350.0;
     const double kBigDefenseStretch = 800.0;
-    const double kLineThickness = 3.0;
+    const double kLineThickness = 6.0;
     
     const double kXMax = kFieldLength/2;
     const double kXMin = -kXMax;

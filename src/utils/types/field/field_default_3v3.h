@@ -14,7 +14,7 @@ namespace Field_Default_3v3 {
     const double kCenterRadius = 200.0;
     const double kDefenseRadius = 150.0;
     const double kDefenseStretch = 700.0;
-    const double kLineThickness = 3.0;
+    const double kLineThickness = 6.0;
     const double kXMax = kFieldLength/2;
     const double kXMin = -kXMax;
     const double kYMax = kFieldWidth/2;
