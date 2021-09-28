@@ -54,7 +54,7 @@ void Checker_BallPlay::run() {
         }
     }
 
-    if(!_areaTimerControl && ((Utils::isInsideGoalArea(VSSRef::Color::BLUE, ballPos) && !Utils::isBallInsideGoal(VSSRef::Color::BLUE, ballPos)) || (Utils::isInsideGoalArea(VSSRef::Color::YELLOW, ballPos) && !Utils::isBallInsideGoal(VSSRef::Color::YELLOW, ballPos)))) {
+    if(!_areaTimerControl && ((Utils::isInsideBigArea(VSSRef::Color::BLUE, ballPos) && !Utils::isBallInsideGoal(VSSRef::Color::BLUE, ballPos)) || (Utils::isInsideBigArea(VSSRef::Color::YELLOW, ballPos) && !Utils::isBallInsideGoal(VSSRef::Color::YELLOW, ballPos)))) {
         // Update control vars
         _isPlayRunning = true;
         if(!_possiblePenalty) {

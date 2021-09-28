@@ -112,10 +112,11 @@ bool Utils::isInsideGoalArea(VSSRef::Color teamColor, Position pos){
 }
 
 bool Utils::isInsideBigArea(VSSRef::Color teamColor, Position pos) {
-    if(!getConstants()->is5v5()) return false;
+    if(!getConstants()->is5v5()) return isInsideGoalArea(teamColor, pos);
 
     float goal_x = (getField()->fieldLength()/2.0 - getField()->bigDefenseRadius()) / 1000.0;
     float goal_y = (getField()->bigDefenseStretch() / 2.0) / 1000.0;
+
 
     if(teamColor == VSSRef::Color::BLUE){
         if(getConstants()->blueIsLeftSide()){
