@@ -523,9 +523,25 @@ VSSRef::Frame Replacer::getPenaltyShootoutPlacement(VSSRef::Color teamColor, boo
         // Take ball position
         Position ballPosition = getBallPlaceByFoul(VSSRef::Foul::PENALTY_KICK, teamColor, VSSRef::Quadrant::NO_QUADRANT);
 
+        // Take team placement frame (getPenaltyShootoutPlacement will only be call after placeTeams())
+        VSSRef::Frame teamFrame = _placement.value(teamColor);
+
         // Take the closest player to ball that isn't the goalkeeper
         for(int i = 0; i < players.size(); i++) {
-            float playerDistToBall = Utils::distance(_vision->getPlayerPosition(teamColor, players.at(i)), ballPosition);
+            // Ignore team goalie
+            if(players.at(i) == getGoalie(teamColor)) continue;
+
+            // Take player position at teamFrame
+            float playerDistToBall = 999.0f;
+            for(int j = 0; j < teamFrame.robots_size(); j++) {
+                VSSRef::Robot robot = teamFrame.robots(j);
+                if(robot.robot_id() == players.at(i)) {
+                    Position robotPosition = Position(true, robot.x(), robot.y());
+                    playerDistToBall = Utils::distance(robotPosition, ballPosition);
+                }
+            }
+
+            // Check if player distance to ball is lower than the best distance
             if(playerDistToBall <= bestDistance) {
                 bestDistance = playerDistToBall;
                 chosenId = players.at(i);
