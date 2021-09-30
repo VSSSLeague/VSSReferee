@@ -108,8 +108,7 @@ private:
 signals:
     void sendFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant);
     void sendTimestamp(float halftime, float timestamp, VSSRef::Half half, bool isEndGame);
-    void callReplacer(bool forceDefault);
-    void placeOutside(VSSRef::Foul foul, VSSRef::Color teamColor);
+    void callReplacer(bool forceDefault, bool isToPlaceOutside);
     void saveFrame();
     void placeFrame();
     void placeBall(Position position, Velocity velocity);

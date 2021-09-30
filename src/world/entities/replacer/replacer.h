@@ -85,6 +85,10 @@ private:
     bool _isGoaliePlacedAtTop;
     bool _forceDefault;
     void placeFrame(VSSRef::Frame frame);
+    void placeOutside(VSSRef::Foul foul, VSSRef::Color oppositeTeam);
+    VSSRef::Frame getTeamFrame(VSSRef::Color teamColor);
+    void setTeamFrame(VSSRef::Color teamColor, VSSRef::Frame frame);
+    QMutex _frameMutex;
 
     // Last data (maintain ball stopped)
     Position _lastBallPosition;
@@ -106,8 +110,7 @@ signals:
 public slots:
     void takeGoalie(VSSRef::Color color, quint8 playerId);
     void takeFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant);
-    void placeTeams(bool forceDefault);
-    void placeOutside(VSSRef::Foul foul, VSSRef::Color oppositeTeam);
+    void placeTeams(bool forceDefault, bool isToPlaceOutside);
     void saveFrameAndBall();
     void placeLastFrameAndBall();
     void placeBall(Position ballPos, Velocity ballVelocity = Velocity(true, 0.0, 0.0));

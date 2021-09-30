@@ -27,8 +27,7 @@ Referee::Referee(Vision *vision, Replacer *replacer, SoccerView *soccerView, Con
     connect(_replacer, SIGNAL(teamsPlaced()), this, SLOT(teamsPlaced()));
     connect(_replacer, SIGNAL(teamsCollided(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), this, SLOT(processCollision(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)));
     connect(this, SIGNAL(sendFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), _replacer, SLOT(takeFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)));
-    connect(this, SIGNAL(callReplacer(bool)), _replacer, SLOT(placeTeams(bool)), Qt::DirectConnection);
-    connect(this, SIGNAL(placeOutside(VSSRef::Foul, VSSRef::Color)), _replacer, SLOT(placeOutside(VSSRef::Foul, VSSRef::Color)), Qt::DirectConnection);
+    connect(this, SIGNAL(callReplacer(bool, bool)), _replacer, SLOT(placeTeams(bool, bool)), Qt::DirectConnection);
     connect(this, SIGNAL(saveFrame()), _replacer, SLOT(saveFrameAndBall()), Qt::DirectConnection);
     connect(this, SIGNAL(placeFrame()), _replacer, SLOT(placeLastFrameAndBall()), Qt::DirectConnection);
     connect(this, SIGNAL(placeBall(Position, Velocity)), _replacer, SLOT(placeBall(Position, Velocity)), Qt::DirectConnection);
@@ -172,13 +171,9 @@ void Referee::loop() {
                 _resetedTimer = false;
 
                 // Call replacer (place teams)
-                emit callReplacer(_forceDefault);
+                emit callReplacer(_forceDefault, _isToPlaceOutside);
                 _forceDefault = false;
-
-                if(_isToPlaceOutside) {
-                    emit placeOutside(_lastFoul, (_lastFoulTeam == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE);
-                    _isToPlaceOutside = false;
-                }
+                _isToPlaceOutside = false;
 
                 // Update sent foul to STOP
                 updatePenaltiesInfo(VSSRef::Foul::STOP, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT);
