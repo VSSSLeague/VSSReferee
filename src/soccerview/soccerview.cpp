@@ -202,8 +202,8 @@ void SoccerView::animateWidget(QWidget *widget, QColor desiredColor, int animati
         QString g = QString(std::to_string(colorValue.green()).c_str());
         QString b = QString(std::to_string(colorValue.blue()).c_str());
         QString a = QString(std::to_string(colorValue.alpha()).c_str());
-        QString rgba = QString("rgb(%1, %2, %3, %4)").arg(r).arg(g).arg(b).arg(a);
-        widget->setStyleSheet("border-radius: 10px; background-color: " + rgba + "; color: white;");
+        QString rgb = QString("rgb(%1, %2, %3)").arg(r).arg(g).arg(b);
+        widget->setStyleSheet("border-radius: 10px; background-color: " + rgb + "; color: white;");
     });
 
     statusAnimation->start(QAbstractAnimation::DeleteWhenStopped);
