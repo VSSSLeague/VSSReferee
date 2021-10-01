@@ -544,6 +544,7 @@ VSSRef::Frame Replacer::getPenaltyShootoutPlacement(VSSRef::Color teamColor, boo
     QList<quint8> players = _vision->getAvailablePlayers(teamColor);
 
     quint8 chosenId = 255;
+    VSSRef::Robot chosenRobot;
     // If is to place attacker
     if(placeAttacker) {
         // Start distance var
@@ -559,11 +560,13 @@ VSSRef::Frame Replacer::getPenaltyShootoutPlacement(VSSRef::Color teamColor, boo
         for(int i = 0; i < players.size(); i++) {
             // Take player position at teamFrame
             float playerDistToBall = 999.0f;
+            VSSRef::Robot robotParams;
             for(int j = 0; j < teamFrame.robots_size(); j++) {
                 VSSRef::Robot robot = teamFrame.robots(j);
                 if(robot.robot_id() == players.at(i)) {
                     Position robotPosition = Position(true, robot.x(), robot.y());
                     playerDistToBall = Utils::distance(robotPosition, ballPosition);
+                    robotParams = robot;
                     break;
                 }
             }
@@ -572,18 +575,30 @@ VSSRef::Frame Replacer::getPenaltyShootoutPlacement(VSSRef::Color teamColor, boo
             if(playerDistToBall <= bestDistance) {
                 bestDistance = playerDistToBall;
                 chosenId = players.at(i);
+                chosenRobot = robotParams;
             }
         }
     }
     // Else, goalie as penalty goalkeeper
     else {
         chosenId = getGoalie(teamColor);
+
+        VSSRef::Frame teamFrame = getTeamFrame(teamColor);
+        for(int i = 0; i < teamFrame.robots_size(); i++) {
+            if(teamFrame.robots(i).robot_id() == chosenId) {
+                chosenRobot = teamFrame.robots(i);
+                break;
+            }
+        }
     }
 
     for(int i = 0; i < frameOutside.robots_size(); i++) {
         VSSRef::Robot robotAt = frameOutside.robots(i);
         if(robotAt.robot_id() != chosenId) {
             movePlayerToPosition(frame.add_robots(), robotAt.robot_id(), Position(true, robotAt.x(), robotAt.y()), Angle(true, robotAt.orientation()));
+        }
+        else {
+            movePlayerToPosition(frame.add_robots(), chosenRobot.robot_id(), Position(true, chosenRobot.x(), chosenRobot.y()), Angle(true, chosenRobot.orientation()));
         }
     }
 
@@ -670,10 +685,6 @@ void Replacer::placeBall(Position ballPos, Velocity ballVelocity) {
 void Replacer::placeTeams(bool forceDefault, bool isToPlaceOutside) {
     VSSRef::Foul lastFoul = getFoul();
     VSSRef::Color lastFoulColor = getFoulColor();
-
-    VSSRef::Frame blueFrame;
-    VSSRef::Frame yellowFrame;
-
     QHash<VSSRef::Color, VSSRef::Frame> frames;
 
     for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
@@ -695,20 +706,20 @@ void Replacer::placeTeams(bool forceDefault, bool isToPlaceOutside) {
         }
     }
 
+    if((lastFoul == VSSRef::Foul::KICKOFF || lastFoul == VSSRef::Foul::PENALTY_KICK) && isToPlaceOutside) {
+        // Cast place outside
+        VSSRef::Color oppositeColor = (lastFoulColor == VSSRef::BLUE) ? VSSRef::YELLOW : VSSRef::BLUE;
+        placeOutside(lastFoul, oppositeColor);
+    }
+
     // Check if frames collides
-    if(checkIfCollides(frames.value(VSSRef::Color::BLUE), frames.value(VSSRef::Color::YELLOW))) {
+    if(checkIfCollides(getTeamFrame(VSSRef::Color::BLUE), getTeamFrame(VSSRef::Color::YELLOW))) {
         emit teamsCollided(_foul, _foulColor, _foulQuadrant, isToPlaceOutside);
     }
     else {
         // If frames not collides, just place it
-        placeFrame(frames.value(VSSRef::Color::BLUE));
-        placeFrame(frames.value(VSSRef::Color::YELLOW));
-
-        if((lastFoul == VSSRef::Foul::KICKOFF || lastFoul == VSSRef::Foul::PENALTY_KICK) && isToPlaceOutside) {
-            // Cast place outside
-            VSSRef::Color oppositeColor = (lastFoulColor == VSSRef::BLUE) ? VSSRef::YELLOW : VSSRef::BLUE;
-            placeOutside(lastFoul, oppositeColor);
-        }
+        placeFrame(getTeamFrame(VSSRef::Color::BLUE));
+        placeFrame(getTeamFrame(VSSRef::Color::YELLOW));
 
         // Mark foul as processed
         _foulMutex.lock();
@@ -728,8 +739,8 @@ void Replacer::placeOutside(VSSRef::Foul foul, VSSRef::Color oppositeTeam) {
         // Filling frames
         removedFrame = getOutsideFieldPlacement(oppositeTeam);
 
-        // Send frames to network
-        placeFrame(removedFrame);
+        // Set team frame
+        setTeamFrame(oppositeTeam, removedFrame);
     }
     else if(foul == VSSRef::Foul::PENALTY_KICK) {
         VSSRef::Frame removedFrameKicker;
@@ -739,9 +750,9 @@ void Replacer::placeOutside(VSSRef::Foul foul, VSSRef::Color oppositeTeam) {
         removedFrameKicker = getPenaltyShootoutPlacement((oppositeTeam == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE, true);
         removedFrameGoalie = getPenaltyShootoutPlacement(oppositeTeam, false);
 
-        // Send frames to network
-        placeFrame(removedFrameKicker);
-        placeFrame(removedFrameGoalie);
+        // Set teams frames
+        setTeamFrame((oppositeTeam == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE, removedFrameKicker);
+        setTeamFrame(oppositeTeam, removedFrameGoalie);
     }
 }
 
