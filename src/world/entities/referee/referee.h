@@ -120,7 +120,7 @@ public slots:
     void teamsPlaced();
     void takeManualFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant, bool isToPlaceOutside = false);
     void takeStuckedTime(float time);
-    void processCollision(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant);
+    void processCollision(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant, bool isToPlaceOutside);
     void processCollisionDecision();
 };
 

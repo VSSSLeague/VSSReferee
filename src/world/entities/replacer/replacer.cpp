@@ -563,9 +563,7 @@ VSSRef::Frame Replacer::getPenaltyShootoutPlacement(VSSRef::Color teamColor, boo
                 VSSRef::Robot robot = teamFrame.robots(j);
                 if(robot.robot_id() == players.at(i)) {
                     Position robotPosition = Position(true, robot.x(), robot.y());
-                    std::cout << "Robot " + std::to_string(robot.robot_id()) + " position x: " + std::to_string(robotPosition.x()) + " y: " + std::to_string(robotPosition.y()) + '\n';
                     playerDistToBall = Utils::distance(robotPosition, ballPosition);
-                    std::cout << "its distance = " + std::to_string(playerDistToBall) + '\n';
                     break;
                 }
             }
@@ -699,7 +697,7 @@ void Replacer::placeTeams(bool forceDefault, bool isToPlaceOutside) {
 
     // Check if frames collides
     if(checkIfCollides(frames.value(VSSRef::Color::BLUE), frames.value(VSSRef::Color::YELLOW))) {
-        emit teamsCollided(_foul, _foulColor, _foulQuadrant);
+        emit teamsCollided(_foul, _foulColor, _foulQuadrant, isToPlaceOutside);
     }
     else {
         // If frames not collides, just place it
