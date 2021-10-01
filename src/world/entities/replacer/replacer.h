@@ -105,7 +105,7 @@ private:
 
 signals:
     void teamsPlaced();
-    void teamsCollided(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant);
+    void teamsCollided(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant, bool placeOutside);
 
 public slots:
     void takeGoalie(VSSRef::Color color, quint8 playerId);

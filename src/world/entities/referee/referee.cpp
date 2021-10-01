@@ -25,7 +25,7 @@ Referee::Referee(Vision *vision, Replacer *replacer, SoccerView *soccerView, Con
 
     // Connecting referee to replacer
     connect(_replacer, SIGNAL(teamsPlaced()), this, SLOT(teamsPlaced()));
-    connect(_replacer, SIGNAL(teamsCollided(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), this, SLOT(processCollision(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)));
+    connect(_replacer, SIGNAL(teamsCollided(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant, bool)), this, SLOT(processCollision(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant, bool)));
     connect(this, SIGNAL(sendFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), _replacer, SLOT(takeFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)));
     connect(this, SIGNAL(callReplacer(bool, bool)), _replacer, SLOT(placeTeams(bool, bool)), Qt::DirectConnection);
     connect(this, SIGNAL(saveFrame()), _replacer, SLOT(saveFrameAndBall()), Qt::DirectConnection);
@@ -508,7 +508,7 @@ void Referee::takeStuckedTime(float time) {
     _soccerView->getFieldView()->setStuckedTime(time);
 }
 
-void Referee::processCollision(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant)  {
+void Referee::processCollision(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant, bool isToPlaceOutside)  {
     // Call halt
     sendControlFoul(VSSRef::Foul::HALT);
     _gameHalted = true;
@@ -517,6 +517,7 @@ void Referee::processCollision(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRe
     _collisionFoul = foul;
     _collisionColor = foulColor;
     _collisionQuadrant = foulQuadrant;
+    _isToPlaceOutside = isToPlaceOutside;
 
     // Send collision suggestion
     emit emitSuggestion("Collision detected, needs to place by default");
