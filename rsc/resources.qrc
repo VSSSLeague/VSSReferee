@@ -26,5 +26,6 @@
         <file>teams/thunderatz.png</file>
         <file>ui/yellowflag.png</file>
         <file>teams/reddragons.png</file>
+        <file>teams/ararabots.png</file>
     </qresource>
 </RCC>
