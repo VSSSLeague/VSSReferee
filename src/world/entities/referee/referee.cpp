@@ -53,6 +53,7 @@ void Referee::initialization() {
     // Ball play
     addChecker(_ballPlayChecker = new Checker_BallPlay(_vision, getConstants()), 2);
     connect(_ballPlayChecker, SIGNAL(emitGoal(VSSRef::Color)), _soccerView, SLOT(addGoal(VSSRef::Color)));
+    connect(_ballPlayChecker, SIGNAL(emitGoal(VSSRef::Color)), this, SLOT(goalOccurred(VSSRef::Color)));
     connect(_ballPlayChecker, SIGNAL(emitSuggestion(QString, VSSRef::Color, VSSRef::Quadrant)), _soccerView, SLOT(addSuggestion(QString, VSSRef::Color, VSSRef::Quadrant)));
     _ballPlayChecker->setAtkDefCheckers(_twoAtkChecker, _twoDefChecker);
     _ballPlayChecker->setIsPenaltyShootout(false, VSSRef::Color::NONE);
@@ -164,8 +165,11 @@ void Referee::loop() {
             bool teamsPlaced = _teamsPlaced;
             _transitionMutex.unlock();
 
+            // Transition time
+            float transitionTime = (_goalOccurred) ? 2.0 * getConstants()->transitionTime() : getConstants()->transitionTime();
+
             // Check if passed transition time
-            if(_transitionTimer.getSeconds() >= getConstants()->transitionTime() || (teamsPlaced && _transitionTimer.getSeconds() >= (getConstants()->transitionTime() / 2.0))) {
+            if(_transitionTimer.getSeconds() >= transitionTime/* || (teamsPlaced && _transitionTimer.getSeconds() >= (getConstants()->transitionTime() / 2.0))*/) {
                 // Set control vars
                 _isStopped = true;
                 _resetedTimer = false;
@@ -185,6 +189,8 @@ void Referee::loop() {
                 _transitionTimer.start();
                 _resetedTimer = true;
             }
+
+            _goalOccurred = false;
 
             // Stop timer
             _transitionTimer.stop();
@@ -436,6 +442,10 @@ void Referee::teamsPlaced() {
     _transitionMutex.lock();
     _teamsPlaced = true;
     _transitionMutex.unlock();
+}
+
+void Referee::goalOccurred(VSSRef::Color) {
+    _goalOccurred = true;
 }
 
 void Referee::sendControlFoul(VSSRef::Foul foul) {

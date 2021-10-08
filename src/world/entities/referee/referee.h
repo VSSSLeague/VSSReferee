@@ -93,6 +93,7 @@ private:
     void sendControlFoul(VSSRef::Foul foul);
     bool _gameHalted;
     bool _longStop;
+    bool _goalOccurred;
 
     // Placement collision control
     bool _forceDefault;
@@ -118,6 +119,7 @@ public slots:
     void processChecker(QObject *checker);
     void halfPassed();
     void teamsPlaced();
+    void goalOccurred(VSSRef::Color);
     void takeManualFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant, bool isToPlaceOutside = false);
     void takeStuckedTime(float time);
     void processCollision(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant, bool isToPlaceOutside);
