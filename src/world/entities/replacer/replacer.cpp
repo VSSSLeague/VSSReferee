@@ -352,11 +352,12 @@ bool Replacer::checkIfCollides(VSSRef::Frame blueFrame, VSSRef::Frame yellowFram
             Position blueRobotPosition = Position(true, blueFrame.robots(i).x(), blueFrame.robots(i).y());
             Position yellowRobotPosition = Position(true, yellowFrame.robots(j).x(), yellowFrame.robots(j).y());
 
-            std::cout << Text::yellow("[REPLACER] ", true) + Text::bold("Detected collision with blue and yellow frames:") + '\n';
-            std::cout << "Collision with blue robot " + std::to_string(blueFrame.robots(i).robot_id()) + " at position x: " + std::to_string(blueRobotPosition.x()) + " y: " + std::to_string(blueRobotPosition.y()) + '\n';
-            std::cout << "Collision with yellow robot " + std::to_string(yellowFrame.robots(i).robot_id()) + " at position x: " + std::to_string(yellowRobotPosition.x()) + " y: " + std::to_string(yellowRobotPosition.y()) + '\n';
 
             if(Utils::distance(blueRobotPosition, yellowRobotPosition) <= 1.1 * getConstants()->robotLength()) {
+                std::cout << Text::yellow("[REPLACER] ", true) + Text::bold("Detected collision with blue and yellow frames:") + '\n';
+                std::cout << "Collision with blue robot " + std::to_string(blueFrame.robots(i).robot_id()) + " at position x: " + std::to_string(blueRobotPosition.x()) + " y: " + std::to_string(blueRobotPosition.y()) + '\n';
+                std::cout << "Collision with yellow robot " + std::to_string(yellowFrame.robots(i).robot_id()) + " at position x: " + std::to_string(yellowRobotPosition.x()) + " y: " + std::to_string(yellowRobotPosition.y()) + '\n';
+
                 return true;
             }
         }
@@ -370,11 +371,12 @@ bool Replacer::checkIfCollides(VSSRef::Frame blueFrame, VSSRef::Frame yellowFram
             Position yellowRobotPosition = Position(true, yellowFrame.robots(i).x(), yellowFrame.robots(i).y());
             Position yellowRobotPosition2 = Position(true, yellowFrame.robots(j).x(), yellowFrame.robots(j).y());
 
-            std::cout << Text::yellow("[REPLACER] ", true) + Text::bold("Detected collision at yellow frame:") + '\n';
-            std::cout << "Collision with yellow robot " + std::to_string(yellowFrame.robots(i).robot_id()) + " at position x: " + std::to_string(yellowRobotPosition.x()) + " y: " + std::to_string(yellowRobotPosition.y()) + '\n';
-            std::cout << "Collision with yellow robot " + std::to_string(yellowFrame.robots(j).robot_id()) + " at position x: " + std::to_string(yellowRobotPosition2.x()) + " y: " + std::to_string(yellowRobotPosition2.y()) + '\n';
 
             if(Utils::distance(yellowRobotPosition, yellowRobotPosition2) <= 1.1 * getConstants()->robotLength()) {
+                std::cout << Text::yellow("[REPLACER] ", true) + Text::bold("Detected collision at yellow frame:") + '\n';
+                std::cout << "Collision with yellow robot " + std::to_string(yellowFrame.robots(i).robot_id()) + " at position x: " + std::to_string(yellowRobotPosition.x()) + " y: " + std::to_string(yellowRobotPosition.y()) + '\n';
+                std::cout << "Collision with yellow robot " + std::to_string(yellowFrame.robots(j).robot_id()) + " at position x: " + std::to_string(yellowRobotPosition2.x()) + " y: " + std::to_string(yellowRobotPosition2.y()) + '\n';
+
                 return true;
             }
         }
@@ -388,11 +390,12 @@ bool Replacer::checkIfCollides(VSSRef::Frame blueFrame, VSSRef::Frame yellowFram
             Position blueRobotPosition = Position(true, blueFrame.robots(i).x(), blueFrame.robots(i).y());
             Position blueRobotPosition2 = Position(true, blueFrame.robots(j).x(), blueFrame.robots(j).y());
 
-            std::cout << Text::yellow("[REPLACER] ", true) + Text::bold("Detected collision at blue frame:") + '\n';
-            std::cout << "Collision with blue robot " + std::to_string(blueFrame.robots(i).robot_id()) + " at position x: " + std::to_string(blueRobotPosition.x()) + " y: " + std::to_string(blueRobotPosition.y()) + '\n';
-            std::cout << "Collision with blue robot " + std::to_string(blueFrame.robots(j).robot_id()) + " at position x: " + std::to_string(blueRobotPosition2.x()) + " y: " + std::to_string(blueRobotPosition2.y()) + '\n';
 
             if(Utils::distance(blueRobotPosition, blueRobotPosition2) <= 1.1 * getConstants()->robotLength()) {
+                std::cout << Text::yellow("[REPLACER] ", true) + Text::bold("Detected collision at blue frame:") + '\n';
+                std::cout << "Collision with blue robot " + std::to_string(blueFrame.robots(i).robot_id()) + " at position x: " + std::to_string(blueRobotPosition.x()) + " y: " + std::to_string(blueRobotPosition.y()) + '\n';
+                std::cout << "Collision with blue robot " + std::to_string(blueFrame.robots(j).robot_id()) + " at position x: " + std::to_string(blueRobotPosition2.x()) + " y: " + std::to_string(blueRobotPosition2.y()) + '\n';
+
                 return true;
             }
         }
