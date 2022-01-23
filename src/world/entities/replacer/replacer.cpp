@@ -538,7 +538,7 @@ VSSRef::Frame Replacer::getOutsideFieldPlacement(VSSRef::Color teamColor){
 
     // Place each robot outside field
     for(int i = 0; i < players.size(); i++) {
-        PlaceData toPlace(Position(true, ((i+1) * 2*getConstants()->robotLength()) + (i * sideLength/players.size()), 1.1*fieldWidth), Angle(true, 90.0f));
+        PlaceData toPlace(Position(true, ((i+1) * 2*getConstants()->robotLength()) + (i * sideLength/players.size()), 1.1*fieldWidth), Angle(true, Angle::pi / 2.0);
         if(teamIsAtLeft) toPlace.reflect();
         movePlayerToPosition(frame.add_robots(), players.at(i), toPlace.getPosition(), toPlace.getOrientation());
     }
@@ -610,10 +610,10 @@ VSSRef::Frame Replacer::getPenaltyShootoutPlacement(VSSRef::Color teamColor, boo
     for(int i = 0; i < frameOutside.robots_size(); i++) {
         VSSRef::Robot robotAt = frameOutside.robots(i);
         if(robotAt.robot_id() != chosenId) {
-            movePlayerToPosition(frame.add_robots(), robotAt.robot_id(), Position(true, robotAt.x(), robotAt.y()), Angle(true, robotAt.orientation()));
+            movePlayerToPosition(frame.add_robots(), robotAt.robot_id(), Position(true, robotAt.x(), robotAt.y()), Angle(true, Angle::toRadians(robotAt.orientation())));
         }
         else {
-            movePlayerToPosition(frame.add_robots(), chosenRobot.robot_id(), Position(true, chosenRobot.x(), chosenRobot.y()), Angle(true, chosenRobot.orientation()));
+            movePlayerToPosition(frame.add_robots(), chosenRobot.robot_id(), Position(true, chosenRobot.x(), chosenRobot.y()), Angle(true, Angle::toRadians(chosenRobot.orientation())));
         }
     }
 
