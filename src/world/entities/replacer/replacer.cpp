@@ -538,7 +538,7 @@ VSSRef::Frame Replacer::getOutsideFieldPlacement(VSSRef::Color teamColor){
 
     // Place each robot outside field
     for(int i = 0; i < players.size(); i++) {
-        PlaceData toPlace(Position(true, ((i+1) * 2*getConstants()->robotLength()) + (i * sideLength/players.size()), 1.1*fieldWidth), Angle(true, Angle::pi / 2.0);
+        PlaceData toPlace(Position(true, ((i+1) * 2*getConstants()->robotLength()) + (i * sideLength/players.size()), 1.1*fieldWidth), Angle(true, Angle::pi / 2.0));
         if(teamIsAtLeft) toPlace.reflect();
         movePlayerToPosition(frame.add_robots(), players.at(i), toPlace.getPosition(), toPlace.getOrientation());
     }
