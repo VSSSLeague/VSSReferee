@@ -282,6 +282,19 @@ color: white;</string>
       <set>Qt::AlignCenter</set>
      </property>
     </widget>
+    <widget class="QPushButton" name="sendToDiscord">
+     <property name="geometry">
+      <rect>
+       <x>238</x>
+       <y>104</y>
+       <width>131</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Send to Discord</string>
+     </property>
+    </widget>
     <zorder>statusColor</zorder>
     <zorder>leftTeamLogo</zorder>
     <zorder>rightTeamLogo</zorder>
@@ -291,6 +304,7 @@ color: white;</string>
     <zorder>halfTime</zorder>
     <zorder>leftTeamName</zorder>
     <zorder>rightTeamName</zorder>
+    <zorder>sendToDiscord</zorder>
    </widget>
    <widget class="QGroupBox" name="manualReferee">
     <property name="geometry">
@@ -786,7 +800,7 @@ color: white;</string>
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="quadrantButtons"/>
   <buttongroup name="forButtons"/>
+  <buttongroup name="quadrantButtons"/>
  </buttongroups>
 </ui>

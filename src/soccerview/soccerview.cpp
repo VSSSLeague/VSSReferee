@@ -187,6 +187,19 @@ void SoccerView::setupButtons() {
         _buttonsMapper->setMapping(button, button);
         connect(_buttonsMapper, SIGNAL(mapped(QWidget *)), this, SLOT(processButton(QWidget *)), Qt::UniqueConnection);
     }
+
+    // Connect Send To Discord button
+    connect(ui->sendToDiscord, &QPushButton::released, [this](){
+        QString leftTeamName = ui->leftTeamName->text();
+        QString rightTeamName = ui->rightTeamName->text();
+        QString leftTeamScore = ui->leftTeamGoals->text();
+        QString rightTeamScore = ui->rightTeamGoals->text();
+
+        QString gameType = getConstants()->gameType(); // quaterfinals, grouph phase, etc.
+
+        system("echo 'oi'"); // modify this to call discord script
+        ui->sendToDiscord->setEnabled(false);
+    });
 }
 
 void SoccerView::animateWidget(QWidget *widget, QColor desiredColor, int animationTime) {
