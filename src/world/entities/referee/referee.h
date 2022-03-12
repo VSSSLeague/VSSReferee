@@ -89,6 +89,9 @@ private:
     bool _isPenaltyShootout;
     void resetTransitionVars();
 
+    // Collision
+    void checkIfTeamsAreColliding();
+
     // Game control
     void sendControlFoul(VSSRef::Foul foul);
     bool _gameHalted;

@@ -91,6 +91,9 @@ void Referee::initialization() {
     // Debug network info
     std::cout << Text::blue("[REFEREE] ", true) + Text::bold("Module started at address '" + _refereeAddress.toStdString() + "' and port '" + std::to_string(_refereePort) + "'.") + '\n';
 
+    // Call check collision
+    checkIfTeamsAreColliding();
+
     // Call halfPassed (start game)
     halfPassed();
 }
@@ -300,6 +303,31 @@ void Referee::resetTransitionVars() {
     _teamsPlaced = false;
     _gameHalted = false;
     _longStop = false;
+}
+
+void Referee::checkIfTeamsAreColliding() {
+    std::cout << Text::yellow("[VSSReferee] ", true) + Text::bold("Checking collisions with teams placements.\n");
+
+    for(int i = VSSRef::PENALTY_KICK; i <= VSSRef::KICKOFF; i++) {
+        if(VSSRef::Foul(i) == VSSRef::Foul::FREE_BALL) {
+            for(int j = VSSRef::Quadrant_MIN; j <= VSSRef::Quadrant_MAX; j++) {
+                std::cout << Text::yellow("[VSSReferee] ", true) + Text::bold("Sending FREE_BALL in " + VSSRef::Quadrant_Name(VSSRef::Quadrant(j)) + '\n');
+                updatePenaltiesInfo(VSSRef::Foul(i), VSSRef::Color::NONE, VSSRef::Quadrant(j));
+                sendPenaltiesToNetwork();
+                std::this_thread::sleep_for(std::chrono::milliseconds(200));
+                emit callReplacer(false, false);
+            }
+        }
+        else {
+            for(int j = VSSRef::Color::BLUE; j <= VSSRef::Color::YELLOW; j++) {
+                std::cout << Text::yellow("[VSSReferee] ", true) + Text::bold("Sending " + VSSRef::Foul_Name(VSSRef::Foul(i)) + "to team " + VSSRef::Color_Name(VSSRef::Color(j)) + '\n');
+                updatePenaltiesInfo(VSSRef::Foul(i), VSSRef::Color(j), VSSRef::Quadrant::NO_QUADRANT);
+                sendPenaltiesToNetwork();
+                std::this_thread::sleep_for(std::chrono::milliseconds(200));
+                emit callReplacer(false, false);
+            }
+        }
+    }
 }
 
 void Referee::updatePenaltiesInfo(VSSRef::Foul foul, VSSRef::Color foulTeam, VSSRef::Quadrant foulQuadrant, bool isManual) {
