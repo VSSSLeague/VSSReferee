@@ -310,7 +310,7 @@ void Referee::checkIfTeamsAreColliding() {
 
     for(int i = VSSRef::PENALTY_KICK; i <= VSSRef::KICKOFF; i++) {
         if(VSSRef::Foul(i) == VSSRef::Foul::FREE_BALL) {
-            for(int j = VSSRef::Quadrant_MIN; j <= VSSRef::Quadrant_MAX; j++) {
+            for(int j = VSSRef::QUADRANT_1; j <= VSSRef::QUADRANT_2; j++) {
                 std::cout << Text::yellow("[VSSReferee] ", true) + Text::bold("Sending FREE_BALL in " + VSSRef::Quadrant_Name(VSSRef::Quadrant(j)) + '\n');
                 updatePenaltiesInfo(VSSRef::Foul(i), VSSRef::Color::NONE, VSSRef::Quadrant(j));
                 sendPenaltiesToNetwork();

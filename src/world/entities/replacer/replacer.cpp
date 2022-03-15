@@ -356,7 +356,7 @@ bool Replacer::checkIfCollides(VSSRef::Frame blueFrame, VSSRef::Frame yellowFram
             if(Utils::distance(blueRobotPosition, yellowRobotPosition) <= 1.1 * getConstants()->robotLength()) {
                 std::cout << Text::yellow("[REPLACER] ", true) + Text::bold("Detected collision with blue and yellow frames:") + '\n';
                 std::cout << "Collision with blue robot " + std::to_string(blueFrame.robots(i).robot_id()) + " at position x: " + std::to_string(blueRobotPosition.x()) + " y: " + std::to_string(blueRobotPosition.y()) + '\n';
-                std::cout << "Collision with yellow robot " + std::to_string(yellowFrame.robots(i).robot_id()) + " at position x: " + std::to_string(yellowRobotPosition.x()) + " y: " + std::to_string(yellowRobotPosition.y()) + '\n';
+                std::cout << "Collision with yellow robot " + std::to_string(yellowFrame.robots(j).robot_id()) + " at position x: " + std::to_string(yellowRobotPosition.x()) + " y: " + std::to_string(yellowRobotPosition.y()) + '\n';
 
                 return true;
             }
