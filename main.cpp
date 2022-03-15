@@ -3,6 +3,7 @@
 
 #include <src/utils/exithandler/exithandler.h>
 #include <src/refereecore.h>
+#include <src/recorder/recorder.h>
 
 int main(int argc, char *argv[])
 {
@@ -54,12 +55,19 @@ int main(int argc, char *argv[])
     RefereeCore *refereeCore = new RefereeCore(constants);
     refereeCore->start();
 
+    // Initializing log recorder
+    QString logFileName = PROJECT_PATH + QString("/logs/") + Timer::getActualTime() + QString("|%1 - %2_%3").arg(constants->gameType()).arg(constants->blueTeamName()).arg(constants->yellowTeamName()) +  ".log";
+    Recorder *recorder = new Recorder(logFileName, constants->visionAddress(), constants->visionPort(), constants->refereeAddress(), constants->refereePort());
+
     // Wait for app exec
     bool exec = app.exec();
 
     // Stopping and deleting referee core
     refereeCore->stop();
     delete refereeCore;
+
+    // Delete recorder
+    delete recorder;
 
     // Deleting constants
     delete constants;

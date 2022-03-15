@@ -44,6 +44,7 @@ SOURCES += \
         include/vssref_placement.pb.cc \
         main.cpp \
         src/constants/constants.cpp \
+        src/recorder/recorder.cpp \
         src/refereecore.cpp \
         src/soccerview/fieldview/fieldview.cpp \
         src/soccerview/fieldview/gltext/gltext.cpp \
@@ -90,6 +91,7 @@ HEADERS += \
     include/vssref_common.pb.h \
     include/vssref_placement.pb.h \
     src/constants/constants.h \
+    src/recorder/recorder.h \
     src/refereecore.h \
     src/soccerview/fieldview/fieldview.h \
     src/soccerview/fieldview/gltext/gltext.h \
@@ -98,6 +100,7 @@ HEADERS += \
     src/utils/types/field/field.h \
     src/utils/types/field/field_default_3v3.h \
     src/utils/types/field/field_default_5v5.h \
+    src/utils/types/messagetype/messagetype.h \
     src/utils/types/object/object.h \
     src/utils/types/placedata/placedata.h \
     src/utils/types/position/position.h \
