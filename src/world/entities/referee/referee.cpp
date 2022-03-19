@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <random>
+#include <thread>
 
 #include <include/vssref_command.pb.h>
 #include <src/soccerview/soccerview.h>
