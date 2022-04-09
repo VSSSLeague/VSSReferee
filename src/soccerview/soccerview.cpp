@@ -1,4 +1,4 @@
-#include "soccerview.h"
+﻿#include "soccerview.h"
 #include "ui_soccerview.h"
 
 #include <src/utils/text/text.h>
@@ -29,6 +29,9 @@ SoccerView::SoccerView(Constants *constants, QWidget *parent) :
 
     // Set flag as not visible
     ui->flag->setVisible(false);
+
+    // Set send to discord (webhook) not visible
+    ui->sendToDiscord->setVisible(false);
 }
 
 SoccerView::~SoccerView()
@@ -190,14 +193,16 @@ void SoccerView::setupButtons() {
 
     // Connect Send To Discord button
     connect(ui->sendToDiscord, &QPushButton::released, [this](){
-        QString leftTeamName = ui->leftTeamName->text();
-        QString rightTeamName = ui->rightTeamName->text();
-        QString leftTeamScore = ui->leftTeamGoals->text();
-        QString rightTeamScore = ui->rightTeamGoals->text();
+        QString leftTeamName = getConstants()->blueTeamName();
+        QString rightTeamName = getConstants()->yellowTeamName();
+        QString leftTeamScore = QString("%1").arg(getLeftTeamGoals());
+        QString rightTeamScore = QString("%1").arg(getRightTeamGoals());
 
         QString gameType = getConstants()->gameType(); // quaterfinals, grouph phase, etc.
 
-        system("echo 'oi'"); // modify this to call discord script
+        QString cmd = QString("/home/ubuntu/vsss results '%1' %2 '%3' %4 --hid %5 --htoken %6").arg(leftTeamName).arg(leftTeamScore).arg(rightTeamName).arg(rightTeamScore).arg(getConstants()->getHID()).arg(getConstants()->getHToken());
+        std::cout << cmd.toStdString() + "\n";
+        system(cmd.toStdString().c_str());
         ui->sendToDiscord->setEnabled(false);
     });
 }
@@ -365,6 +370,7 @@ void SoccerView::takeTimeStamp(float halftime, float timestamp, VSSRef::Half hal
         ui->gameTime->setText("END");
         ui->refereeSuggestions->setEnabled(false);
         ui->manualReferee->setEnabled(false);
+        ui->sendToDiscord->setVisible(true);
         return ;
     }
 
