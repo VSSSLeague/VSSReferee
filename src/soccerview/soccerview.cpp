@@ -201,7 +201,7 @@ void SoccerView::setupButtons() {
         QString gameType = getConstants()->gameType(); // quaterfinals, grouph phase, etc.
 
         QString cmd = QString("/home/ubuntu/vsss results '%1' %2 '%3' %4 --hid %5 --htoken %6").arg(leftTeamName).arg(leftTeamScore).arg(rightTeamName).arg(rightTeamScore).arg(getConstants()->getHID()).arg(getConstants()->getHToken());
-        std::cout << cmd.toStdString() + "\n";
+
         system(cmd.toStdString().c_str());
         ui->sendToDiscord->setEnabled(false);
     });
