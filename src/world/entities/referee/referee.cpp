@@ -414,7 +414,7 @@ void Referee::halfPassed() {
     // If has at second half, check if is needed to go to overtime
     if(_gameHalf == VSSRef::Half::SECOND_HALF) {
         // If eq goals (go to overtime)
-        if((_soccerView->getLeftTeamGoals() == _soccerView->getRightTeamGoals()) && _soccerView->getStage().toLower() != "group_phase") {
+        if((_soccerView->getLeftTeamGoals() == _soccerView->getRightTeamGoals()) && (_soccerView->getStage().toLower() != "group_phase" && !_soccerView->getStage().toLower().contains("rodada"))) {
             _halfChecker->setIsOvertime(true);
         }
         else {

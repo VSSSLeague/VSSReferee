@@ -45,5 +45,10 @@
     		"stuckedBallTime": 5.0,
     		"ballInAreaMaxTime": 3.0
     	}
+    },
+    
+    "Webhook":{
+    	"hID": "",
+    	"hToken": ""
     }
 }
