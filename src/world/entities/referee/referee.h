@@ -61,6 +61,7 @@ private:
 
     // Checkers
     QHash<int, QVector<Checker*>*> _checkers;
+    QMutex _checkerMutex;
 
     // Stucked ball checker
     Checker_StuckedBall *_stuckedBallChecker;
