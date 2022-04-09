@@ -23,6 +23,7 @@ Constants::Constants(QString fileName) {
     readVisionConstants();
     readReplacerConstants();
     readTeamConstants();
+    readWebhookConstants();
 }
 
 void Constants::readEntityConstants() {
@@ -159,7 +160,7 @@ void Constants::readWebhookConstants() {
     QVariantMap teamMap = documentMap()["Webhook"].toMap();
 
     // Filling vars
-    _hID = teamMap["hID"].toInt();
+    _hID = teamMap["hID"].toString();
     std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded hID: " + _hID.toStdString()) + '\n';
 
     _hToken = teamMap["hToken"].toString();
