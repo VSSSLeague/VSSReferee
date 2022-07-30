@@ -287,7 +287,7 @@ VSSRef::Frame Replacer::getPlacementFrameByFoul(QString foul, VSSRef::Quadrant f
     if(teamIsAtLeft) goalKeeperPlaceData.reflect();
 
     // If is GOAL_KICK, randomly swap the y-axis
-    if(foul == "GOAL_KICK" && getFoulColor() == teamColor && !getConstants()->is5v5()) {
+    if(foul == "GOAL_KICK" && getFoulColor() == teamColor) {
         // Random to choose GK position
         auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
         std::mt19937 mt_rand(seed);
@@ -479,13 +479,14 @@ Position Replacer::getBallPlaceByFoul(VSSRef::Foul foul, VSSRef::Color color, VS
         }
         break;
         case VSSRef::Foul::GOAL_KICK:{
+        float stretch = getField()->defenseStretch()/2000.0 + getConstants()->ballRadius();
             if(color == VSSRef::Color::BLUE){
-                if(getConstants()->blueIsLeftSide()) return Position(true, -goalKickX, getConstants()->is5v5() ? 0.0 : ((_isGoaliePlacedAtTop) ? (0.375 - getConstants()->ballRadius()) : (-0.375 + getConstants()->ballRadius())));
-                else return Position(true, goalKickX, getConstants()->is5v5() ? 0.0 : ((_isGoaliePlacedAtTop) ? (0.375 - getConstants()->ballRadius()) : (-0.375 + getConstants()->ballRadius())));
+                if(getConstants()->blueIsLeftSide()) return Position(true, -goalKickX, ((_isGoaliePlacedAtTop) ? (stretch - getConstants()->ballRadius()) : (-stretch + getConstants()->ballRadius())));
+                else return Position(true, goalKickX, ((_isGoaliePlacedAtTop) ? (stretch - getConstants()->ballRadius()) : (-stretch + getConstants()->ballRadius())));
             }
             else if(color == VSSRef::Color::YELLOW){
-                if(getConstants()->blueIsLeftSide()) return Position(true, goalKickX, getConstants()->is5v5() ? 0.0 : ((_isGoaliePlacedAtTop) ? (0.375 - getConstants()->ballRadius()) : (-0.375 + getConstants()->ballRadius())));
-                else return Position(true, -goalKickX, getConstants()->is5v5() ? 0.0 : ((_isGoaliePlacedAtTop) ? (0.375 - getConstants()->ballRadius()) : (-0.375 + getConstants()->ballRadius())));
+                if(getConstants()->blueIsLeftSide()) return Position(true, goalKickX, ((_isGoaliePlacedAtTop) ? (stretch - getConstants()->ballRadius()) : (-stretch + getConstants()->ballRadius())));
+                else return Position(true, -goalKickX, ((_isGoaliePlacedAtTop) ? (stretch - getConstants()->ballRadius()) : (-stretch + getConstants()->ballRadius())));
             }
         }
         break;
