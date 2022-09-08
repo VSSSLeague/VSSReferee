@@ -4,6 +4,8 @@
 #include <random>
 #include <thread>
 
+#include <QNetworkInterface>
+
 #include <include/vssref_command.pb.h>
 #include <src/soccerview/soccerview.h>
 
@@ -238,6 +240,10 @@ void Referee::connectClient() {
 
     // Connect to referee address and port
     _refereeClient->connectToHost(_refereeAddress, _refereePort, QIODevice::WriteOnly, QAbstractSocket::IPv4Protocol);
+
+    // Set multicast options
+    _refereeClient->setSocketOption(QAbstractSocket::MulticastTtlOption, 1);
+    _refereeClient->setMulticastInterface(QNetworkInterface::interfaceFromName(getConstants()->networkInterface()));
 }
 
 void Referee::disconnectClient() {

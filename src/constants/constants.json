@@ -13,6 +13,10 @@
     	}
     },
     
+    "Network":{
+    	"networkInterface": "lo"
+    },
+    
     "Replacer":{
     	"replacerAddress": "224.5.23.2",
     	"replacerPort": 10004,

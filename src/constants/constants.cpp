@@ -19,6 +19,7 @@ Constants::Constants(QString fileName) {
 
     // Read data
     readEntityConstants();
+    readNetworkConstants();
     readRefereeConstants();
     readVisionConstants();
     readReplacerConstants();
@@ -33,6 +34,15 @@ void Constants::readEntityConstants() {
     // Filling vars
     _threadFrequency = threadMap["threadFrequency"].toInt();
     std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded threadFrequency: " + std::to_string(_threadFrequency)) + '\n';
+}
+
+void Constants::readNetworkConstants() {
+    // Taking entity mapping in json
+    QVariantMap networkMap = documentMap()["Network"].toMap();
+
+    // Filling vars
+    _networkInterface = networkMap["networkInterface"].toString();
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded network interface: " + _networkInterface.toStdString()) + '\n';
 }
 
 void Constants::readRefereeConstants() {
@@ -169,6 +179,10 @@ void Constants::readWebhookConstants() {
 
 int Constants::threadFrequency() {
     return _threadFrequency;
+}
+
+QString Constants::networkInterface() {
+    return _networkInterface;
 }
 
 QString Constants::refereeAddress() {

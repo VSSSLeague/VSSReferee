@@ -1,5 +1,6 @@
 #include <QCommandLineParser>
 #include <QCommandLineOption>
+#include <QNetworkInterface>
 
 #include <src/utils/exithandler/exithandler.h>
 #include <src/refereecore.h>
@@ -46,6 +47,11 @@ int main(int argc, char *argv[])
 
     // Initializing constants
     Constants *constants = new Constants(QString(PROJECT_PATH) + "/src/constants/constants.json");
+
+    // Check if network interface is valid
+    if(!QNetworkInterface::interfaceFromName(constants->networkInterface()).isValid()) {
+        std::cout << Text::red("[ERROR] ", true) + Text::bold("Invalid specified network interface '" + constants->networkInterface().toStdString() + "'") + '\n';
+    }
 
     // Check if 3v3 or 5v5 option is set, otherwise close
     if(parser.isSet(use5v5Option) || parser.isSet(use3v3Option)) {

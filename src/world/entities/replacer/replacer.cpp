@@ -6,6 +6,8 @@
 #include <src/utils/types/field/field.h>
 #include <src/utils/utils.h>
 
+#include <QNetworkInterface>
+
 void movePlayerToPosition(VSSRef::Robot *bot, quint8 botId, Position position, Angle orientation) {
     bot->set_orientation(0.0);
     bot->set_robot_id(botId);
@@ -56,13 +58,13 @@ void Replacer::bindAndConnect() {
 
     // Binding replacer in defined network data
     if(_replacerClient->bind(QHostAddress(_replacerAddress), _replacerPort, QUdpSocket::ShareAddress) == false) {
-        std::cout << Text::blue("[VISION] " , true) << Text::red("Error while binding socket.", true) + '\n';
+        std::cout << Text::blue("[REPLACER] " , true) << Text::red("Error while binding socket.", true) + '\n';
         return ;
     }
 
     // Joining multicast group
-    if(_replacerClient->joinMulticastGroup(QHostAddress(_replacerAddress)) == false) {
-        std::cout << Text::blue("[VISION] ", true) << Text::red("Error while joining multicast.", true) + '\n';
+    if(_replacerClient->joinMulticastGroup(QHostAddress(_replacerAddress), QNetworkInterface::interfaceFromName(getConstants()->networkInterface())) == false) {
+        std::cout << Text::blue("[REPLACER] ", true) << Text::red("Error while joining multicast.", true) + '\n';
         return ;
     }
 }

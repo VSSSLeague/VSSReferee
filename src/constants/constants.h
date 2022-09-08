@@ -17,6 +17,9 @@ public:
     // Entities constants getters
     int threadFrequency();
 
+    // Network constants getters
+    QString networkInterface();
+
     // Referee constants getters
     QString refereeAddress();
     quint16 refereePort();
@@ -74,6 +77,10 @@ private:
     // Entities constants
     int _threadFrequency;
     void readEntityConstants();
+
+    // Network interface
+    QString _networkInterface;
+    void readNetworkConstants();
 
     // Referee
     QString _refereeAddress;
