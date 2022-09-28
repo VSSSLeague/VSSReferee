@@ -38,7 +38,8 @@ private:
 
     // Animations
     void animateWidget(QWidget *widget, QColor desiredColor, int animationTime);
-    void animateFlag(bool toShow, int animationTime);
+    void animateFlag(bool toShow, int animationTime, QString flagImage = ":/ui/yellowflag.png");
+    QString _pixmapPath;
 
     // Mapping buttons
     QList<QPushButton*> _buttons;
@@ -51,6 +52,18 @@ private:
     // Goals
     int _leftTeamGoals;
     int _rightTeamGoals;
+    std::pair<VSSRef::Color, bool> _happenedGoal;
+
+    // Timeouts
+    int _leftTeamTimeouts;
+    int _rightTeamTimeouts;
+    bool _timeoutSet;
+    float _timeoutTimestamp;
+    Timer _timeoutTimer;
+
+    // VARs
+    int _leftTeamVars;
+    int _rightTeamVars;
 
     // Suggestions
     QList<QWidget*> _widgets;
@@ -66,10 +79,10 @@ signals:
 public slots:
     void takeFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant);
     void takeTimeStamp(float halftime, float timestamp, VSSRef::Half half, bool isEndGame);
-    void addGoal(VSSRef::Color color);
+    void addGoal(VSSRef::Color color, bool setFlag = false);
     void removeGoal(VSSRef::Color color);
     void processButton(QWidget *button);
-    void addSuggestion(QString suggestion, VSSRef::Color forColor = VSSRef::Color::NONE, VSSRef::Quadrant atQuadrant = VSSRef::Quadrant::NO_QUADRANT);
+    void addSuggestion(QString suggestion, VSSRef::Color forColor = VSSRef::Color::NONE, VSSRef::Quadrant atQuadrant = VSSRef::Quadrant::NO_QUADRANT, bool showFlag = true);
 };
 
 #endif // SOCCERVIEW_H

@@ -31,5 +31,7 @@
         <file>teams/utbots.png</file>
         <file>teams/lambesujo.png</file>
         <file>teams/carrossel.png</file>
+        <file>ui/timeoutflag.png</file>
+        <file>ui/varflag.png</file>
     </qresource>
 </RCC>

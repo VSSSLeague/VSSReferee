@@ -25,6 +25,9 @@ public:
     quint16 refereePort();
     float transitionTime();
     QString gameType();
+    int varsPerTeam();
+    int timeoutsPerTeam();
+    float timeoutLength();
     float ballRadius();
     float robotLength();
     float halfTime();
@@ -87,6 +90,9 @@ private:
     quint16 _refereePort;
     float _transitionTime;
     QString _gameType;
+    int _varsPerTeam;
+    int _timeoutsPerTeam;
+    float _timeoutLength;
     float _ballRadius;
     float _robotLength;
     float _halfTime;

@@ -44,7 +44,7 @@ private:
     Checker_TwoDefenders *_checkerTwoDef;
 
 signals:
-    void emitGoal(VSSRef::Color forTeam);
+    void emitGoal(VSSRef::Color forTeam, bool enableFlag);
     void emitSuggestion(QString suggestion, VSSRef::Color forTeam = VSSRef::Color::NONE, VSSRef::Quadrant atQuadrant = VSSRef::Quadrant::NO_QUADRANT);
 };
 

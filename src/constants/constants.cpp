@@ -67,6 +67,15 @@ void Constants::readRefereeConstants() {
     _gameType = gameParamsMap["gameType"].toString();
     std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded gameType: '" + _gameType.toStdString() + "'\n");
 
+    _varsPerTeam = gameParamsMap["varsPerTeam"].toInt();
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded varsPerTeam: '" + std::to_string(_varsPerTeam) + "'\n");
+
+    _timeoutsPerTeam = gameParamsMap["timeoutsPerTeam"].toInt();
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded timeoutsPerTeam: '" + std::to_string(_timeoutsPerTeam) + "'\n");
+
+    _timeoutLength = gameParamsMap["timeoutLength"].toFloat();
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded timeoutLength: '" + std::to_string(_timeoutLength) + "'\n");
+
     _ballRadius = gameParamsMap["ballRadius"].toFloat();
     std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded ballRadius: '" + std::to_string(_ballRadius) + "'\n");
 
@@ -199,6 +208,18 @@ float Constants::transitionTime() {
 
 QString Constants::gameType() {
     return _gameType;
+}
+
+int Constants::varsPerTeam() {
+    return _varsPerTeam;
+}
+
+int Constants::timeoutsPerTeam() {
+    return _timeoutsPerTeam;
+}
+
+float Constants::timeoutLength() {
+    return _timeoutLength;
 }
 
 float Constants::ballRadius() {

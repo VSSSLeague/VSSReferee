@@ -40,6 +40,9 @@
     		"ballRadius": 0.0215,
     		"robotLength": 0.075,
     		"halfTime": 300.0,
+	    	"varsPerTeam": 1,
+	    	"timeoutsPerTeam": 2,
+	    	"timeoutLength": 180.0,
     		"overtimeHalfTime": 180.0
     	},
     	"fouls":{

@@ -96,7 +96,7 @@ void Checker_BallPlay::run() {
                     // Check if not occurred possible penalty or goal kick
                     if(!_possiblePenalty && !_possibleGoalKick) {
                         // Send as valid goal
-                        emit emitGoal(_possibleGoalTeam);
+                        emit emitGoal(_possibleGoalTeam, true);
 
                         // If is penalty shootout
                         if(_isPenaltyShootout) {
@@ -147,7 +147,7 @@ void Checker_BallPlay::run() {
                         }
                         // Possible goal, possible penalty and not possible goal kick, priority: GOAL
                         else if(!_possibleGoalKick && _possiblePenalty) {
-                            emit emitGoal(_possibleGoalTeam);
+                            emit emitGoal(_possibleGoalTeam, true);
 
                             setPenaltiesInfo(VSSRef::Foul::KICKOFF, (_possibleGoalTeam == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE, VSSRef::Quadrant::NO_QUADRANT);
                             emit foulOccured();

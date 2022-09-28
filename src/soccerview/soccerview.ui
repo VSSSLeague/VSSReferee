@@ -310,9 +310,9 @@ color: white;</string>
     <property name="geometry">
      <rect>
       <x>630</x>
-      <y>310</y>
+      <y>299</y>
       <width>421</width>
-      <height>290</height>
+      <height>301</height>
      </rect>
     </property>
     <property name="font">
@@ -725,7 +725,7 @@ color: white;</string>
      <property name="geometry">
       <rect>
        <x>180</x>
-       <y>230</y>
+       <y>260</y>
        <width>226</width>
        <height>25</height>
       </rect>
@@ -735,6 +735,9 @@ color: white;</string>
      </property>
     </widget>
     <widget class="QPushButton" name="rmvField">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>180</x>
@@ -747,6 +750,32 @@ color: white;</string>
       <string>WO Kickoff</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="var">
+     <property name="geometry">
+      <rect>
+       <x>180</x>
+       <y>230</y>
+       <width>100</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>VAR</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="timeout">
+     <property name="geometry">
+      <rect>
+       <x>305</x>
+       <y>230</y>
+       <width>100</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Timeout</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QGroupBox" name="refereeSuggestions">
     <property name="geometry">
@@ -754,7 +783,7 @@ color: white;</string>
       <x>630</x>
       <y>10</y>
       <width>421</width>
-      <height>290</height>
+      <height>281</height>
      </rect>
     </property>
     <property name="title">
@@ -766,7 +795,7 @@ color: white;</string>
        <x>0</x>
        <y>20</y>
        <width>421</width>
-       <height>271</height>
+       <height>261</height>
       </rect>
      </property>
      <layout class="QGridLayout" name="suggestionGrid"/>
@@ -776,7 +805,7 @@ color: white;</string>
     <property name="geometry">
      <rect>
       <x>770</x>
-      <y>100</y>
+      <y>90</y>
       <width>131</width>
       <height>141</height>
      </rect>
@@ -800,7 +829,7 @@ color: white;</string>
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="forButtons"/>
   <buttongroup name="quadrantButtons"/>
+  <buttongroup name="forButtons"/>
  </buttongroups>
 </ui>
