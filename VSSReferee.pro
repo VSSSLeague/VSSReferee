@@ -42,6 +42,9 @@ SOURCES += \
         include/vssref_command.pb.cc \
         include/vssref_common.pb.cc \
         include/vssref_placement.pb.cc \
+        include/messages_robocup_ssl_detection.pb.cc \
+        include/messages_robocup_ssl_geometry.pb.cc \
+        include/wrapper.pb.cc \
         main.cpp \
         src/constants/constants.cpp \
         src/recorder/recorder.cpp \
@@ -90,6 +93,9 @@ HEADERS += \
     include/vssref_command.pb.h \
     include/vssref_common.pb.h \
     include/vssref_placement.pb.h \
+    include/messages_robocup_ssl_detection.pb.h \
+    include/messages_robocup_ssl_geometry.pb.h \
+    include/wrapper.pb.h \
     src/constants/constants.h \
     src/recorder/recorder.h \
     src/refereecore.h \

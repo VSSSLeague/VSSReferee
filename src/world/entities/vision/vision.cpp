@@ -1,7 +1,5 @@
 #include "vision.h"
 
-#include <include/packet.pb.h>
-
 Vision::Vision(Constants *constants) : Entity(ENT_VISION) {
     // Taking constants
     _constants = constants;
@@ -28,7 +26,7 @@ void Vision::initialization() {
 void Vision::loop() {
     while(_visionClient->hasPendingDatagrams()) {
         // Creating auxiliary vars
-        fira_message::sim_to_ref::Environment environmentData;
+        SSL_WrapperPacket wrapper;
         QNetworkDatagram datagram;
 
         // Reading datagram and checking if it is valid
@@ -38,13 +36,12 @@ void Vision::loop() {
         }
 
         // Parsing datagram and checking if it worked properly
-        if(environmentData.ParseFromArray(datagram.data().data(), datagram.data().size()) == false) {
+        if(wrapper.ParseFromArray(datagram.data().data(), datagram.data().size()) == false) {
             std::cout << Text::blue("[VISION] ", true) << Text::red("Wrapper packet parsing error.", true) + '\n';
             continue;
         }
 
-        // Iterate received vision frame
-        if(environmentData.has_frame()) {
+        if(wrapper.has_detection()) {
             // Lock mutex for write
             _dataMutex.lockForWrite();
 
@@ -52,43 +49,47 @@ void Vision::loop() {
             clearObjectsControl();
 
             // Take frame
-            fira_message::Frame frame = environmentData.frame();
+            const auto& detection = wrapper.detection();
 
             // Parse ball
-            if(frame.has_ball()) {
-                _ballObject->updateObject(1.0f, Position(true, frame.ball().x(), frame.ball().y()));
-            }
-            else {
-                _ballObject->updateObject(0.0f, Position(false, 0.0, 0.0));
+            {
+                using BALL = std::pair<float, Position>;
+                QVector<BALL> balls;
+                for (const auto& ball : detection.balls()) {
+                    balls += BALL(ball.confidence(), Position(true, ball.x() / 1000., ball.y() / 1000.));
+                }
+                /* TODO: How we can do it better? (ball confidence) */ 
+                std::sort(balls.begin(), balls.end(), [](BALL a, BALL b) { return a.first > b.first; });
+
+                if (!balls.empty()) {
+                    _ballObject->updateObject(balls.front().first/ 1000., balls.front().second);
+                }
+                else {
+                    _ballObject->updateObject(0.0f, Position(false, 0.0, 0.0));
+                }
             }
 
             // Parse blue robots
-            for(int i = 0; i < frame.robots_blue_size(); i++) {
-                // Take robot
-                fira_message::Robot robot = frame.robots_blue(i);
-
+            for (const auto& robot : detection.robots_blue()) {
                 // Take id
                 quint8 robotId = robot.robot_id();
 
                 // Get object
                 Object *robotObject = _objects.value(VSSRef::Color::BLUE)->value(robotId);
-                robotObject->updateObject(1.0f, Position(true, robot.x(), robot.y()), Angle(true, robot.orientation()));
+                robotObject->updateObject(robot.confidence(), Position(true, robot.x() / 1000., robot.y() / 1000.), Angle(true, robot.orientation()));
 
                 // Update control to true
                 _objectsControl.value(VSSRef::Color::BLUE)->insert(robotId, true);
             }
 
             // Parse yellow robots
-            for(int i = 0; i < frame.robots_yellow_size(); i++) {
-                // Take robot
-                fira_message::Robot robot = frame.robots_yellow(i);
-
+            for (const auto& robot : detection.robots_yellow()) {
                 // Take id
                 quint8 robotId = robot.robot_id();
 
                 // Get object
                 Object *robotObject = _objects.value(VSSRef::Color::YELLOW)->value(robotId);
-                robotObject->updateObject(1.0f, Position(true, robot.x(), robot.y()), Angle(true, robot.orientation()));
+                robotObject->updateObject(robot.confidence(), Position(true, robot.x() / 1000., robot.y() / 1000.), Angle(true, robot.orientation()));
 
                 // Update control to true
                 _objectsControl.value(VSSRef::Color::YELLOW)->insert(robotId, true);
