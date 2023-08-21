@@ -185,7 +185,7 @@ void Referee::loop() {
                 _resetedTimer = false;
 
                 // Call replacer (place teams)
-                emit callReplacer(_forceDefault, _isToPlaceOutside);
+                // emit callReplacer(_forceDefault, _isToPlaceOutside);
                 _forceDefault = false;
                 _isToPlaceOutside = false;
 
