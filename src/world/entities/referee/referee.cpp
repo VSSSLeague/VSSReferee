@@ -95,7 +95,7 @@ void Referee::initialization() {
     std::cout << Text::blue("[REFEREE] ", true) + Text::bold("Module started at address '" + _refereeAddress.toStdString() + "' and port '" + std::to_string(_refereePort) + "'.") + '\n';
 
     // Call check collision
-    checkIfTeamsAreColliding();
+    // checkIfTeamsAreColliding();
 
     // Call halfPassed (start game)
     halfPassed();
