@@ -37,6 +37,11 @@ public:
     // Vision constants getters
     QString visionAddress();
     quint16 visionPort();
+    QString firaVisionAddress();
+    quint16 firaVisionPort();
+
+    bool isFIRAVision();
+
     bool useKalman();
     int noiseTime();
     int lossTime();
@@ -91,6 +96,9 @@ private:
     // Vision constants
     QString _visionAddress;
     quint16 _visionPort;
+    QString _firaVisionAddress;
+    quint16 _firaVisionPort;
+    bool _isFIRAVision;
     bool _useKalman;
     int _noiseTime;
     int _lossTime;

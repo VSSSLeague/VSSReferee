@@ -4,8 +4,11 @@
     },
     
     "Vision":{
-    	"visionAddress": "224.0.0.1",
-    	"visionPort": 10002,
+		"isFIRAVision": true,
+    	"visionAddress": "224.5.23.2",
+    	"visionPort": 10015,
+    	"firaVisionAddress": "224.0.0.1",
+    	"firaVisionPort": 10002,
     	"filters":{
     		"useKalman": false,
     		"noiseTime": 100,

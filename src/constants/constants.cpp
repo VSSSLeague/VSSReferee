@@ -100,6 +100,15 @@ void Constants::readVisionConstants() {
 
     _visionPort = visionMap["visionPort"].toUInt();
     std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded visionPort: " + std::to_string(_visionPort)) + '\n';
+    
+    _firaVisionAddress = visionMap["firaVisionAddress"].toString();
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded firaVisionAddress: '" + _firaVisionAddress.toStdString() + "'\n");
+
+    _firaVisionPort = visionMap["firaVisionPort"].toUInt();
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded firaVisionPort: " + std::to_string(_firaVisionPort)) + '\n';
+
+    _isFIRAVision = visionMap["isFIRAVision"].toUInt();
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded isFIRAVision: " + std::to_string(_isFIRAVision)) + '\n';
 
     // Filter constants
     QVariantMap filterMap = visionMap["filters"].toMap();
@@ -224,6 +233,18 @@ QString Constants::visionAddress() {
 
 quint16 Constants::visionPort() {
     return _visionPort;
+}
+
+QString Constants::firaVisionAddress() {
+    return _firaVisionAddress;
+}
+
+quint16 Constants::firaVisionPort() {
+    return _firaVisionPort;
+}
+
+bool Constants::isFIRAVision() {
+    return _isFIRAVision;
 }
 
 bool Constants::useKalman() {
