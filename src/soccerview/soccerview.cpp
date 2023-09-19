@@ -164,6 +164,19 @@ void SoccerView::setupButtons() {
         emit addTime(1);
     });
 
+    // Connecting teleport button to lambda
+    connect(ui->enableTeleport, &QPushButton::released, [this](){
+        ui->enableTeleport->setChecked(true);
+        ui->disableTeleport->setChecked(false);
+        emit sendTeleport(true);
+    });
+
+    connect(ui->disableTeleport, &QPushButton::released, [this](){
+        ui->enableTeleport->setChecked(false);
+        ui->disableTeleport->setChecked(true);
+        emit sendTeleport(false);
+    });
+
     // Connecting command buttons that need to place outside
     connect(ui->penaltyShootout, &QPushButton::released, [this](){
         VSSRef::Color calledColor = VSSRef::Color();
