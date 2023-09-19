@@ -25,6 +25,7 @@ Referee::Referee(Vision *vision, Replacer *replacer, SoccerView *soccerView, Con
     // Taking network data
     _refereeAddress = getConstants()->refereeAddress();
     _refereePort = getConstants()->refereePort();
+    _isFIRAVision = getConstants()->isFIRAVision();
 
     // Connecting referee to replacer
     connect(_replacer, SIGNAL(teamsPlaced()), this, SLOT(teamsPlaced()));
@@ -186,9 +187,11 @@ void Referee::loop() {
                 _resetedTimer = false;
 
                 // Call replacer (place teams)
-                // emit callReplacer(_forceDefault, _isToPlaceOutside);
-                _forceDefault = false;
-                _isToPlaceOutside = false;
+                if(_isFIRAVision){
+                    emit callReplacer(_forceDefault, _isToPlaceOutside);
+                    _forceDefault = false;
+                    _isToPlaceOutside = false;
+                }
 
                 // Update sent foul to STOP
                 updatePenaltiesInfo(VSSRef::Foul::STOP, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT);
@@ -327,7 +330,7 @@ void Referee::checkIfTeamsAreColliding() {
                 updatePenaltiesInfo(VSSRef::Foul(i), VSSRef::Color::NONE, VSSRef::Quadrant(j));
                 sendPenaltiesToNetwork();
                 std::this_thread::sleep_for(std::chrono::milliseconds(200));
-                emit callReplacer(false, false);
+                if(_isFIRAVision) emit callReplacer(false, false);
             }
         }
         else {
@@ -336,7 +339,7 @@ void Referee::checkIfTeamsAreColliding() {
                 updatePenaltiesInfo(VSSRef::Foul(i), VSSRef::Color(j), VSSRef::Quadrant::NO_QUADRANT);
                 sendPenaltiesToNetwork();
                 std::this_thread::sleep_for(std::chrono::milliseconds(200));
-                emit callReplacer(false, false);
+                if(_isFIRAVision) emit callReplacer(false, false);
             }
         }
     }
@@ -595,4 +598,8 @@ Constants* Referee::getConstants() {
     }
 
     return nullptr;
+}
+
+void Referee::visionPacketChanged(bool isFIRAVision) {
+    _isFIRAVision = isFIRAVision;
 }

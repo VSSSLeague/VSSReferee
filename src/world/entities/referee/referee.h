@@ -109,6 +109,7 @@ private:
     Position _lastBallPosition;
     Velocity _lastBallVelocity;
     bool _placedLast;
+    bool _isFIRAVision;
 
 signals:
     void sendFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant);
@@ -128,6 +129,7 @@ public slots:
     void takeStuckedTime(float time);
     void processCollision(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant, bool isToPlaceOutside);
     void processCollisionDecision();
+    void visionPacketChanged(bool isFIRAVision);
 };
 
 #endif // REFEREE_H
