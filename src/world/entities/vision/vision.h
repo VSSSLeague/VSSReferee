@@ -59,6 +59,8 @@ private:
     void SSLVisionPackets();
     void FIRAVisionPackets();
 
+    std::string visionType = "[VISION] ";
+
 signals:
     void visionUpdated();
 

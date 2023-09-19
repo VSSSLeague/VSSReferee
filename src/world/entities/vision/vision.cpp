@@ -22,8 +22,9 @@ Vision::~Vision() {
 void Vision::initialization() {
     // Binding and connecting in network
     bindAndConnect();
-    std::string const visionType = _isFIRAVision ? "[FIRA_VISION] " : "[SSL_VISION] ";
-    std::cout << Text::blue(visionType, true) + Text::bold("Module started at address '" + _visionAddress.toStdString() + "' and port '" + std::to_string(_visionPort) + "'.") + '\n';
+    visionType = _isFIRAVision ? "[FIRA_VISION] " : "[SSL_VISION] ";
+    std::cout << Text::green(visionType + "Module started at address '" + _visionAddress.toStdString() + "' and port '" + std::to_string(_visionPort) + "'.", true) + '\n';
+    std::cout << Text::green(visionType + "Receiving for packets of " + (_isFIRAVision ? "FIRA Simulation!" : "SSLVision!"), true) + '\n';
 }
 
 void Vision::loop() {
@@ -46,7 +47,7 @@ void Vision::SSLVisionPackets(){
 
         // Parsing datagram and checking if it worked properly
         if(wrapper.ParseFromArray(datagram.data().data(), datagram.data().size()) == false) {
-            std::cout << Text::blue("[VISION] ", true) << Text::red("Wrapper packet parsing error.", true) + '\n';
+            std::cout << Text::green(visionType, true) << Text::green("Wrapper packet parsing error.", true) + '\n';
             continue;
         }
 
@@ -147,7 +148,7 @@ void Vision::FIRAVisionPackets(){
 
         // Parsing datagram and checking if it worked properly
         if(environmentData.ParseFromArray(datagram.data().data(), datagram.data().size()) == false) {
-            std::cout << Text::blue("[VISION] ", true) << Text::red("Wrapper packet parsing error.", true) + '\n';
+            std::cout << Text::green(visionType + "Wrapper packet parsing error.", true) + '\n';
             continue;
         }
 
@@ -240,7 +241,7 @@ void Vision::finalization() {
     // Deleting vision client
     delete _visionClient;
 
-    std::cout << Text::blue("[VISION] ", true) + Text::bold("Module finished.") + '\n';
+    std::cout << Text::green(visionType + "Module finished.", true) + '\n';
 }
 
 void Vision::bindAndConnect() {
@@ -249,13 +250,13 @@ void Vision::bindAndConnect() {
 
     // Binding in defined network data
     if(_visionClient->bind(QHostAddress(_visionAddress), _visionPort, QUdpSocket::ShareAddress) == false) {
-        std::cout << Text::blue("[VISION] " , true) << Text::red("Error while binding socket.", true) + '\n';
+        std::cout << Text::green(visionType + "Error while binding socket.", true) + '\n';
         return ;
     }
 
     // Joining multicast group
     if(_visionClient->joinMulticastGroup(QHostAddress(_visionAddress)) == false) {
-        std::cout << Text::blue("[VISION] ", true) << Text::red("Error while joining multicast.", true) + '\n';
+        std::cout << Text::green(visionType + "Error while joining multicast.", true) + '\n';
         return ;
     }
 }
@@ -393,7 +394,7 @@ Velocity Vision::getBallVelocity() {
 
 Constants* Vision::getConstants() {
     if(_constants == nullptr) {
-        std::cout << Text::red("[ERROR] ", true) << Text::bold("Constants with nullptr value at Vision") + '\n';
+        std::cout << Text::red("[ERROR] Constants with nullptr value at Vision", true) + '\n';
     }
     else {
         return _constants;
