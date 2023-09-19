@@ -42,6 +42,7 @@ private:
     // Network
     QString _visionAddress;
     quint16 _visionPort;
+    bool _isFIRAVision;
 
     // Objects
     Object *_ballObject;
@@ -56,6 +57,9 @@ private:
 
 signals:
     void visionUpdated();
+
+public slots:
+    void visionPacketChanged(bool isFIRAVision);
 };
 
 #endif // VISION_H

@@ -9,6 +9,7 @@ Vision::Vision(Constants *constants) : Entity(ENT_VISION) {
     // Taking network data
     _visionAddress = getConstants()->visionAddress();
     _visionPort = getConstants()->visionPort();
+    _isFIRAVision = getConstants()->isFIRAVision();
 
     // Init objects
     initObjects();
@@ -17,12 +18,12 @@ Vision::Vision(Constants *constants) : Entity(ENT_VISION) {
 Vision::~Vision() {
     deleteObjects();
 }
-
+    
 void Vision::initialization() {
     // Binding and connecting in network
     bindAndConnect();
-
-    std::cout << Text::blue("[VISION] ", true) + Text::bold("Module started at address '" + _visionAddress.toStdString() + "' and port '" + std::to_string(_visionPort) + "'.") + '\n';
+    std::string const visionType = _isFIRAVision ? "[FIRA_VISION] " : "[SSL_VISION] ";
+    std::cout << Text::blue(visionType, true) + Text::bold("Module started at address '" + _visionAddress.toStdString() + "' and port '" + std::to_string(_visionPort) + "'.") + '\n';
 }
 
 void Vision::loop() {
@@ -292,4 +293,20 @@ Constants* Vision::getConstants() {
     }
 
     return nullptr;
+}
+
+void Vision::visionPacketChanged(bool isFIRAVision){
+    _isFIRAVision = isFIRAVision;
+    if(isFIRAVision){
+        _visionAddress = getConstants()->firaVisionAddress();
+        _visionPort = getConstants()->firaVisionPort();
+    }
+    else{
+        _visionAddress = getConstants()->visionAddress();
+        _visionPort = getConstants()->visionPort();
+    }
+    _visionClient->close();
+    deleteObjects();
+    initObjects();
+    initialization();
 }
