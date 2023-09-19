@@ -69,6 +69,9 @@ private:
     quint8 getGoalie(VSSRef::Color color);
     QMutex _goalieMutex;
 
+    // Teleport
+    bool _teleport;
+
     // Fouls management
     VSSRef::Foul _foul;
     VSSRef::Color _foulColor;
@@ -110,6 +113,7 @@ signals:
 public slots:
     void takeGoalie(VSSRef::Color color, quint8 playerId);
     void takeFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant);
+    void takeTeleport(bool teleport);
     void placeTeams(bool forceDefault, bool isToPlaceOutside);
     void saveFrameAndBall();
     void placeLastFrameAndBall();
