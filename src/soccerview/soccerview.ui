@@ -740,7 +740,7 @@ color: white;</string>
       <x>630</x>
       <y>5</y>
       <width>421</width>
-      <height>200</height>
+      <height>135</height>
      </rect>
     </property>
     <property name="title">
@@ -806,6 +806,63 @@ color: white;</string>
             </property>
             <property name="text">
                   <string>Disable</string>
+            </property>
+            <property name="checkable">
+                  <bool>true</bool>
+            </property>
+            <property name="checked">
+                  <bool>true</bool>
+            </property>
+      </widget>
+   </widget>
+   <widget class="QGroupBox" name="visionBox">
+      <property name="geometry">
+            <rect>
+                  <x>630</x>
+                  <y>145</y>
+                  <width>421</width>
+                  <height>65</height>
+            </rect>
+      </property>
+      <property name="title">
+            <string>Vision Packets</string>
+      </property>
+      <widget class="QPushButton" name="SSLVision">
+            <property name="geometry">
+            <rect>
+                  <x>80</x>
+                  <y>30</y>
+                  <width>120</width>
+                  <height>25</height>
+            </rect>
+            </property>
+            <property name="whatsThis">
+                  <string>SSL VISION</string>
+            </property>
+            <property name="text">
+                  <string>SSLvision packet</string>
+            </property>
+            <property name="checkable">
+                  <bool>true</bool>
+            </property>
+            <property name="checked">
+                  <bool>false</bool>
+            </property>
+      </widget>
+      <widget class="QPushButton" name="FIRAVision">
+            <property name="geometry">
+            <rect>
+                  <x>230</x>
+                  <y>30</y>
+                  <width>120</width>
+                  <height>25</height>
+            </rect>
+            </property>
+            <property name="whatsThis">
+                  <string>FIRA VISION</string>
+            </property>
+            <property name="text">
+                  <string>FIRA packet</string>
             </property>
             <property name="checkable">
                   <bool>true</bool>

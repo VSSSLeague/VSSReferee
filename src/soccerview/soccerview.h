@@ -63,6 +63,7 @@ signals:
     void sendManualFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant, bool isToPlaceOutside = false);
     void addTime(int seconds);
     void sendTeleport(bool teleport);
+    void changeVision(bool isFIRAvision);
 
 public slots:
     void takeFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant);

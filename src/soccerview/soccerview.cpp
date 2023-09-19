@@ -102,9 +102,25 @@ void SoccerView::setupGoals() {
 
     ui->leftTeamGoals->setText(QString("%1").arg(leftGoal));
     ui->rightTeamGoals->setText(QString("%1").arg(rightGoal));
+
+    std::cout << Text::blue("[SOCCERVIEW] ", true) + Text::red("Goals set to ", true) + Text::bold(QString("%1 x %2").arg(_leftTeamGoals).arg(_rightTeamGoals).toStdString()) + '\n';
 }
 
 void SoccerView::setupButtons() {
+
+    // Connecting vision buttons
+    connect(ui->SSLVision, &QPushButton::released, [this](){
+        ui->SSLVision->setChecked(true);
+        ui->FIRAVision->setChecked(false);
+        emit changeVision(false);
+    });
+
+    connect(ui->FIRAVision, &QPushButton::released, [this](){
+        ui->SSLVision->setChecked(false);
+        ui->FIRAVision->setChecked(true);
+        emit changeVision(true);
+    });
+
     // Setup buttons mapper
     _buttonsMapper = new QSignalMapper();
 
@@ -200,6 +216,8 @@ void SoccerView::setupButtons() {
         _buttonsMapper->setMapping(button, button);
         connect(_buttonsMapper, SIGNAL(mapped(QWidget *)), this, SLOT(processButton(QWidget *)), Qt::UniqueConnection);
     }
+
+    std::cout << Text::blue("[SOCCERVIEW] ", true) + Text::red("Modules connection done.", true) + '\n';
 }
 
 void SoccerView::animateWidget(QWidget *widget, QColor desiredColor, int animationTime) {
