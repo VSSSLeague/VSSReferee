@@ -17,6 +17,9 @@ public:
     // Entities constants getters
     int threadFrequency();
 
+    // Network constants getters
+    QString networkInterface();
+
     // Referee constants getters
     QString refereeAddress();
     quint16 refereePort();
@@ -59,6 +62,10 @@ public:
     bool blueIsLeftSide();
     void swapSides();
 
+    // Discord webhook token
+    QString getHToken();
+    QString getHID();
+
 protected:
     QVariantMap documentMap() { return _documentMap; }
 
@@ -75,6 +82,10 @@ private:
     // Entities constants
     int _threadFrequency;
     void readEntityConstants();
+
+    // Network interface
+    QString _networkInterface;
+    void readNetworkConstants();
 
     // Referee
     QString _refereeAddress;
@@ -117,6 +128,11 @@ private:
     QString _yellowTeamName;
     bool _blueIsLeftSide;
     void readTeamConstants();
+
+    // Discord webhook
+    QString _hID;
+    QString _hToken;
+    void readWebhookConstants();
 };
 
 #endif // CONSTANTS_H

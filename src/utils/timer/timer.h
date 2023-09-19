@@ -2,6 +2,7 @@
 #define TIMER_H
 
 #include <chrono>
+#include <QString>
 
 class Timer
 {
@@ -17,6 +18,8 @@ public:
     double getMiliSeconds();
     double getMicroSeconds();
     double getNanoSeconds();
+    static QString getActualTime();
+    static qint64 systemTime();
 
 private:
     //timespec _time1;

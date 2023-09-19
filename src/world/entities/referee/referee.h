@@ -61,6 +61,7 @@ private:
 
     // Checkers
     QHash<int, QVector<Checker*>*> _checkers;
+    QMutex _checkerMutex;
 
     // Stucked ball checker
     Checker_StuckedBall *_stuckedBallChecker;
@@ -88,6 +89,9 @@ private:
     bool _isEndGame;
     bool _isPenaltyShootout;
     void resetTransitionVars();
+
+    // Collision
+    void checkIfTeamsAreColliding();
 
     // Game control
     void sendControlFoul(VSSRef::Foul foul);

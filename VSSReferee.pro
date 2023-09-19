@@ -42,8 +42,12 @@ SOURCES += \
         include/vssref_command.pb.cc \
         include/vssref_common.pb.cc \
         include/vssref_placement.pb.cc \
+        include/messages_robocup_ssl_detection.pb.cc \
+        include/messages_robocup_ssl_geometry.pb.cc \
+        include/wrapper.pb.cc \
         main.cpp \
         src/constants/constants.cpp \
+        src/recorder/recorder.cpp \
         src/refereecore.cpp \
         src/soccerview/fieldview/fieldview.cpp \
         src/soccerview/fieldview/gltext/gltext.cpp \
@@ -89,7 +93,11 @@ HEADERS += \
     include/vssref_command.pb.h \
     include/vssref_common.pb.h \
     include/vssref_placement.pb.h \
+    include/messages_robocup_ssl_detection.pb.h \
+    include/messages_robocup_ssl_geometry.pb.h \
+    include/wrapper.pb.h \
     src/constants/constants.h \
+    src/recorder/recorder.h \
     src/refereecore.h \
     src/soccerview/fieldview/fieldview.h \
     src/soccerview/fieldview/gltext/gltext.h \
@@ -98,6 +106,7 @@ HEADERS += \
     src/utils/types/field/field.h \
     src/utils/types/field/field_default_3v3.h \
     src/utils/types/field/field_default_5v5.h \
+    src/utils/types/messagetype/messagetype.h \
     src/utils/types/object/object.h \
     src/utils/types/placedata/placedata.h \
     src/utils/types/position/position.h \

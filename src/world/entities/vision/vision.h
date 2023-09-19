@@ -7,6 +7,7 @@
 
 #include <src/utils/types/object/object.h>
 #include <include/vssref_common.pb.h>
+#include <include/wrapper.pb.h>
 #include <src/world/entities/entity.h>
 #include <src/constants/constants.h>
 
@@ -54,6 +55,9 @@ private:
 
     // Data management
     QReadWriteLock _dataMutex;
+
+    void SSLVisionPackets();
+    void FIRAVisionPackets();
 
 signals:
     void visionUpdated();

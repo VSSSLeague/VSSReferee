@@ -92,7 +92,7 @@
 		},
 		"5v5": {
 			"goalkeeper": {
-			    "foul_kicker"  : {"x": 1.03, "y": 0.0, "ori": 0.0},
+			    "foul_kicker"  : {"x": 1.03, "y": 0.2, "ori": 0.0},
 			    "foul_receiver": {"x": 1.03, "y": 0.0, "ori": 0.0}
 			},
 			"attacker": {

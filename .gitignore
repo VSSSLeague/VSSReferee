@@ -54,6 +54,7 @@ compile_commands.json
 # Folders
 build/
 bin/
+logs/
 
 # Protobufs
 *.pb.cc

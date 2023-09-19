@@ -16,6 +16,10 @@
     	}
     },
     
+    "Network":{
+    	"networkInterface": "lo"
+    },
+    
     "Replacer":{
     	"replacerAddress": "224.5.23.2",
     	"replacerPort": 10004,
@@ -24,7 +28,7 @@
     },
     
     "Team":{
-    	"qtPlayers": 5,
+    	"qtPlayers": 20,
     	"blueTeamName": "Team Blue",
     	"yellowTeamName": "Team Yellow",
     	"blueIsLeftSide": true
@@ -33,7 +37,7 @@
     "Referee":{
     	"refereeAddress": "224.5.23.2",
     	"refereePort": 10003,
-    	"transitionTime": 4.0,
+    	"transitionTime": 7.0,
     	"game":{
     		"gameType": "Group_Phase",
     		"ballRadius": 0.0215,
@@ -48,5 +52,10 @@
     		"stuckedBallTime": 5.0,
     		"ballInAreaMaxTime": 3.0
     	}
+    },
+    
+    "Webhook":{
+    	"hID": "",
+    	"hToken": ""
     }
 }

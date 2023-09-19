@@ -65,6 +65,10 @@ void Checker_Goalie::run() {
                 // Insert again
                 teamElapsedTimeHash->insert(avPlayers.at(j), elapsedPlayerTimeAtGoal);
             }
+            // If player is outside goal area, reset its timer
+            else {
+                teamElapsedTimeHash->insert(avPlayers.at(j), 0.0f);
+            }
 
             // Reset timer
             playerTimer->start();

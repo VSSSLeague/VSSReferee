@@ -47,7 +47,7 @@ void Checker_StuckedBall::run() {
                     // Set penalties and emit that an foul occured
                     // If have ball disputation (nearly ball of both teams)
                     if(havePlayersNearlyBall(VSSRef::Color::BLUE) && havePlayersNearlyBall(VSSRef::Color::YELLOW)) {
-                        setPenaltiesInfo(VSSRef::Foul::FREE_BALL, VSSRef::Color::NONE, Utils::getBallQuadrant(ballPosition));
+                        setPenaltiesInfo(VSSRef::Foul::GOAL_KICK, VSSRef::Color(i), VSSRef::Quadrant::NO_QUADRANT);
                     }
                     else {
                         setPenaltiesInfo(VSSRef::Foul::PENALTY_KICK, ((i == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE), VSSRef::Quadrant::NO_QUADRANT);

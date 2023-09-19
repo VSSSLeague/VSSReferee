@@ -27,6 +27,113 @@ void Vision::initialization() {
 }
 
 void Vision::loop() {
+    if(_isFIRAVision) FIRAVisionPackets();
+    else SSLVisionPackets();
+}
+
+void Vision::SSLVisionPackets(){
+    while(_visionClient->hasPendingDatagrams()) {
+
+        // Creating auxiliary vars
+        SSL_WrapperPacket wrapper;
+        QNetworkDatagram datagram;
+
+        // Reading datagram and checking if it is valid
+        datagram = _visionClient->receiveDatagram();
+        if(!datagram.isValid()) {
+            continue;
+        }
+
+        // Parsing datagram and checking if it worked properly
+        if(wrapper.ParseFromArray(datagram.data().data(), datagram.data().size()) == false) {
+            std::cout << Text::blue("[VISION] ", true) << Text::red("Wrapper packet parsing error.", true) + '\n';
+            continue;
+        }
+
+        if(wrapper.has_detection()) {
+            // Lock mutex for write
+            _dataMutex.lockForWrite();
+
+            // Clear objects control
+            clearObjectsControl();
+
+            // Take frame
+            const auto& detection = wrapper.detection();
+
+            // Parse ball
+            {
+                using BALL = std::pair<float, Position>;
+                QVector<BALL> balls;
+                for (const auto& ball : detection.balls()) {
+                    balls += BALL(ball.confidence(), Position(true, ball.x() / 1000., ball.y() / 1000.));
+                }
+                /* TODO: How we can do it better? (ball confidence) */ 
+                std::sort(balls.begin(), balls.end(), [](BALL a, BALL b) { return a.first > b.first; });
+
+                if (!balls.empty()) {
+                    _ballObject->updateObject(balls.front().first/ 1000., balls.front().second);
+                }
+                else {
+                    _ballObject->updateObject(0.0f, Position(false, 0.0, 0.0));
+                }
+            }
+
+            // Parse blue robots
+            for (const auto& robot : detection.robots_blue()) {
+                // Take id
+                quint8 robotId = robot.robot_id();
+
+                // Get object
+                Object *robotObject = _objects.value(VSSRef::Color::BLUE)->value(robotId);
+                robotObject->updateObject(robot.confidence(), Position(true, robot.x() / 1000., robot.y() / 1000.), Angle(true, robot.orientation()));
+
+                // Update control to true
+                _objectsControl.value(VSSRef::Color::BLUE)->insert(robotId, true);
+            }
+
+            // Parse yellow robots
+            for (const auto& robot : detection.robots_yellow()) {
+                // Take id
+                quint8 robotId = robot.robot_id();
+
+                // Get object
+                Object *robotObject = _objects.value(VSSRef::Color::YELLOW)->value(robotId);
+                robotObject->updateObject(robot.confidence(), Position(true, robot.x() / 1000., robot.y() / 1000.), Angle(true, robot.orientation()));
+
+                // Update control to true
+                _objectsControl.value(VSSRef::Color::YELLOW)->insert(robotId, true);
+            }
+
+            // Parse robots that didn't appeared
+            for(int i = VSSRef::Color::BLUE; i <= VSSRef::Color::YELLOW; i++) {
+                // Take control hash
+                QHash<quint8, bool> *idsControl = _objectsControl.value(VSSRef::Color(i));
+
+                // Take ids list and iterate on it
+                QList<quint8> idList = idsControl->keys();
+                QList<quint8>::iterator it;
+
+                for(it = idList.begin(); it != idList.end(); it++) {
+                    // If not updated (== false)
+                    if(idsControl->value((*it)) == false) {
+                        // Take object
+                        Object *robotObject = _objects.value(VSSRef::Color(i))->value((*it));
+
+                        // Update it with invalid values
+                        robotObject->updateObject(0.0f, Position(false, 0.0, 0.0), Angle(false, 0.0));
+                    }
+                }
+            }
+
+            // Release mutex
+            _dataMutex.unlock();
+
+            emit visionUpdated();
+        }
+    }
+}
+
+void Vision::FIRAVisionPackets(){
     while(_visionClient->hasPendingDatagrams()) {
         // Creating auxiliary vars
         fira_message::sim_to_ref::Environment environmentData;

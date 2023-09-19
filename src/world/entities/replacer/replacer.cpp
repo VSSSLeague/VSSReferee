@@ -6,6 +6,8 @@
 #include <src/utils/types/field/field.h>
 #include <src/utils/utils.h>
 
+#include <QNetworkInterface>
+
 void movePlayerToPosition(VSSRef::Robot *bot, quint8 botId, Position position, Angle orientation) {
     bot->set_orientation(0.0);
     bot->set_robot_id(botId);
@@ -61,13 +63,13 @@ void Replacer::bindAndConnect() {
 
     // Binding replacer in defined network data
     if(_replacerClient->bind(QHostAddress(_replacerAddress), _replacerPort, QUdpSocket::ShareAddress) == false) {
-        std::cout << Text::blue("[VISION] " , true) << Text::red("Error while binding socket.", true) + '\n';
+        std::cout << Text::blue("[REPLACER] " , true) << Text::red("Error while binding socket.", true) + '\n';
         return ;
     }
 
     // Joining multicast group
-    if(_replacerClient->joinMulticastGroup(QHostAddress(_replacerAddress)) == false) {
-        std::cout << Text::blue("[VISION] ", true) << Text::red("Error while joining multicast.", true) + '\n';
+    if(_replacerClient->joinMulticastGroup(QHostAddress(_replacerAddress), QNetworkInterface::interfaceFromName(getConstants()->networkInterface())) == false) {
+        std::cout << Text::blue("[REPLACER] ", true) << Text::red("Error while joining multicast.", true) + '\n';
         return ;
     }
 }
@@ -292,7 +294,7 @@ VSSRef::Frame Replacer::getPlacementFrameByFoul(QString foul, VSSRef::Quadrant f
     if(teamIsAtLeft) goalKeeperPlaceData.reflect();
 
     // If is GOAL_KICK, randomly swap the y-axis
-    if(foul == "GOAL_KICK" && getFoulColor() == teamColor && !getConstants()->is5v5()) {
+    if(foul == "GOAL_KICK" && getFoulColor() == teamColor) {
         // Random to choose GK position
         auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
         std::mt19937 mt_rand(seed);
@@ -361,7 +363,7 @@ bool Replacer::checkIfCollides(VSSRef::Frame blueFrame, VSSRef::Frame yellowFram
             if(Utils::distance(blueRobotPosition, yellowRobotPosition) <= 1.1 * getConstants()->robotLength()) {
                 std::cout << Text::yellow("[REPLACER] ", true) + Text::bold("Detected collision with blue and yellow frames:") + '\n';
                 std::cout << "Collision with blue robot " + std::to_string(blueFrame.robots(i).robot_id()) + " at position x: " + std::to_string(blueRobotPosition.x()) + " y: " + std::to_string(blueRobotPosition.y()) + '\n';
-                std::cout << "Collision with yellow robot " + std::to_string(yellowFrame.robots(i).robot_id()) + " at position x: " + std::to_string(yellowRobotPosition.x()) + " y: " + std::to_string(yellowRobotPosition.y()) + '\n';
+                std::cout << "Collision with yellow robot " + std::to_string(yellowFrame.robots(j).robot_id()) + " at position x: " + std::to_string(yellowRobotPosition.x()) + " y: " + std::to_string(yellowRobotPosition.y()) + '\n';
 
                 return true;
             }
@@ -489,13 +491,14 @@ Position Replacer::getBallPlaceByFoul(VSSRef::Foul foul, VSSRef::Color color, VS
         }
         break;
         case VSSRef::Foul::GOAL_KICK:{
+        float stretch = getField()->defenseStretch()/2000.0 + getConstants()->ballRadius();
             if(color == VSSRef::Color::BLUE){
-                if(getConstants()->blueIsLeftSide()) return Position(true, -goalKickX, getConstants()->is5v5() ? 0.0 : ((_isGoaliePlacedAtTop) ? (0.375 - getConstants()->ballRadius()) : (-0.375 + getConstants()->ballRadius())));
-                else return Position(true, goalKickX, getConstants()->is5v5() ? 0.0 : ((_isGoaliePlacedAtTop) ? (0.375 - getConstants()->ballRadius()) : (-0.375 + getConstants()->ballRadius())));
+                if(getConstants()->blueIsLeftSide()) return Position(true, -goalKickX, ((_isGoaliePlacedAtTop) ? (stretch - getConstants()->ballRadius()) : (-stretch + getConstants()->ballRadius())));
+                else return Position(true, goalKickX, ((_isGoaliePlacedAtTop) ? (stretch - getConstants()->ballRadius()) : (-stretch + getConstants()->ballRadius())));
             }
             else if(color == VSSRef::Color::YELLOW){
-                if(getConstants()->blueIsLeftSide()) return Position(true, goalKickX, getConstants()->is5v5() ? 0.0 : ((_isGoaliePlacedAtTop) ? (0.375 - getConstants()->ballRadius()) : (-0.375 + getConstants()->ballRadius())));
-                else return Position(true, -goalKickX, getConstants()->is5v5() ? 0.0 : ((_isGoaliePlacedAtTop) ? (0.375 - getConstants()->ballRadius()) : (-0.375 + getConstants()->ballRadius())));
+                if(getConstants()->blueIsLeftSide()) return Position(true, goalKickX, ((_isGoaliePlacedAtTop) ? (stretch - getConstants()->ballRadius()) : (-stretch + getConstants()->ballRadius())));
+                else return Position(true, -goalKickX, ((_isGoaliePlacedAtTop) ? (stretch - getConstants()->ballRadius()) : (-stretch + getConstants()->ballRadius())));
             }
         }
         break;
