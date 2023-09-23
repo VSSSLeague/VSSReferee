@@ -1,0 +1,5 @@
+#!/bin/bash
+
+xhost +
+docker run -e DISPLAY=$DISPLAY  --network=host -it vssreferee
+xhost -
