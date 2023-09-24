@@ -107,7 +107,7 @@
      <property name="font">
       <font>
        <family>FreeMono</family>
-       <pointsize>58</pointsize>
+       <pointsize>50</pointsize>
        <weight>50</weight>
        <bold>false</bold>
       </font>
@@ -140,7 +140,7 @@
      <property name="font">
       <font>
        <family>FreeMono</family>
-       <pointsize>58</pointsize>
+       <pointsize>50</pointsize>
        <weight>50</weight>
        <bold>false</bold>
       </font>
