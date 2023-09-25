@@ -1,6 +1,7 @@
 #include <QCommandLineParser>
 #include <QCommandLineOption>
 #include <QNetworkInterface>
+#include <QInputDialog>
 
 #include <src/utils/exithandler/exithandler.h>
 #include <src/refereecore.h>
@@ -10,6 +11,9 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
     app.setApplicationVersion(APP_VERSION);
+
+    QString blueTeamName = QInputDialog::getText(nullptr, "Blue Team Name", "Enter name:");
+    QString yellowTeamName = QInputDialog::getText(nullptr, "Yellow Team Name", "Enter name:");
 
     // Showing banner
     std::cout << Text::bold(Text::center("__     ______ ____  ____       __                    ")) + '\n';
@@ -79,6 +83,9 @@ int main(int argc, char *argv[])
         std::cout << Text::red("[ERROR] ", true) + Text::bold("You need to explicitly use --record true|false flag") + '\n';
         return 0;
     }
+
+    constants->setBlueTeamName(blueTeamName);
+    constants->setYellowTeamName(yellowTeamName);
 
     // Initializating referee core
     RefereeCore *refereeCore = new RefereeCore(constants);

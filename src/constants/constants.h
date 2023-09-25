@@ -35,6 +35,8 @@ public:
     bool useRefereeSuggestions();
     bool maintainSpeedAtSuggestions();
     void setIs5v5(bool is5v5);
+    void setBlueTeamName(QString blue);
+    void setYellowTeamName(QString yellow);
     bool is5v5();
 
     // Vision constants getters

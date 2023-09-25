@@ -164,10 +164,10 @@ void Constants::readTeamConstants() {
     _qtPlayers = teamMap["qtPlayers"].toInt();
     std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded qtPlayers: " + std::to_string(_qtPlayers)) + '\n';
 
-    _blueTeamName = teamMap["blueTeamName"].toString();
+    //_blueTeamName = teamMap["blueTeamName"].toString();
     std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded blueTeamName: '" + _blueTeamName.toStdString() + "'\n");
 
-    _yellowTeamName = teamMap["yellowTeamName"].toString();
+    //_yellowTeamName = teamMap["yellowTeamName"].toString();
     std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded yellowTeamName: '" + _yellowTeamName.toStdString() + "'\n");
 
     _blueIsLeftSide = teamMap["blueIsLeftSide"].toInt();
@@ -248,6 +248,14 @@ bool Constants::maintainSpeedAtSuggestions() {
 
 void Constants::setIs5v5(bool is5v5) {
     _is5v5 = is5v5;
+}
+
+void Constants::setBlueTeamName(QString blue){
+    _blueTeamName = blue;
+}
+
+void Constants::setYellowTeamName(QString yellow){
+    _yellowTeamName = yellow;
 }
 
 bool Constants::is5v5() {
