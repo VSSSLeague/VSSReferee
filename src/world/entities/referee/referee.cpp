@@ -247,7 +247,7 @@ void Referee::connectClient() {
 
     // Set multicast options
     _refereeClient->setSocketOption(QAbstractSocket::MulticastTtlOption, 1);
-    _refereeClient->setMulticastInterface(QNetworkInterface::interfaceFromName(getConstants()->networkInterface()));
+    // _refereeClient->setMulticastInterface(QNetworkInterface::interfaceFromName(getConstants()->networkInterface()));
 }
 
 void Referee::disconnectClient() {
