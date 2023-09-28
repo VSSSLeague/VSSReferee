@@ -12,9 +12,6 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     app.setApplicationVersion(APP_VERSION);
 
-    QString blueTeamName = QInputDialog::getText(nullptr, "Blue Team Name", "Enter name:");
-    QString yellowTeamName = QInputDialog::getText(nullptr, "Yellow Team Name", "Enter name:");
-
     // Showing banner
     std::cout << Text::bold(Text::center("__     ______ ____  ____       __                    ")) + '\n';
     std::cout << Text::bold(Text::center("\\ \\   / / ___/ ___||  _ \\ ___ / _| ___ _ __ ___  ___ ")) + '\n';
@@ -75,7 +72,7 @@ int main(int argc, char *argv[])
         }
         else if(parser.value(record).toLower() == "true") {
             // Allocate recorder
-            QString logFileName = PROJECT_PATH + QString("/logs/") + Timer::getActualTime() + QString("|%1 - %2_%3").arg(constants->gameType()).arg(constants->blueTeamName()).arg(constants->yellowTeamName()) +  ".log";
+            QString logFileName = PROJECT_PATH + QString("/logs/") + Timer::getActualTime() + QString("|%1 - %2_%3").arg(constants->gameType()).arg("Blue Team").arg("Yellow Team") +  ".log";
             recorder = new Recorder(logFileName, constants->visionAddress(), constants->visionPort(), constants->refereeAddress(), constants->refereePort());
         }
     }
@@ -83,9 +80,6 @@ int main(int argc, char *argv[])
         std::cout << Text::red("[ERROR] ", true) + Text::bold("You need to explicitly use --record true|false flag") + '\n';
         return 0;
     }
-
-    constants->setBlueTeamName(blueTeamName);
-    constants->setYellowTeamName(yellowTeamName);
 
     // Initializating referee core
     RefereeCore *refereeCore = new RefereeCore(constants);

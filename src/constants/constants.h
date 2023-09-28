@@ -35,8 +35,6 @@ public:
     bool useRefereeSuggestions();
     bool maintainSpeedAtSuggestions();
     void setIs5v5(bool is5v5);
-    void setBlueTeamName(QString blue);
-    void setYellowTeamName(QString yellow);
     bool is5v5();
 
     // Vision constants getters
@@ -59,10 +57,9 @@ public:
 
     // Teams constants getters
     int qtPlayers();
-    QString blueTeamName();
-    QString yellowTeamName();
     bool blueIsLeftSide();
     void swapSides();
+    QStringList teams();
 
     // Discord webhook token
     QString getHToken();
@@ -126,8 +123,7 @@ private:
 
     // Teams constants
     int _qtPlayers;
-    QString _blueTeamName;
-    QString _yellowTeamName;
+    QStringList _teams;
     bool _blueIsLeftSide;
     void readTeamConstants();
 

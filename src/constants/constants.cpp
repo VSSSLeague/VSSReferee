@@ -159,16 +159,21 @@ void Constants::readReplacerConstants() {
 void Constants::readTeamConstants() {
     // Taking team mapping in json
     QVariantMap teamMap = documentMap()["Team"].toMap();
+    QVariantList teams = teamMap["teams"].toList();
 
     // Filling vars
     _qtPlayers = teamMap["qtPlayers"].toInt();
     std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded qtPlayers: " + std::to_string(_qtPlayers)) + '\n';
 
-    //_blueTeamName = teamMap["blueTeamName"].toString();
-    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded blueTeamName: '" + _blueTeamName.toStdString() + "'\n");
+    _teams.clear();
 
-    //_yellowTeamName = teamMap["yellowTeamName"].toString();
-    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded yellowTeamName: '" + _yellowTeamName.toStdString() + "'\n");
+    foreach (const QVariant &t, teams) {
+        if (t.canConvert<QString>()) {
+            QString teamName = t.toString();
+            _teams.append(teamName);
+            std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded team: " + teamName.toStdString()) + '\n';
+        }
+    }
 
     _blueIsLeftSide = teamMap["blueIsLeftSide"].toInt();
     std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded blueIsLeftSide: " + ((_blueIsLeftSide) ? QString("true").toStdString() : QString("false").toStdString()) + '\n');
@@ -250,14 +255,6 @@ void Constants::setIs5v5(bool is5v5) {
     _is5v5 = is5v5;
 }
 
-void Constants::setBlueTeamName(QString blue){
-    _blueTeamName = blue;
-}
-
-void Constants::setYellowTeamName(QString yellow){
-    _yellowTeamName = yellow;
-}
-
 bool Constants::is5v5() {
     return _is5v5;
 }
@@ -294,6 +291,10 @@ int Constants::lossTime() {
     return _lossTime;
 }
 
+QStringList Constants::teams() {
+    return _teams;
+}
+
 QString Constants::replacerAddress() {
     return _replacerAddress;
 }
@@ -314,20 +315,11 @@ int Constants::qtPlayers() {
     return _qtPlayers;
 }
 
-QString Constants::blueTeamName() {
-    return _blueTeamName;
-}
-
-QString Constants::yellowTeamName() {
-    return _yellowTeamName;
-}
-
 bool Constants::blueIsLeftSide() {
     return _blueIsLeftSide;
 }
 
 void Constants::swapSides() {
-    std::swap(_blueTeamName, _yellowTeamName);
     _blueIsLeftSide = !_blueIsLeftSide;
 }
 

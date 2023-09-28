@@ -6,7 +6,7 @@
     "Vision":{
 		"isFIRAVision": true,
     	"visionAddress": "224.5.23.2",
-    	"visionPort": 10015,
+    	"visionPort": 10016,
     	"firaVisionAddress": "224.0.0.1",
     	"firaVisionPort": 10002,
     	"filters":{
@@ -29,8 +29,12 @@
     
     "Team":{
     	"qtPlayers": 20,
-    	"blueTeamName": "Team Blue",
-    	"yellowTeamName": "Team Yellow",
+    	"teams": ["None", "RoboCIn", "ITAndroids", "RobotBulls", "Maracatronics", "Rodetas"
+   				,"RoboTech", "RoboIME", "Rinobot", "PinguimBots", "Pequi Mecanico"
+   				,"GER", "FURGBot", "UnBall", "Poti", "Warthog", "Nhao","Ararabots"
+   				,"Neon", "UaiSoccer", "Troia", "Yapira", "ThunderVolt", "RedDragons"
+   				,"UFRBots", "UTBots", "LambeSujo", "Carrossel", "BahiaRT", "CIMAT-UAZ"
+   				,"Trevinho", "HumaMaquina", "Drumonsters"],
     	"blueIsLeftSide": true
     },
     
