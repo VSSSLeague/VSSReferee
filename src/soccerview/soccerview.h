@@ -35,7 +35,7 @@ private:
     void setupTeams();
     void setupGoals();
     void setupButtons();
-
+    void setTeams();
     // Animations
     void animateWidget(QWidget *widget, QColor desiredColor, int animationTime);
     void animateFlag(bool toShow, int animationTime);
@@ -43,14 +43,15 @@ private:
     // Mapping buttons
     QList<QPushButton*> _buttons;
     QSignalMapper *_buttonsMapper;
+    QStringList _teams;
 
     // Constants
     Constants *_constants;
     Constants* getConstants();
 
     // Goals
-    int _leftTeamGoals;
-    int _rightTeamGoals;
+    int _leftTeamGoals = 0;
+    int _rightTeamGoals = 0;
 
     // Suggestions
     QList<QWidget*> _widgets;

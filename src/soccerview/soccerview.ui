@@ -236,52 +236,6 @@ color: white;</string>
       <set>Qt::AlignBottom|Qt::AlignHCenter</set>
      </property>
     </widget>
-    <widget class="QLabel" name="leftTeamName">
-     <property name="geometry">
-      <rect>
-       <x>5</x>
-       <y>27</y>
-       <width>96</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>10</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>Default Team</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-    <widget class="QLabel" name="rightTeamName">
-     <property name="geometry">
-      <rect>
-       <x>509</x>
-       <y>27</y>
-       <width>96</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>10</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>Default Team</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
     <widget class="QPushButton" name="sendToDiscord">
      <property name="geometry">
       <rect>
@@ -295,6 +249,26 @@ color: white;</string>
       <string>Send to Discord</string>
      </property>
     </widget>
+    <widget class="QComboBox" name="rightTeamBox">
+     <property name="geometry">
+      <rect>
+       <x>500</x>
+       <y>20</y>
+       <width>111</width>
+       <height>25</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="leftTeamBox">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>20</y>
+       <width>111</width>
+       <height>25</height>
+      </rect>
+     </property>
+    </widget>
     <zorder>statusColor</zorder>
     <zorder>leftTeamLogo</zorder>
     <zorder>rightTeamLogo</zorder>
@@ -305,6 +279,8 @@ color: white;</string>
     <zorder>leftTeamName</zorder>
     <zorder>rightTeamName</zorder>
     <zorder>sendToDiscord</zorder>
+    <zorder>rightTimeBox</zorder>
+    <zorder>leftTimeBox</zorder>
    </widget>
    <widget class="QGroupBox" name="manualReferee">
     <property name="geometry">
@@ -773,118 +749,118 @@ color: white;</string>
     </widget>
    </widget>
    <widget class="QGroupBox" name="teleportBox">
-      <property name="geometry">
-            <rect>
-                  <x>630</x>
-                  <y>210</y>
-                  <width>421</width>
-                  <height>65</height>
-            </rect>
-      </property>
-      <property name="title">
-            <string>Teleport</string>
-      </property>
-      <widget class="QPushButton" name="enableTeleport">
-            <property name="geometry">
-            <rect>
-                  <x>110</x>
-                  <y>30</y>
-                  <width>90</width>
-                  <height>25</height>
-            </rect>
-            </property>
-            <property name="whatsThis">
-                  <string>ENABLE TELEPORT</string>
-            </property>
-            <property name="text">
-                  <string>Enable</string>
-            </property>
-            <property name="checkable">
-                  <bool>true</bool>
-            </property>
-            <property name="checked">
-                  <bool>false</bool>
-            </property>
-      </widget>
-      <widget class="QPushButton" name="disableTeleport">
-            <property name="geometry">
-            <rect>
-                  <x>210</x>
-                  <y>30</y>
-                  <width>90</width>
-                  <height>25</height>
-            </rect>
-            </property>
-            <property name="whatsThis">
-                  <string>DISABLE TELEPORT</string>
-            </property>
-            <property name="text">
-                  <string>Disable</string>
-            </property>
-            <property name="checkable">
-                  <bool>true</bool>
-            </property>
-            <property name="checked">
-                  <bool>true</bool>
-            </property>
-      </widget>
+    <property name="geometry">
+     <rect>
+      <x>630</x>
+      <y>210</y>
+      <width>421</width>
+      <height>65</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Teleport</string>
+    </property>
+    <widget class="QPushButton" name="enableTeleport">
+     <property name="geometry">
+      <rect>
+       <x>110</x>
+       <y>30</y>
+       <width>90</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="whatsThis">
+      <string>ENABLE TELEPORT</string>
+     </property>
+     <property name="text">
+      <string>Enable</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="disableTeleport">
+     <property name="geometry">
+      <rect>
+       <x>210</x>
+       <y>30</y>
+       <width>90</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="whatsThis">
+      <string>DISABLE TELEPORT</string>
+     </property>
+     <property name="text">
+      <string>Disable</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
    </widget>
    <widget class="QGroupBox" name="visionBox">
-      <property name="geometry">
-            <rect>
-                  <x>630</x>
-                  <y>145</y>
-                  <width>421</width>
-                  <height>65</height>
-            </rect>
-      </property>
-      <property name="title">
-            <string>Vision Packets</string>
-      </property>
-      <widget class="QPushButton" name="SSLVision">
-            <property name="geometry">
-            <rect>
-                  <x>80</x>
-                  <y>30</y>
-                  <width>120</width>
-                  <height>25</height>
-            </rect>
-            </property>
-            <property name="whatsThis">
-                  <string>SSL VISION</string>
-            </property>
-            <property name="text">
-                  <string>SSLvision packet</string>
-            </property>
-            <property name="checkable">
-                  <bool>true</bool>
-            </property>
-            <property name="checked">
-                  <bool>false</bool>
-            </property>
-      </widget>
-      <widget class="QPushButton" name="FIRAVision">
-            <property name="geometry">
-            <rect>
-                  <x>230</x>
-                  <y>30</y>
-                  <width>120</width>
-                  <height>25</height>
-            </rect>
-            </property>
-            <property name="whatsThis">
-                  <string>FIRA VISION</string>
-            </property>
-            <property name="text">
-                  <string>FIRA packet</string>
-            </property>
-            <property name="checkable">
-                  <bool>true</bool>
-            </property>
-            <property name="checked">
-                  <bool>true</bool>
-            </property>
-      </widget>
+    <property name="geometry">
+     <rect>
+      <x>630</x>
+      <y>145</y>
+      <width>421</width>
+      <height>65</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Vision Packets</string>
+    </property>
+    <widget class="QPushButton" name="SSLVision">
+     <property name="geometry">
+      <rect>
+       <x>80</x>
+       <y>30</y>
+       <width>120</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="whatsThis">
+      <string>SSL VISION</string>
+     </property>
+     <property name="text">
+      <string>SSLvision packet</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="FIRAVision">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>30</y>
+       <width>120</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="whatsThis">
+      <string>FIRA VISION</string>
+     </property>
+     <property name="text">
+      <string>FIRA packet</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
    </widget>
    <widget class="QLabel" name="flag">
     <property name="geometry">
@@ -914,7 +890,7 @@ color: white;</string>
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="forButtons"/>
   <buttongroup name="quadrantButtons"/>
+  <buttongroup name="forButtons"/>
  </buttongroups>
 </ui>

@@ -15,6 +15,7 @@ SoccerView::SoccerView(Constants *constants, QWidget *parent) :
     // Setup UI
     ui->setupUi(this);
     setDarkTheme();
+    setTeams();
     setupTeams();
     setupGoals();
     setupButtons();
@@ -55,17 +56,20 @@ int SoccerView::getRightTeamGoals() {
     return _rightTeamGoals;
 }
 
+void SoccerView::setTeams() {
+
+    _teams = getConstants()->teams();
+    for(auto a : _teams) {
+        ui->leftTeamBox->addItem(a);
+        ui->rightTeamBox->addItem(a);
+    }
+}
+
 void SoccerView::setupTeams() {
     QString leftName, rightName;
-
-    leftName = getConstants()->blueIsLeftSide() ? getConstants()->blueTeamName() : getConstants()->yellowTeamName();
-    rightName = getConstants()->blueIsLeftSide() ? getConstants()->yellowTeamName() : getConstants()->blueTeamName();
-
-    // Set names
-    ui->leftTeamName->setText(leftName);
-    ui->leftTeamName->setStyleSheet(getConstants()->blueIsLeftSide() ? "color: #779FFF;" : "color: #FCEE44;");
-    ui->rightTeamName->setText(rightName);
-    ui->rightTeamName->setStyleSheet(getConstants()->blueIsLeftSide() ? "color: #FCEE44;" : "color: #779FFF;");
+    
+    leftName = ui->leftTeamBox->currentText();
+    rightName = ui->rightTeamBox->currentText();
 
     // Remove spaces to take logo
     leftName.remove(" ");
@@ -92,8 +96,6 @@ void SoccerView::setupTeams() {
     }
 
     // Set initial goals and call setupGoals
-    _leftTeamGoals = 0;
-    _rightTeamGoals = 0;
     setupGoals();
 }
 
@@ -224,8 +226,8 @@ void SoccerView::setupButtons() {
     
     // Connect Send To Discord button
     connect(ui->sendToDiscord, &QPushButton::released, [this](){
-        QString leftTeamName = getConstants()->blueTeamName();
-        QString rightTeamName = getConstants()->yellowTeamName();
+        QString leftTeamName = ui->leftTeamBox->currentText();
+        QString rightTeamName = ui->leftTeamBox->currentText();
         QString leftTeamScore = QString("%1").arg(getLeftTeamGoals());
         QString rightTeamScore = QString("%1").arg(getRightTeamGoals());
 
@@ -235,6 +237,12 @@ void SoccerView::setupButtons() {
 
         system(cmd.toStdString().c_str());
         ui->sendToDiscord->setEnabled(false);
+    });
+    connect(ui->leftTeamBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int index){
+        setupTeams();
+    });
+    connect(ui->rightTeamBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int index){
+        setupTeams();
     });
 }
 
@@ -359,8 +367,8 @@ void SoccerView::takeFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Qu
     else {
         desiredColor = QColor(238, 0, 34, 255);
         if(foulColor != VSSRef::Color::NONE) {
-            QString forBlue = QString("<font color=\"#0000CD\">%1</font>").arg(getConstants()->blueTeamName());
-            QString forYellow = QString("<font color=\"#FCEE44\">%1</font>").arg(getConstants()->yellowTeamName());
+            QString forBlue = QString("<font color=\"#0000CD\">%1</font>").arg(ui->leftTeamBox->currentText());
+            QString forYellow = QString("<font color=\"#FCEE44\">%1</font>").arg(ui->leftTeamBox->currentText());
 
             ui->statusColor->setText(QString("%1 for %2").arg(VSSRef::Foul_Name(foul).c_str()).arg(foulColor == VSSRef::Color::BLUE ? forBlue : forYellow));
         }
