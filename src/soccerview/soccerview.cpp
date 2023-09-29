@@ -227,7 +227,7 @@ void SoccerView::setupButtons() {
     // Connect Send To Discord button
     connect(ui->sendToDiscord, &QPushButton::released, [this](){
         QString leftTeamName = ui->leftTeamBox->currentText();
-        QString rightTeamName = ui->leftTeamBox->currentText();
+        QString rightTeamName = ui->rightTeamBox->currentText();
         QString leftTeamScore = QString("%1").arg(getLeftTeamGoals());
         QString rightTeamScore = QString("%1").arg(getRightTeamGoals());
 
@@ -367,8 +367,8 @@ void SoccerView::takeFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Qu
     else {
         desiredColor = QColor(238, 0, 34, 255);
         if(foulColor != VSSRef::Color::NONE) {
-            QString forBlue = QString("<font color=\"#0000CD\">%1</font>").arg(ui->leftTeamBox->currentText());
-            QString forYellow = QString("<font color=\"#FCEE44\">%1</font>").arg(ui->leftTeamBox->currentText());
+            QString forBlue = QString("<font color=\"#0000CD\">%1</font>").arg(getConstants()->blueIsLeftSide() ? ui->leftTeamBox->currentText() : ui->rightTeamBox->currentText());
+            QString forYellow = QString("<font color=\"#FCEE44\">%1</font>").arg(getConstants()->blueIsLeftSide() ? ui->rightTeamBox->currentText() : ui->leftTeamBox->currentText());
 
             ui->statusColor->setText(QString("%1 for %2").arg(VSSRef::Foul_Name(foul).c_str()).arg(foulColor == VSSRef::Color::BLUE ? forBlue : forYellow));
         }
