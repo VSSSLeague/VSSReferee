@@ -8,6 +8,8 @@
 #include <src/world/entities/replacer/replacer.h>
 #include <src/world/entities/referee/checkers/checkers.h>
 
+#define MAX_PACKETS 10
+
 // Abstract SoccerView
 class SoccerView;
 

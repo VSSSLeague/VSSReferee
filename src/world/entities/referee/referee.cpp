@@ -383,8 +383,10 @@ void Referee::sendPenaltiesToNetwork() {
     command.SerializeToString(&datagram);
 
     // Send via socket
-    if(_refereeClient->write(datagram.c_str(), static_cast<quint64>(datagram.length())) == -1) {
-        std::cout << Text::cyan("[REFEREE] ", true) + Text::red("Failed to write to socket.", true) + '\n';
+    for (int i = 0; i < MAX_PACKETS; i++) {
+        if(_refereeClient->write(datagram.c_str(), static_cast<quint64>(datagram.length())) == -1) {
+            std::cout << Text::cyan("[REFEREE] ", true) + Text::red("Failed to write to socket.", true) + '\n';
+        }
     }
 
     // Debug sent foul
