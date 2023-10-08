@@ -131,8 +131,9 @@ void Checker_BallPlay::run() {
 
                 // If any of them occurred, send HALT command
                 if(getConstants()->useRefereeSuggestions()) {
-                    setPenaltiesInfo(VSSRef::Foul::HALT);
-                    emit foulOccured();
+                    // setPenaltiesInfo(VSSRef::Foul::HALT);
+                    // emit foulOccured();
+                    _isPlayRunning = false;
                     return ;
                 }
                 else {

@@ -382,7 +382,7 @@ void SoccerView::takeFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Qu
 
     // Animate statusboard
     animateWidget(ui->statusColor, desiredColor, 500);
-
+    
     // Animate timer
     // Taking desired color for timer
     if(foul == VSSRef::Foul::GAME_ON){
@@ -494,7 +494,7 @@ void SoccerView::processButton(QWidget *button) {
 
 void SoccerView::addSuggestion(QString suggestion, VSSRef::Color forColor, VSSRef::Quadrant atQuadrant) {
     // Animate flag
-    animateFlag(true, 150);
+    // animateFlag(true, 150);
 
     // Avoid to add if not using ref suggestions
     if(!getConstants()->useRefereeSuggestions() && !suggestion.contains("Collision")) return;
@@ -538,9 +538,7 @@ void SoccerView::addSuggestion(QString suggestion, VSSRef::Color forColor, VSSRe
 
     _suggestionsMutex.unlock();
 
-    if(suggestion.contains("Collision")) {
-        showSuggestions();
-    }
+    showSuggestions();
 }
 
 void SoccerView::showSuggestions() {
