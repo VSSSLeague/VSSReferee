@@ -519,7 +519,6 @@ void SoccerView::addSuggestion(QString suggestion, VSSRef::Color forColor, VSSRe
         }
         else if(label->whatsThis() == "GOAL") {
             addGoal(forColor);
-
             emit sendManualFoul(VSSRef::Foul::KICKOFF, (forColor == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE, VSSRef::Quadrant::NO_QUADRANT);
         }
         else if(label->whatsThis() == "GAME_ON"){

@@ -38,6 +38,7 @@ private:
     // Ball in area management
     Timer _areaTimer;
     bool _areaTimerControl;
+    bool _ballInside = false;
 
     // Checkers
     Checker_TwoAttackers *_checkerTwoAtk;
