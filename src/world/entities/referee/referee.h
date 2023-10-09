@@ -112,6 +112,7 @@ private:
     Velocity _lastBallVelocity;
     bool _placedLast;
     bool _isFIRAVision;
+    bool _wait = false;
 
 signals:
     void sendFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant);

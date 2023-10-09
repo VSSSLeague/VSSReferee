@@ -196,6 +196,7 @@ void Referee::loop() {
                 // Update sent foul to STOP
                 updatePenaltiesInfo(VSSRef::Foul::STOP, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT);
                 sendPenaltiesToNetwork();
+                _wait = true;
             }
         }
         else {
@@ -210,10 +211,12 @@ void Referee::loop() {
             _transitionTimer.stop();
 
             // Check if passed transition time
-            if(_transitionTimer.getSeconds() >= getConstants()->transitionTime()) {
+            if(_wait) {
                 // Update sent foul to GAME_ON
+                emit emitSuggestion("GAME_ON");
                 updatePenaltiesInfo(VSSRef::Foul::GAME_ON, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT);
-                sendPenaltiesToNetwork();
+                _wait = false;
+                // sendPenaltiesToNetwork();
             }
         }
     }

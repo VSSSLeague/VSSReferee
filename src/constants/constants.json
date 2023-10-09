@@ -6,7 +6,7 @@
     "Vision":{
 		"isFIRAVision": true,
     	"visionAddress": "224.5.23.2",
-    	"visionPort": 10016,
+    	"visionPort": 10324,
     	"firaVisionAddress": "224.0.0.1",
     	"firaVisionPort": 10002,
     	"filters":{
@@ -40,8 +40,8 @@
     
     "Referee":{
     	"refereeAddress": "224.5.23.2",
-    	"refereePort": 10003,
-    	"transitionTime": 7.0,
+    	"refereePort": 10314,
+    	"transitionTime": 8.0,
     	"game":{
     		"gameType": "Group_Phase",
     		"ballRadius": 0.0215,
@@ -50,7 +50,7 @@
     		"overtimeHalfTime": 180.0
     	},
     	"fouls":{
-    		"useRefereeSuggestions": false,
+    		"useRefereeSuggestions": true,
     		"maintainSpeedAtSuggestions": true,
     		"ballMinSpeedForStuck": 0.1,
     		"stuckedBallTime": 5.0,

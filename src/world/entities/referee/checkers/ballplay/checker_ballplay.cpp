@@ -102,12 +102,14 @@ void Checker_BallPlay::run() {
                         if(_isPenaltyShootout) {
                             setNextTeam();
                             setPenaltiesInfo(VSSRef::Foul::PENALTY_KICK, _penaltyTeam, VSSRef::Quadrant::NO_QUADRANT);
-                            emit foulOccured();
+                            emit emitSuggestion("GOAL", _possibleGoalTeam);
+                            // emit foulOccured();
                             return ;
                         }
                         else {
                             setPenaltiesInfo(VSSRef::Foul::KICKOFF, VSSRef::Color(i), VSSRef::Quadrant::NO_QUADRANT);
-                            emit foulOccured();
+                            emit emitSuggestion("GOAL", _possibleGoalTeam);
+                            // emit foulOccured();
                             return ;
                         }
                     }
