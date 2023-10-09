@@ -101,8 +101,8 @@ void SoccerView::setupTeams() {
     setupGoals();
 
     // Set initial timeouts and vars per team
-    _leftTeamVars = _rightTeamVars = Constants::varsPerTeam();
-    _leftTeamTimeouts = _rightTeamTimeouts = Constants::timeoutsPerTeam();
+    _leftTeamVars = _rightTeamVars = getConstants()->varsPerTeam();
+    _leftTeamTimeouts = _rightTeamTimeouts = getConstants()->timeoutsPerTeam();
 
     // Setup timeout
     _timeoutSet = false;
@@ -270,8 +270,7 @@ void SoccerView::setupButtons() {
 
     //timeout
     connect(ui->timeout, &QPushButton::released, [this]() {
-        _timeoutSet = true;
-        emit sendManualFoul(VSSRef::Foul::HALT, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT);
+        emit sendManualFoul(VSSRef::Foul::STOP, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT);
         bool hasTeamBlue = ui->forBlue->isChecked();
 
         QString leftTeamName = ui->leftTeamBox->currentText();
@@ -280,9 +279,7 @@ void SoccerView::setupButtons() {
         QString forBlue = QString("<font color=\"#0000CD\">%1</font>").arg(leftTeamName);
         QString forYellow = QString("<font color=\"#FCEE44\">%1</font>").arg(rightTeamName);
 
-        ui->statusColor->setText(QString("Game is halted due to TIMEOUT for %2.").arg(hasTeamBlue ? forBlue : forYellow));
-        _timeoutTimestamp = 0.0f;
-        _timeoutTimer.start();
+        ui->statusColor->setText(QString("Game is stopped due to TIMEOUT  for %2.").arg(hasTeamBlue ? forBlue : forYellow));
     });
 }
 
@@ -455,7 +452,7 @@ void SoccerView::takeTimeStamp(float halftime, float timestamp, VSSRef::Half hal
 
     // Check if timeout is set
     if(_timeoutSet) {
-        halftime = Constants::timeoutLength();
+        halftime = getConstants()->timeoutLength();
         timestamp = _timeoutTimestamp;
 
         _timeoutTimestamp += _timeoutTimer.getSeconds();

@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>1066</width>
-    <height>685</height>
+    <height>693</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,7 +26,7 @@
       <x>10</x>
       <y>180</y>
       <width>600</width>
-      <height>420</height>
+      <height>431</height>
      </rect>
     </property>
    </widget>
@@ -286,7 +286,7 @@ color: white;</string>
       <x>630</x>
       <y>280</y>
       <width>421</width>
-      <height>320</height>
+      <height>331</height>
      </rect>
     </property>
     <property name="font">
@@ -725,7 +725,7 @@ color: white;</string>
      <property name="geometry">
       <rect>
        <x>180</x>
-       <y>230</y>
+       <y>290</y>
        <width>226</width>
        <height>25</height>
       </rect>
@@ -776,7 +776,7 @@ color: white;</string>
     <property name="geometry">
      <rect>
       <x>630</x>
-      <y>610</y>
+      <y>620</y>
       <width>421</width>
       <height>65</height>
      </rect>
@@ -833,7 +833,7 @@ color: white;</string>
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>610</y>
+      <y>620</y>
       <width>601</width>
       <height>65</height>
      </rect>
@@ -914,7 +914,7 @@ color: white;</string>
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="forButtons"/>
   <buttongroup name="quadrantButtons"/>
+  <buttongroup name="forButtons"/>
  </buttongroups>
 </ui>
