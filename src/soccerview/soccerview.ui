@@ -695,6 +695,32 @@ color: white;</string>
       <string>Stop</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="var">
+     <property name="geometry">
+      <rect>
+       <x>180</x>
+       <y>230</y>
+       <width>100</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>VAR</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="timeout">
+     <property name="geometry">
+      <rect>
+       <x>305</x>
+       <y>230</y>
+       <width>100</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Timeout</string>
+     </property>
+    </widget>
     <widget class="QPushButton" name="penaltyShootout">
      <property name="geometry">
       <rect>

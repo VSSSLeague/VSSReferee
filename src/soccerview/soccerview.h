@@ -9,6 +9,7 @@
 #include <include/vssref_common.pb.h>
 #include <src/soccerview/fieldview/fieldview.h>
 
+
 namespace Ui {
 class SoccerView;
 }
@@ -36,6 +37,19 @@ private:
     void setupGoals();
     void setupButtons();
     void setTeams();
+
+    // Timeouts
+    int _leftTeamTimeouts;
+    int _rightTeamTimeouts;
+    bool _timeoutSet;
+    float _timeoutTimestamp;
+    Timer _timeoutTimer;
+
+    // VARs
+    int _leftTeamVars;
+    int _rightTeamVars;
+
+
     // Animations
     void animateWidget(QWidget *widget, QColor desiredColor, int animationTime);
     void animateFlag(bool toShow, int animationTime);

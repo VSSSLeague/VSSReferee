@@ -330,3 +330,29 @@ QString Constants::getHID() {
 QString Constants::getHToken() {
     return _hToken;
 }
+
+
+
+int Constants::varsPerTeam() {
+    QString varsPerTeam = _documentMap["Referee"].toMap()["game"].toMap()["varPerTeam"].toString();
+    bool converted = false;
+    int varsPerTeamInt = varsPerTeam.toInt(&converted);
+
+    return varsPerTeamInt;
+}
+
+int Constants::timeoutsPerTeam() {
+    QString timeoutsPerTeam = _documentMap["Referee"].toMap()["game"].toMap()["timeoutsPerTeam"].toString();
+    bool converted = false;
+    int timeoutsPerTeamInt = timeoutsPerTeam.toInt(&converted);
+
+    return timeoutsPerTeamInt;
+}
+
+float Constants::timeoutLength() {
+    QString timeoutLength = _documentMap["Referee"].toMap()["game"].toMap()["timeoutLength"].toString();
+    bool converted = false;
+    float timeoutLengthFloat = timeoutLength.toFloat(&converted);   
+
+    return timeoutLengthFloat;
+}

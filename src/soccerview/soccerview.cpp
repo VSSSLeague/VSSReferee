@@ -96,7 +96,16 @@ void SoccerView::setupTeams() {
     }
 
     // Set initial goals and call setupGoals
+    _leftTeamGoals = 0;
+    _rightTeamGoals = 0;
     setupGoals();
+
+    // Set initial timeouts and vars per team
+    _leftTeamVars = _rightTeamVars = Constants::varsPerTeam();
+    _leftTeamTimeouts = _rightTeamTimeouts = Constants::timeoutsPerTeam();
+
+    // Setup timeout
+    _timeoutSet = false;
 }
 
 void SoccerView::setupGoals() {
@@ -243,6 +252,37 @@ void SoccerView::setupButtons() {
     });
     connect(ui->rightTeamBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int index){
         setupTeams();
+    });
+
+    // var
+    connect(ui->var, &QPushButton::released, [this]() {
+        emit sendManualFoul(VSSRef::Foul::STOP, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT);
+        bool hasTeamBlue = ui->forBlue->isChecked();
+
+        QString leftTeamName = ui->leftTeamBox->currentText();
+        QString rightTeamName = ui->rightTeamBox->currentText();
+
+        QString forBlue = QString("<font color=\"#0000CD\">%1</font>").arg(leftTeamName);
+        QString forYellow = QString("<font color=\"#FCEE44\">%1</font>").arg(rightTeamName);
+
+        ui->statusColor->setText(QString("Game is stopped due to VAR for %2.").arg(hasTeamBlue ? forBlue : forYellow));
+    });
+
+    //timeout
+    connect(ui->timeout, &QPushButton::released, [this]() {
+        _timeoutSet = true;
+        emit sendManualFoul(VSSRef::Foul::HALT, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT);
+        bool hasTeamBlue = ui->forBlue->isChecked();
+
+        QString leftTeamName = ui->leftTeamBox->currentText();
+        QString rightTeamName = ui->rightTeamBox->currentText();
+
+        QString forBlue = QString("<font color=\"#0000CD\">%1</font>").arg(leftTeamName);
+        QString forYellow = QString("<font color=\"#FCEE44\">%1</font>").arg(rightTeamName);
+
+        ui->statusColor->setText(QString("Game is halted due to TIMEOUT for %2.").arg(hasTeamBlue ? forBlue : forYellow));
+        _timeoutTimestamp = 0.0f;
+        _timeoutTimer.start();
     });
 }
 
@@ -412,6 +452,24 @@ void SoccerView::takeTimeStamp(float halftime, float timestamp, VSSRef::Half hal
         ui->sendToDiscord->setVisible(true);
         return ;
     }
+
+    // Check if timeout is set
+    if(_timeoutSet) {
+        halftime = Constants::timeoutLength();
+        timestamp = _timeoutTimestamp;
+
+        _timeoutTimestamp += _timeoutTimer.getSeconds();
+        _timeoutTimer.start();
+
+        if(_timeoutTimestamp >= halftime) {
+            _timeoutTimestamp = halftime;
+
+            // Disable timeout
+            _timeoutSet = false;
+            emit sendManualFoul(VSSRef::Foul::HALT, VSSRef::Color::NONE, VSSRef::NO_QUADRANT);
+        }
+    }
+
 
     int min = (halftime - timestamp) / 60.0;
     int sec = (halftime - timestamp) - (min * 60.0);

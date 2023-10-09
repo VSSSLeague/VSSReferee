@@ -65,6 +65,11 @@ public:
     QString getHToken();
     QString getHID();
 
+    int timeoutsPerTeam();
+    float timeoutLength();
+    int varsPerTeam();
+
+
 protected:
     QVariantMap documentMap() { return _documentMap; }
 
