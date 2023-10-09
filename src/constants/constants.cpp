@@ -59,9 +59,6 @@ void Constants::readRefereeConstants() {
     _transitionTime = refereeMap["transitionTime"].toFloat();
     std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded transitionTime: '" + std::to_string(_transitionTime) + "'\n");
 
-    _waitTime = refereeMap["waitTime"].toFloat();
-    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded waitTime: '" + std::to_string(_waitTime) + "'\n");
-
     // Game params
     // Taking fouls mapping in json
     QVariantMap gameParamsMap = refereeMap["game"].toMap();

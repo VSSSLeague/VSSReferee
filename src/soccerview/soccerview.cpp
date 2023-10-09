@@ -522,6 +522,10 @@ void SoccerView::addSuggestion(QString suggestion, VSSRef::Color forColor, VSSRe
 
             emit sendManualFoul(VSSRef::Foul::KICKOFF, (forColor == VSSRef::Color::BLUE) ? VSSRef::Color::YELLOW : VSSRef::Color::BLUE, VSSRef::Quadrant::NO_QUADRANT);
         }
+        else if(label->whatsThis() == "GAME_ON"){
+            printf("Estou aqui no GAME ON");
+            emit sendManualFoul(VSSRef::Foul::GAME_ON, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT);
+        }
         else {
             VSSRef::Foul suggestedFoul = VSSRef::Foul();
             VSSRef::Foul_Parse(label->whatsThis().toStdString(), &suggestedFoul);

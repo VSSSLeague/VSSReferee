@@ -213,8 +213,9 @@ void Referee::loop() {
             // Check if passed transition time
             if(_wait) {
                 // Update sent foul to GAME_ON
+
+                updatePenaltiesInfo(VSSRef::Foul::HALT, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT);
                 emit emitSuggestion("GAME_ON");
-                updatePenaltiesInfo(VSSRef::Foul::GAME_ON, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT);
                 _wait = false;
                 // sendPenaltiesToNetwork();
             }
@@ -524,6 +525,7 @@ void Referee::sendControlFoul(VSSRef::Foul foul) {
 }
 
 void Referee::takeManualFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant, bool isToPlaceOutside) {
+    printf("%d\n", foul);
     if(foul == VSSRef::Foul::GAME_ON) {
         // Reset transitions vars
         resetTransitionVars();
@@ -540,6 +542,8 @@ void Referee::takeManualFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef:
         }
 
         // Re-send last penalties to network
+
+        updatePenaltiesInfo(VSSRef::Foul::GAME_ON, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT);
         sendPenaltiesToNetwork();
     }
     else if(foul == VSSRef::Foul::HALT) {
