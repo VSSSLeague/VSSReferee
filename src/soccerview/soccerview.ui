@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>1066</width>
-    <height>609</height>
+    <height>693</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,7 +26,7 @@
       <x>10</x>
       <y>180</y>
       <width>600</width>
-      <height>420</height>
+      <height>431</height>
      </rect>
     </property>
    </widget>
@@ -107,7 +107,7 @@
      <property name="font">
       <font>
        <family>FreeMono</family>
-       <pointsize>58</pointsize>
+       <pointsize>50</pointsize>
        <weight>50</weight>
        <bold>false</bold>
       </font>
@@ -140,7 +140,7 @@
      <property name="font">
       <font>
        <family>FreeMono</family>
-       <pointsize>58</pointsize>
+       <pointsize>50</pointsize>
        <weight>50</weight>
        <bold>false</bold>
       </font>
@@ -236,52 +236,6 @@ color: white;</string>
       <set>Qt::AlignBottom|Qt::AlignHCenter</set>
      </property>
     </widget>
-    <widget class="QLabel" name="leftTeamName">
-     <property name="geometry">
-      <rect>
-       <x>5</x>
-       <y>27</y>
-       <width>96</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>10</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>Default Team</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-    <widget class="QLabel" name="rightTeamName">
-     <property name="geometry">
-      <rect>
-       <x>509</x>
-       <y>27</y>
-       <width>96</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>10</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>Default Team</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
     <widget class="QPushButton" name="sendToDiscord">
      <property name="geometry">
       <rect>
@@ -295,6 +249,28 @@ color: white;</string>
       <string>Send to Discord</string>
      </property>
     </widget>
+    <widget class="QComboBox" name="rightTeamBox">
+     <property name="geometry">
+      <rect>
+       <x>470</x>
+       <y>20</y>
+       <width>141</width>
+       <height>25</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="leftTeamBox">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>20</y>
+       <width>141</width>
+       <height>25</height>
+      </rect>
+     </property>
+    </widget>
+    <zorder>rightTeamBox</zorder>
+    <zorder>leftTeamBox</zorder>
     <zorder>statusColor</zorder>
     <zorder>leftTeamLogo</zorder>
     <zorder>rightTeamLogo</zorder>
@@ -302,17 +278,15 @@ color: white;</string>
     <zorder>rightTeamGoals</zorder>
     <zorder>gameTime</zorder>
     <zorder>halfTime</zorder>
-    <zorder>leftTeamName</zorder>
-    <zorder>rightTeamName</zorder>
     <zorder>sendToDiscord</zorder>
    </widget>
    <widget class="QGroupBox" name="manualReferee">
     <property name="geometry">
      <rect>
       <x>630</x>
-      <y>310</y>
+      <y>280</y>
       <width>421</width>
-      <height>290</height>
+      <height>331</height>
      </rect>
     </property>
     <property name="font">
@@ -721,11 +695,37 @@ color: white;</string>
       <string>Stop</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="penaltyShootout">
+    <widget class="QPushButton" name="var">
      <property name="geometry">
       <rect>
        <x>180</x>
        <y>230</y>
+       <width>100</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>VAR</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="timeout">
+     <property name="geometry">
+      <rect>
+       <x>305</x>
+       <y>230</y>
+       <width>100</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Timeout</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="penaltyShootout">
+     <property name="geometry">
+      <rect>
+       <x>180</x>
+       <y>290</y>
        <width>226</width>
        <height>25</height>
       </rect>
@@ -752,9 +752,9 @@ color: white;</string>
     <property name="geometry">
      <rect>
       <x>630</x>
-      <y>10</y>
+      <y>5</y>
       <width>421</width>
-      <height>290</height>
+      <height>261</height>
      </rect>
     </property>
     <property name="title">
@@ -764,12 +764,126 @@ color: white;</string>
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>20</y>
+       <y>15</y>
        <width>421</width>
        <height>271</height>
       </rect>
      </property>
      <layout class="QGridLayout" name="suggestionGrid"/>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="teleportBox">
+    <property name="geometry">
+     <rect>
+      <x>630</x>
+      <y>620</y>
+      <width>421</width>
+      <height>65</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Teleport</string>
+    </property>
+    <widget class="QPushButton" name="enableTeleport">
+     <property name="geometry">
+      <rect>
+       <x>110</x>
+       <y>30</y>
+       <width>90</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="whatsThis">
+      <string>ENABLE TELEPORT</string>
+     </property>
+     <property name="text">
+      <string>Enable</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="disableTeleport">
+     <property name="geometry">
+      <rect>
+       <x>210</x>
+       <y>30</y>
+       <width>90</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="whatsThis">
+      <string>DISABLE TELEPORT</string>
+     </property>
+     <property name="text">
+      <string>Disable</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="visionBox">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>620</y>
+      <width>601</width>
+      <height>65</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Vision Packets</string>
+    </property>
+    <widget class="QPushButton" name="SSLVision">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>30</y>
+       <width>151</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="whatsThis">
+      <string>SSL VISION</string>
+     </property>
+     <property name="text">
+      <string>VSS-Vision</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="FIRAVision">
+     <property name="geometry">
+      <rect>
+       <x>360</x>
+       <y>30</y>
+       <width>151</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="whatsThis">
+      <string>FIRA VISION</string>
+     </property>
+     <property name="text">
+      <string>FIRASim</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
     </widget>
    </widget>
    <widget class="QLabel" name="flag">
@@ -800,7 +914,7 @@ color: white;</string>
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="forButtons"/>
   <buttongroup name="quadrantButtons"/>
+  <buttongroup name="forButtons"/>
  </buttongroups>
 </ui>

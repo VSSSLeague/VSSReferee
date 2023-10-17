@@ -96,29 +96,45 @@ void Checker_BallPlay::run() {
                     // Check if not occurred possible penalty or goal kick
                     if(!_possiblePenalty && !_possibleGoalKick) {
                         // Send as valid goal
-                        emit emitGoal(_possibleGoalTeam);
+                        // emit emitGoal(_possibleGoalTeam);
 
                         // If is penalty shootout
                         if(_isPenaltyShootout) {
                             setNextTeam();
                             setPenaltiesInfo(VSSRef::Foul::PENALTY_KICK, _penaltyTeam, VSSRef::Quadrant::NO_QUADRANT);
-                            emit foulOccured();
+                            if(!_ballInside){
+                                emit emitSuggestion("GOAL", _possibleGoalTeam);
+                                _ballInside = true;
+                            }
+                            // emit foulOccured();
                             return ;
                         }
                         else {
                             setPenaltiesInfo(VSSRef::Foul::KICKOFF, VSSRef::Color(i), VSSRef::Quadrant::NO_QUADRANT);
-                            emit foulOccured();
+                            if(!_ballInside){
+                                emit emitSuggestion("GOAL", _possibleGoalTeam);
+                                _ballInside = true;
+                            }
+                            // emit foulOccured();
                             return ;
                         }
                     }
                     else{
                         if(getConstants()->useRefereeSuggestions()) {
                             // If occurred penalty or goal kick, send an goal suggestion
-                            emit emitSuggestion("GOAL", _possibleGoalTeam);
+                            if(!_ballInside){
+                                emit emitSuggestion("GOAL", _possibleGoalTeam);
+                                emit emitSuggestion("FREE_BALL", VSSRef::Color::NONE, Utils::getBallQuadrant(getVision()->getBallPosition()));
+                                _ballInside = true;
+                            }
 
                             // Send also an suggestion of free ball
-                            emit emitSuggestion("FREE_BALL", VSSRef::Color::NONE, Utils::getBallQuadrant(getVision()->getBallPosition()));
+                            return ;
                         }
+                    }
+                } else {
+                    if(_possibleGoalTeam != i){
+                        _ballInside = false;
                     }
                 }
             }
@@ -131,8 +147,9 @@ void Checker_BallPlay::run() {
 
                 // If any of them occurred, send HALT command
                 if(getConstants()->useRefereeSuggestions()) {
-                    setPenaltiesInfo(VSSRef::Foul::HALT);
-                    emit foulOccured();
+                    // setPenaltiesInfo(VSSRef::Foul::HALT);
+                    // emit foulOccured();
+                    _isPlayRunning = false;
                     return ;
                 }
                 else {

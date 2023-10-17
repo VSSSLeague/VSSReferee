@@ -25,10 +25,12 @@ Referee::Referee(Vision *vision, Replacer *replacer, SoccerView *soccerView, Con
     // Taking network data
     _refereeAddress = getConstants()->refereeAddress();
     _refereePort = getConstants()->refereePort();
+    _isFIRAVision = getConstants()->isFIRAVision();
 
     // Connecting referee to replacer
     connect(_replacer, SIGNAL(teamsPlaced()), this, SLOT(teamsPlaced()));
     connect(_replacer, SIGNAL(teamsCollided(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant, bool)), this, SLOT(processCollision(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant, bool)));
+    connect(_soccerView, SIGNAL(sendTeleport(bool)), _replacer, SLOT(takeTeleport(bool)));
     connect(this, SIGNAL(sendFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)), _replacer, SLOT(takeFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant)));
     connect(this, SIGNAL(callReplacer(bool, bool)), _replacer, SLOT(placeTeams(bool, bool)), Qt::DirectConnection);
     connect(this, SIGNAL(saveFrame()), _replacer, SLOT(saveFrameAndBall()), Qt::DirectConnection);
@@ -95,7 +97,7 @@ void Referee::initialization() {
     std::cout << Text::blue("[REFEREE] ", true) + Text::bold("Module started at address '" + _refereeAddress.toStdString() + "' and port '" + std::to_string(_refereePort) + "'.") + '\n';
 
     // Call check collision
-    checkIfTeamsAreColliding();
+    // checkIfTeamsAreColliding();
 
     // Call halfPassed (start game)
     halfPassed();
@@ -185,13 +187,16 @@ void Referee::loop() {
                 _resetedTimer = false;
 
                 // Call replacer (place teams)
-                emit callReplacer(_forceDefault, _isToPlaceOutside);
-                _forceDefault = false;
-                _isToPlaceOutside = false;
+                if(_isFIRAVision){
+                    emit callReplacer(_forceDefault, _isToPlaceOutside);
+                    _forceDefault = false;
+                    _isToPlaceOutside = false;
+                }
 
                 // Update sent foul to STOP
                 updatePenaltiesInfo(VSSRef::Foul::STOP, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT);
                 sendPenaltiesToNetwork();
+                _wait = true;
             }
         }
         else {
@@ -206,10 +211,13 @@ void Referee::loop() {
             _transitionTimer.stop();
 
             // Check if passed transition time
-            if(_transitionTimer.getSeconds() >= getConstants()->transitionTime()) {
+            if(_wait) {
                 // Update sent foul to GAME_ON
-                updatePenaltiesInfo(VSSRef::Foul::GAME_ON, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT);
-                sendPenaltiesToNetwork();
+
+                updatePenaltiesInfo(VSSRef::Foul::HALT, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT);
+                emit emitSuggestion("GAME_ON");
+                _wait = false;
+                // sendPenaltiesToNetwork();
             }
         }
     }
@@ -243,7 +251,7 @@ void Referee::connectClient() {
 
     // Set multicast options
     _refereeClient->setSocketOption(QAbstractSocket::MulticastTtlOption, 1);
-    _refereeClient->setMulticastInterface(QNetworkInterface::interfaceFromName(getConstants()->networkInterface()));
+    // _refereeClient->setMulticastInterface(QNetworkInterface::interfaceFromName(getConstants()->networkInterface()));
 }
 
 void Referee::disconnectClient() {
@@ -326,7 +334,7 @@ void Referee::checkIfTeamsAreColliding() {
                 updatePenaltiesInfo(VSSRef::Foul(i), VSSRef::Color::NONE, VSSRef::Quadrant(j));
                 sendPenaltiesToNetwork();
                 std::this_thread::sleep_for(std::chrono::milliseconds(200));
-                emit callReplacer(false, false);
+                if(_isFIRAVision) emit callReplacer(false, false);
             }
         }
         else {
@@ -335,7 +343,7 @@ void Referee::checkIfTeamsAreColliding() {
                 updatePenaltiesInfo(VSSRef::Foul(i), VSSRef::Color(j), VSSRef::Quadrant::NO_QUADRANT);
                 sendPenaltiesToNetwork();
                 std::this_thread::sleep_for(std::chrono::milliseconds(200));
-                emit callReplacer(false, false);
+                if(_isFIRAVision) emit callReplacer(false, false);
             }
         }
     }
@@ -379,8 +387,10 @@ void Referee::sendPenaltiesToNetwork() {
     command.SerializeToString(&datagram);
 
     // Send via socket
-    if(_refereeClient->write(datagram.c_str(), static_cast<quint64>(datagram.length())) == -1) {
-        std::cout << Text::cyan("[REFEREE] ", true) + Text::red("Failed to write to socket.", true) + '\n';
+    for (int i = 0; i < MAX_PACKETS; i++) {
+        if(_refereeClient->write(datagram.c_str(), static_cast<quint64>(datagram.length())) == -1) {
+            std::cout << Text::cyan("[REFEREE] ", true) + Text::red("Failed to write to socket.", true) + '\n';
+        }
     }
 
     // Debug sent foul
@@ -515,6 +525,7 @@ void Referee::sendControlFoul(VSSRef::Foul foul) {
 }
 
 void Referee::takeManualFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant, bool isToPlaceOutside) {
+    printf("%d\n", foul);
     if(foul == VSSRef::Foul::GAME_ON) {
         // Reset transitions vars
         resetTransitionVars();
@@ -531,6 +542,8 @@ void Referee::takeManualFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef:
         }
 
         // Re-send last penalties to network
+
+        updatePenaltiesInfo(VSSRef::Foul::GAME_ON, VSSRef::Color::NONE, VSSRef::Quadrant::NO_QUADRANT);
         sendPenaltiesToNetwork();
     }
     else if(foul == VSSRef::Foul::HALT) {
@@ -594,4 +607,8 @@ Constants* Referee::getConstants() {
     }
 
     return nullptr;
+}
+
+void Referee::visionPacketChanged(bool isFIRAVision) {
+    _isFIRAVision = isFIRAVision;
 }

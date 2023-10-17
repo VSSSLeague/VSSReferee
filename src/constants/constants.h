@@ -40,6 +40,11 @@ public:
     // Vision constants getters
     QString visionAddress();
     quint16 visionPort();
+    QString firaVisionAddress();
+    quint16 firaVisionPort();
+
+    bool isFIRAVision();
+
     bool useKalman();
     int noiseTime();
     int lossTime();
@@ -52,14 +57,18 @@ public:
 
     // Teams constants getters
     int qtPlayers();
-    QString blueTeamName();
-    QString yellowTeamName();
     bool blueIsLeftSide();
     void swapSides();
+    QStringList teams();
 
     // Discord webhook token
     QString getHToken();
     QString getHID();
+
+    int timeoutsPerTeam();
+    float timeoutLength();
+    int varsPerTeam();
+
 
 protected:
     QVariantMap documentMap() { return _documentMap; }
@@ -102,6 +111,9 @@ private:
     // Vision constants
     QString _visionAddress;
     quint16 _visionPort;
+    QString _firaVisionAddress;
+    quint16 _firaVisionPort;
+    bool _isFIRAVision;
     bool _useKalman;
     int _noiseTime;
     int _lossTime;
@@ -116,8 +128,7 @@ private:
 
     // Teams constants
     int _qtPlayers;
-    QString _blueTeamName;
-    QString _yellowTeamName;
+    QStringList _teams;
     bool _blueIsLeftSide;
     void readTeamConstants();
 

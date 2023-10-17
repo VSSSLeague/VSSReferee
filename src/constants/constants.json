@@ -4,8 +4,11 @@
     },
     
     "Vision":{
-    	"visionAddress": "224.0.0.1",
-    	"visionPort": 10002,
+		"isFIRAVision": true,
+    	"visionAddress": "224.5.23.2",
+    	"visionPort": 10015,
+    	"firaVisionAddress": "224.0.0.1",
+    	"firaVisionPort": 10002,
     	"filters":{
     		"useKalman": false,
     		"noiseTime": 100,
@@ -25,25 +28,32 @@
     },
     
     "Team":{
-    	"qtPlayers": 5,
-    	"blueTeamName": "Team Blue",
-    	"yellowTeamName": "Team Yellow",
+    	"qtPlayers": 20,
+    	"teams": ["None", "RoboCIn", "ITAndroids", "RobotBulls", "Maracatronics", "Rodetas"
+   				,"RoboTech", "RoboIME", "Rinobot", "PinguimBots", "Pequi Mecanico"
+   				,"GER", "FURGBot", "UnBall", "Poti", "Warthog", "Nhao","Ararabots"
+   				,"Neon", "UaiSoccer", "Troia", "Yapira", "ThunderVolt", "RedDragons"
+   				,"UFRBots", "UTBots", "LambeSujo", "Carrossel", "BahiaRT", "CIMAT-UAZ"
+   				,"Trevinho", "HumaMaquina", "Drumonsters", "BDP", "UERJ"],
     	"blueIsLeftSide": true
     },
     
     "Referee":{
     	"refereeAddress": "224.5.23.2",
     	"refereePort": 10003,
-    	"transitionTime": 4.0,
+    	"transitionTime": 8.0,
     	"game":{
     		"gameType": "Group_Phase",
     		"ballRadius": 0.0215,
     		"robotLength": 0.075,
     		"halfTime": 300.0,
-    		"overtimeHalfTime": 180.0
+    		"overtimeHalfTime": 180.0,
+			"timeoutsPerTeam": 2,
+			"timeoutLength": 120.0,
+			"varPerTeam": 4
     	},
     	"fouls":{
-    		"useRefereeSuggestions": false,
+    		"useRefereeSuggestions": true,
     		"maintainSpeedAtSuggestions": true,
     		"ballMinSpeedForStuck": 0.1,
     		"stuckedBallTime": 5.0,

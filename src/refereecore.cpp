@@ -63,6 +63,8 @@ void RefereeCore::start() {
     QObject::connect(_referee, SIGNAL(sendTimestamp(float, float, VSSRef::Half, bool)), _soccerView, SLOT(takeTimeStamp(float, float, VSSRef::Half, bool)));
     QObject::connect(_soccerView, SIGNAL(sendManualFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant, bool)), _referee, SLOT(takeManualFoul(VSSRef::Foul, VSSRef::Color, VSSRef::Quadrant, bool)));
     QObject::connect(_vision, SIGNAL(visionUpdated()), _soccerView->getFieldView(), SLOT(updateField()));
+    QObject::connect(_soccerView, SIGNAL(changeVision(bool)), _vision, SLOT(visionPacketChanged(bool)));
+    QObject::connect(_soccerView, SIGNAL(changeVision(bool)), _referee, SLOT(visionPacketChanged(bool)));
 
     // Show GUI
     _soccerView->show();

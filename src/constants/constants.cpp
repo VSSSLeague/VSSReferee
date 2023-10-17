@@ -111,6 +111,15 @@ void Constants::readVisionConstants() {
 
     _visionPort = visionMap["visionPort"].toUInt();
     std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded visionPort: " + std::to_string(_visionPort)) + '\n';
+    
+    _firaVisionAddress = visionMap["firaVisionAddress"].toString();
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded firaVisionAddress: '" + _firaVisionAddress.toStdString() + "'\n");
+
+    _firaVisionPort = visionMap["firaVisionPort"].toUInt();
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded firaVisionPort: " + std::to_string(_firaVisionPort)) + '\n';
+
+    _isFIRAVision = visionMap["isFIRAVision"].toUInt();
+    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded isFIRAVision: " + std::to_string(_isFIRAVision)) + '\n';
 
     // Filter constants
     QVariantMap filterMap = visionMap["filters"].toMap();
@@ -150,16 +159,21 @@ void Constants::readReplacerConstants() {
 void Constants::readTeamConstants() {
     // Taking team mapping in json
     QVariantMap teamMap = documentMap()["Team"].toMap();
+    QVariantList teams = teamMap["teams"].toList();
 
     // Filling vars
     _qtPlayers = teamMap["qtPlayers"].toInt();
     std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded qtPlayers: " + std::to_string(_qtPlayers)) + '\n';
 
-    _blueTeamName = teamMap["blueTeamName"].toString();
-    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded blueTeamName: '" + _blueTeamName.toStdString() + "'\n");
+    _teams.clear();
 
-    _yellowTeamName = teamMap["yellowTeamName"].toString();
-    std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded yellowTeamName: '" + _yellowTeamName.toStdString() + "'\n");
+    foreach (const QVariant &t, teams) {
+        if (t.canConvert<QString>()) {
+            QString teamName = t.toString();
+            _teams.append(teamName);
+            std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded team: " + teamName.toStdString()) + '\n';
+        }
+    }
 
     _blueIsLeftSide = teamMap["blueIsLeftSide"].toInt();
     std::cout << Text::purple("[CONSTANTS] ", true) << Text::bold("Loaded blueIsLeftSide: " + ((_blueIsLeftSide) ? QString("true").toStdString() : QString("false").toStdString()) + '\n');
@@ -253,6 +267,18 @@ quint16 Constants::visionPort() {
     return _visionPort;
 }
 
+QString Constants::firaVisionAddress() {
+    return _firaVisionAddress;
+}
+
+quint16 Constants::firaVisionPort() {
+    return _firaVisionPort;
+}
+
+bool Constants::isFIRAVision() {
+    return _isFIRAVision;
+}
+
 bool Constants::useKalman() {
     return _useKalman;
 }
@@ -263,6 +289,10 @@ int Constants::noiseTime() {
 
 int Constants::lossTime() {
     return _lossTime;
+}
+
+QStringList Constants::teams() {
+    return _teams;
 }
 
 QString Constants::replacerAddress() {
@@ -285,20 +315,11 @@ int Constants::qtPlayers() {
     return _qtPlayers;
 }
 
-QString Constants::blueTeamName() {
-    return _blueTeamName;
-}
-
-QString Constants::yellowTeamName() {
-    return _yellowTeamName;
-}
-
 bool Constants::blueIsLeftSide() {
     return _blueIsLeftSide;
 }
 
 void Constants::swapSides() {
-    std::swap(_blueTeamName, _yellowTeamName);
     _blueIsLeftSide = !_blueIsLeftSide;
 }
 
@@ -308,4 +329,30 @@ QString Constants::getHID() {
 
 QString Constants::getHToken() {
     return _hToken;
+}
+
+
+
+int Constants::varsPerTeam() {
+    QString varsPerTeam = _documentMap["Referee"].toMap()["game"].toMap()["varPerTeam"].toString();
+    bool converted = false;
+    int varsPerTeamInt = varsPerTeam.toInt(&converted);
+
+    return varsPerTeamInt;
+}
+
+int Constants::timeoutsPerTeam() {
+    QString timeoutsPerTeam = _documentMap["Referee"].toMap()["game"].toMap()["timeoutsPerTeam"].toString();
+    bool converted = false;
+    int timeoutsPerTeamInt = timeoutsPerTeam.toInt(&converted);
+
+    return timeoutsPerTeamInt;
+}
+
+float Constants::timeoutLength() {
+    QString timeoutLength = _documentMap["Referee"].toMap()["game"].toMap()["timeoutLength"].toString();
+    bool converted = false;
+    float timeoutLengthFloat = timeoutLength.toFloat(&converted);   
+
+    return timeoutLengthFloat;
 }

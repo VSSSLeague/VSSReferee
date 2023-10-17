@@ -7,6 +7,7 @@
 
 #include <src/utils/types/object/object.h>
 #include <include/vssref_common.pb.h>
+#include <include/wrapper.pb.h>
 #include <src/world/entities/entity.h>
 #include <src/constants/constants.h>
 
@@ -42,6 +43,7 @@ private:
     // Network
     QString _visionAddress;
     quint16 _visionPort;
+    bool _isFIRAVision;
 
     // Objects
     Object *_ballObject;
@@ -54,8 +56,16 @@ private:
     // Data management
     QReadWriteLock _dataMutex;
 
+    void SSLVisionPackets();
+    void FIRAVisionPackets();
+
+    std::string visionType = "[VISION] ";
+
 signals:
     void visionUpdated();
+
+public slots:
+    void visionPacketChanged(bool isFIRAVision);
 };
 
 #endif // VISION_H

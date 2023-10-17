@@ -21,6 +21,11 @@ void debugReplacePosition(double x, double y, int num = 0, std::string side = ""
     std::cout << Text::blue("[REPLACER] ", true) + Text::bold("Moving player " + std::to_string(num) + " from team \"" + side + "\" " + " to position ("+ std::to_string(x) + ", " + std::to_string(y) + ")") + '\n';
 }
 
+void debugTeleport(bool teleport) {
+    std::string const str_teleport = (teleport ? "enabled." : "disabled.");
+    std::cout << Text::yellow("[TELEPORT] ", true) + Text::bold("Teleport is " + str_teleport) + '\n';
+}
+
 Replacer::Replacer(QString replaceFileName, Vision *vision, Field *field, Constants *constants) : Entity(ENT_REPLACER){
     // Take pointers
     _vision = vision;
@@ -455,6 +460,11 @@ void Replacer::takeFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quad
     _foulMutex.unlock();
 }
 
+void Replacer::takeTeleport(bool teleport) {
+    _teleport = teleport;
+    debugTeleport(teleport);
+}
+
 Position Replacer::getBallPlaceByFoul(VSSRef::Foul foul, VSSRef::Color color, VSSRef::Quadrant quadrant){
     float goalKickX = (getField()->fieldLength() / 1000.0)/2.0 - 0.15;
     float markX = (getField()->fieldLength() / 1000.0)/2.0 - getField()->fieldFBMarkX()/1000.0;
@@ -735,9 +745,11 @@ void Replacer::placeTeams(bool forceDefault, bool isToPlaceOutside) {
         emit teamsCollided(_foul, _foulColor, _foulQuadrant, isToPlaceOutside);
     }
     else {
-        // If frames not collides, just place it
-        placeFrame(getTeamFrame(VSSRef::Color::BLUE));
-        placeFrame(getTeamFrame(VSSRef::Color::YELLOW));
+        // If frames not collides and the teleport is enabled, just place it
+        if(_teleport){
+            placeFrame(getTeamFrame(VSSRef::Color::BLUE));
+            placeFrame(getTeamFrame(VSSRef::Color::YELLOW));
+        }
 
         // Mark foul as processed
         _foulMutex.lock();

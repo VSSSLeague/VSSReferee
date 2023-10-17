@@ -8,6 +8,8 @@
 #include <src/world/entities/replacer/replacer.h>
 #include <src/world/entities/referee/checkers/checkers.h>
 
+#define MAX_PACKETS 10
+
 // Abstract SoccerView
 class SoccerView;
 
@@ -109,6 +111,8 @@ private:
     Position _lastBallPosition;
     Velocity _lastBallVelocity;
     bool _placedLast;
+    bool _isFIRAVision;
+    bool _wait = false;
 
 signals:
     void sendFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant);
@@ -128,6 +132,7 @@ public slots:
     void takeStuckedTime(float time);
     void processCollision(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant, bool isToPlaceOutside);
     void processCollisionDecision();
+    void visionPacketChanged(bool isFIRAVision);
 };
 
 #endif // REFEREE_H

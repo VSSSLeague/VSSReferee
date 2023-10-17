@@ -9,6 +9,7 @@
 #include <include/vssref_common.pb.h>
 #include <src/soccerview/fieldview/fieldview.h>
 
+
 namespace Ui {
 class SoccerView;
 }
@@ -35,6 +36,19 @@ private:
     void setupTeams();
     void setupGoals();
     void setupButtons();
+    void setTeams();
+
+    // Timeouts
+    int _leftTeamTimeouts;
+    int _rightTeamTimeouts;
+    bool _timeoutSet;
+    float _timeoutTimestamp;
+    Timer _timeoutTimer;
+
+    // VARs
+    int _leftTeamVars;
+    int _rightTeamVars;
+
 
     // Animations
     void animateWidget(QWidget *widget, QColor desiredColor, int animationTime);
@@ -43,14 +57,15 @@ private:
     // Mapping buttons
     QList<QPushButton*> _buttons;
     QSignalMapper *_buttonsMapper;
+    QStringList _teams;
 
     // Constants
     Constants *_constants;
     Constants* getConstants();
 
     // Goals
-    int _leftTeamGoals;
-    int _rightTeamGoals;
+    int _leftTeamGoals = 0;
+    int _rightTeamGoals = 0;
 
     // Suggestions
     QList<QWidget*> _widgets;
@@ -62,6 +77,8 @@ signals:
     void sendCollisionDecision();
     void sendManualFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant, bool isToPlaceOutside = false);
     void addTime(int seconds);
+    void sendTeleport(bool teleport);
+    void changeVision(bool isFIRAvision);
 
 public slots:
     void takeFoul(VSSRef::Foul foul, VSSRef::Color foulColor, VSSRef::Quadrant foulQuadrant);
