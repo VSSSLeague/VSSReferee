@@ -6,7 +6,7 @@
     "Vision":{
 		"isFIRAVision": true,
     	"visionAddress": "224.5.23.2",
-    	"visionPort": 10324,
+    	"visionPort": 10015,
     	"firaVisionAddress": "224.0.0.1",
     	"firaVisionPort": 10002,
     	"filters":{
@@ -40,7 +40,7 @@
     
     "Referee":{
     	"refereeAddress": "224.5.23.2",
-    	"refereePort": 10314,
+    	"refereePort": 10003,
     	"transitionTime": 8.0,
     	"game":{
     		"gameType": "Group_Phase",
